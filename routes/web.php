@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Focal\Core\Http\Middleware\RequireApiToken;
 use Focal\Core\Support\RouteGroup;
 use Focal\Marketing\Http\Controllers\AmpFormController;
 use Focal\Marketing\Http\Controllers\CustomBehavioralEventController;
@@ -21,10 +22,16 @@ use Focal\Marketing\Http\Controllers\WorkflowEnrollmentWebhookController;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Route;
 
-Route::group(RouteGroup::attributes('focal-marketing.routes.web'), function (): void {
+// Server-to-server endpoints require the marketing API token; browser-facing
+// submissions are rate limited per IP (see focal-core.rate_limits).
+$apiToken = RequireApiToken::class.':focal-marketing.api.token';
+
+Route::group(RouteGroup::attributes('focal-marketing.routes.web'), function () use ($apiToken): void {
     // Hosted lead capture forms
     Route::get('/forms/{slug}', [MarketingFormController::class, 'show'])->name('focal.marketing.forms.show');
-    Route::post('/forms/{slug}', [MarketingFormController::class, 'submit'])->name('focal.marketing.forms.submit');
+    Route::post('/forms/{slug}', [MarketingFormController::class, 'submit'])
+        ->middleware('throttle:focal-public')
+        ->name('focal.marketing.forms.submit');
 
     // Embeddable Form JavaScript Loader & Headless JSON Schema
     Route::get('/marketing/forms/embed.js', [MarketingFormController::class, 'embedScript'])->name('focal.marketing.forms.embed-script');
@@ -37,38 +44,49 @@ Route::group(RouteGroup::attributes('focal-marketing.routes.web'), function (): 
 
     // Unsubscribe & Compliance Center
     Route::get('/marketing/unsubscribe/{token}', [MarketingTrackingController::class, 'showUnsubscribe'])->name('focal.marketing.unsubscribe.show');
-    Route::post('/marketing/unsubscribe/{token}', [MarketingTrackingController::class, 'processUnsubscribe'])->name('focal.marketing.unsubscribe.process');
+    Route::post('/marketing/unsubscribe/{token}', [MarketingTrackingController::class, 'processUnsubscribe'])
+        ->middleware('throttle:focal-public')
+        ->name('focal.marketing.unsubscribe.process');
 
     // Inbound Web Tracking & Client Script
     Route::get('/marketing/focal.js', [WebTrackingController::class, 'clientScript'])->name('focal.marketing.track.script');
     Route::post('/marketing/track/pageview', [WebTrackingController::class, 'pageview'])
         ->withoutMiddleware([ValidateCsrfToken::class])
+        ->middleware('throttle:focal-public')
         ->name('focal.marketing.track.pageview');
 
     // External Form Auto-Capture Endpoint
     Route::post('/marketing/forms/auto-capture', [WebTrackingController::class, 'autoCapture'])
         ->withoutMiddleware([ValidateCsrfToken::class])
+        ->middleware('throttle:focal-public')
         ->name('focal.marketing.forms.auto-capture');
 
     // Inbound ESP Deliverability Webhooks (bounces, complaints)
     Route::post('/marketing/webhooks/esp/{provider}', [EspWebhookController::class, 'handle'])
         ->withoutMiddleware([ValidateCsrfToken::class])
+        ->middleware([$apiToken, 'throttle:focal-api'])
         ->name('focal.marketing.webhooks.esp');
 
     // Hosted Public Landing Pages
     Route::get('/p/{slug}', [LandingPageController::class, 'show'])->name('focal.marketing.landing-pages.show');
-    Route::post('/p/{slug}/submit', [LandingPageController::class, 'submit'])->name('focal.marketing.landing-pages.submit');
+    Route::post('/p/{slug}/submit', [LandingPageController::class, 'submit'])
+        ->middleware('throttle:focal-public')
+        ->name('focal.marketing.landing-pages.submit');
 
     // Self-Service Preference Center & Topic Subscriptions
     Route::get('/marketing/preferences/{token}', [MarketingPreferencesController::class, 'showPreferences'])->name('focal.marketing.preferences.show');
-    Route::post('/marketing/preferences/{token}', [MarketingPreferencesController::class, 'updatePreferences'])->name('focal.marketing.preferences.update');
+    Route::post('/marketing/preferences/{token}', [MarketingPreferencesController::class, 'updatePreferences'])
+        ->middleware('throttle:focal-public')
+        ->name('focal.marketing.preferences.update');
 
     // Double Opt-In Email Verification
     Route::get('/marketing/confirm/{token}', [MarketingPreferencesController::class, 'confirmEmail'])->name('focal.marketing.confirm');
 
     // Net Promoter Score (NPS) 1-Click Rating & Feedback
     Route::get('/marketing/nps/{token}/{score}', [NpsSurveyController::class, 'recordScore'])->name('focal.marketing.nps.rate');
-    Route::post('/marketing/nps/{token}/feedback', [NpsSurveyController::class, 'submitFeedback'])->name('focal.marketing.nps.feedback');
+    Route::post('/marketing/nps/{token}/feedback', [NpsSurveyController::class, 'submitFeedback'])
+        ->middleware('throttle:focal-public')
+        ->name('focal.marketing.nps.feedback');
 
     // Gated Marketing Assets / Lead Magnet Downloads
     Route::get('/marketing/assets/{slug}/download', [MarketingAssetController::class, 'download'])->name('focal.marketing.assets.download');
@@ -80,33 +98,41 @@ Route::group(RouteGroup::attributes('focal-marketing.routes.web'), function (): 
         ->name('focal.marketing.images.badge');
 });
 
-Route::group(RouteGroup::attributes('focal-marketing.routes.api'), function (): void {
-    Route::withoutMiddleware([ValidateCsrfToken::class])->group(function (): void {
-        // Inbound External Webhook Lead Ingestion (Zapier, LinkedIn Lead Gen, Zoom Webinars)
-        Route::post('/leads/webhook/{source?}', [ExternalLeadWebhookController::class, 'handle'])->name('focal.marketing.leads.webhook');
+Route::group(RouteGroup::attributes('focal-marketing.routes.api'), function () use ($apiToken): void {
+    Route::withoutMiddleware([ValidateCsrfToken::class])->group(function () use ($apiToken): void {
+        // Public, browser-facing endpoints (embedded forms, event sign-ups, in-email AMP forms).
+        Route::middleware('throttle:focal-public')->group(function (): void {
+            // External / Embed form submission endpoint (CSRF-exempt for cross-site landing pages)
+            Route::post('/forms/{slug}', [MarketingFormController::class, 'submit'])->name('focal.marketing.forms.api-submit');
 
-        // External / Embed form submission endpoint (CSRF-exempt for cross-site landing pages)
-        Route::post('/forms/{slug}', [MarketingFormController::class, 'submit'])->name('focal.marketing.forms.api-submit');
+            // Marketing Events & Webinar Registrations
+            Route::post('/events/{slug}/register', [MarketingEventController::class, 'register'])->name('focal.marketing.events.register');
 
-        // Inbound ESP Deliverability Webhooks
-        Route::post('/webhooks/deliverability', [EspWebhookController::class, 'deliverability'])->name('focal.marketing.webhooks.deliverability');
+            // Interactive In-Email AMP Form Handlers (NPS feedback & event RSVPs)
+            Route::post('/amp/feedback', [AmpFormController::class, 'feedback'])->name('focal.marketing.amp.feedback');
+            Route::post('/amp/rsvp', [AmpFormController::class, 'rsvp'])->name('focal.marketing.amp.rsvp');
+        });
 
-        // Marketing Events & Webinar Registrations / Attendance Webhooks
-        Route::post('/events/{slug}/register', [MarketingEventController::class, 'register'])->name('focal.marketing.events.register');
-        Route::post('/events/{slug}/attendance-webhook', [MarketingEventController::class, 'attendanceWebhook'])->name('focal.marketing.events.attendance-webhook');
+        // Server-to-server endpoints: require the marketing API token.
+        Route::middleware([$apiToken, 'throttle:focal-api'])->group(function (): void {
+            // Inbound External Webhook Lead Ingestion (Zapier, LinkedIn Lead Gen, Zoom Webinars)
+            Route::post('/leads/webhook/{source?}', [ExternalLeadWebhookController::class, 'handle'])->name('focal.marketing.leads.webhook');
 
-        // In-App Custom Behavioral Events (Product-Led Growth / Custom Tracking API)
-        Route::post('/events/track', [CustomBehavioralEventController::class, 'track'])->name('focal.marketing.events.track');
+            // Inbound ESP Deliverability Webhooks
+            Route::post('/webhooks/deliverability', [EspWebhookController::class, 'deliverability'])->name('focal.marketing.webhooks.deliverability');
 
-        // Inbound Webhook Workflow Enrollment (Zapier, Segment, Stripe, telemetry)
-        Route::post('/workflows/{workflow}/enroll', [WorkflowEnrollmentWebhookController::class, 'enroll'])->name('focal.marketing.workflows.enroll-webhook');
+            // Webinar attendance webhooks
+            Route::post('/events/{slug}/attendance-webhook', [MarketingEventController::class, 'attendanceWebhook'])->name('focal.marketing.events.attendance-webhook');
 
-        // Headless Transactional Email API (trigger template send programmatically via API)
-        Route::post('/templates/{template}/send', [TransactionalTemplateController::class, 'send'])->name('focal.marketing.templates.send');
-        Route::post('/templates/{template}/send-batch', [TransactionalTemplateController::class, 'sendBatch'])->name('focal.marketing.templates.send-batch');
+            // In-App Custom Behavioral Events (Product-Led Growth / Custom Tracking API)
+            Route::post('/events/track', [CustomBehavioralEventController::class, 'track'])->name('focal.marketing.events.track');
 
-        // Interactive In-Email AMP Form Handlers (NPS feedback & event RSVPs)
-        Route::post('/amp/feedback', [AmpFormController::class, 'feedback'])->name('focal.marketing.amp.feedback');
-        Route::post('/amp/rsvp', [AmpFormController::class, 'rsvp'])->name('focal.marketing.amp.rsvp');
+            // Inbound Webhook Workflow Enrollment (Zapier, Segment, Stripe, telemetry)
+            Route::post('/workflows/{workflow}/enroll', [WorkflowEnrollmentWebhookController::class, 'enroll'])->name('focal.marketing.workflows.enroll-webhook');
+
+            // Headless Transactional Email API (trigger template send programmatically via API)
+            Route::post('/templates/{template}/send', [TransactionalTemplateController::class, 'send'])->name('focal.marketing.templates.send');
+            Route::post('/templates/{template}/send-batch', [TransactionalTemplateController::class, 'sendBatch'])->name('focal.marketing.templates.send-batch');
+        });
     });
 });

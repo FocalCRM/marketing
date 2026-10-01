@@ -33,7 +33,7 @@ The omnichannel marketing automation, lead generation, and closed-loop revenue a
 
 ### Core Features
 
-- **Omnichannel Drip Workflows:** Visual automation orchestrating automated emails, SMS alerts, time delays, branching conditional logic, custom webhooks, and sales handoffs.
+- **Drip Workflows:** Automation orchestrating emails, time delays, branching conditional logic, custom webhooks, and sales handoffs. SMS steps are recorded, but no SMS provider is connected yet, so messages are not delivered.
 - **Multi-Touch Revenue Attribution:** Accurately calculate marketing ROI using 6 standard attribution models:
   - *First Touch* (100% to initial acquisition)
   - *Last Touch* (100% to conversion touchpoint)
@@ -48,7 +48,7 @@ The omnichannel marketing automation, lead generation, and closed-loop revenue a
 - **Predictive Send-Time Optimization:** Calculate the optimal hour of day for each recipient based on historical engagement patterns.
 - **Forms & Progressive Profiling:** Self-hosted forms and embeddable widgets with anti-bot honey-pots and progressive profiling (asking new questions on return visits).
 - **Compliance & Granular Topics:** RFC 8058 one-click unsubscribe headers, preference centers, and topic-level subscriptions (*Product Updates*, *Webinars*, *Newsletters*).
-- **Ad Audience Sync:** Synchronize active CRM lists directly with Meta Custom Audiences, Google Customer Match, and LinkedIn Matched Audiences.
+- **Ad Audience Sync (planned):** Track which CRM lists are destined for Meta Custom Audiences, Google Customer Match, and LinkedIn Matched Audiences. Pushing audiences to the ad platforms is not implemented yet.
 
 ---
 
@@ -177,6 +177,25 @@ FOCAL_MARKETING_ROUTES_ENABLED=true
 ```
 
 Each group also accepts `middleware`. To register the routes yourself, set `routes.enabled` to `false` and define routes with the same names (`focal.marketing.*`), because models, emails and notifications generate links from those names.
+
+---
+
+## API tokens and rate limits
+
+Server-to-server endpoints require the marketing API token. Until `FOCAL_MARKETING_API_TOKEN` is set, they respond with `403` and do nothing:
+
+- Transactional sending: `POST /api/marketing/templates/{template}/send` and `/send-batch`
+- Lead ingestion: `POST /api/marketing/leads/webhook/{source}`
+- Deliverability webhooks: `POST /api/marketing/webhooks/deliverability` and `/marketing/webhooks/esp/{provider}`
+- Workflow enrollment, behavioral events, and webinar attendance webhooks
+
+```env
+FOCAL_MARKETING_API_TOKEN=   # e.g. php -r "echo bin2hex(random_bytes(32));"
+```
+
+Send it as `Authorization: Bearer <token>`, an `X-Focal-Token` header, or, for providers that only accept a URL, a `?token=<token>` query parameter.
+
+Browser-facing endpoints (forms, landing pages, tracking, preferences, unsubscribe, event registration, AMP forms) stay public and are rate limited per IP. Adjust the limits with `FOCAL_PUBLIC_RATE_LIMIT` and `FOCAL_API_RATE_LIMIT` (requests per minute; see `config/focal-core.php`).
 
 ---
 
