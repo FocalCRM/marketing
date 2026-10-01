@@ -1,0 +1,107 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Focal\Marketing\Actions;
+
+use Focal\Core\Enums\LeadStatus;
+use Focal\Core\Enums\LifecycleStage;
+use Focal\Core\Models\Company;
+use Focal\Core\Models\Contact;
+use Focal\Core\Support\UserModel;
+use Focal\Sales\Enums\DealStatus;
+use Focal\Sales\Models\Deal;
+use Focal\Sales\Models\Pipeline;
+use Illuminate\Database\Eloquent\Model;
+
+class HandoffLeadToSalesAction
+{
+    /**
+     * Instantly hand off a qualified marketing lead to the Sales team.
+     * Assigns a sales owner, updates lifecycle stage to SQL, and auto-generates a pipeline Deal and urgent task.
+     *
+     * @return array{contact: Contact, deal: ?Model, owner: ?Model, task_created: bool}
+     */
+    public function execute(
+        Contact $contact,
+        ?string $dealName = null,
+        ?float $amount = null,
+        ?int $pipelineId = null,
+        ?int $ownerId = null
+    ): array {
+        // 1. Resolve or Assign Sales Owner (Round-Robin or First Available)
+        if ($ownerId === null && $contact->owner_id === null) {
+            /** @var class-string<Model> $userClass */
+            $userClass = UserModel::className();
+            if (class_exists($userClass)) {
+                $ownerId = $userClass::query()->orderBy('id', 'asc')->first()?->getKey();
+            }
+        } elseif ($ownerId === null) {
+            $ownerId = $contact->owner_id;
+        }
+
+        // 2. Promote Contact to SQL and Active Lead Status
+        $updates = [
+            'lifecycle_stage' => LifecycleStage::SalesQualifiedLead,
+            'lead_status' => LeadStatus::InProgress,
+        ];
+
+        if ($ownerId !== null && $contact->owner_id !== $ownerId) {
+            $updates['owner_id'] = (int) $ownerId;
+        }
+
+        $contact->update($updates);
+
+        /** @var Model|null $owner */
+        $owner = $contact->owner;
+
+        // 3. Create Pipeline Deal if Sales package is available
+        $deal = null;
+        if (class_exists(Pipeline::class) && class_exists(Deal::class)) {
+            $pipeline = $pipelineId !== null
+                ? Pipeline::query()->find($pipelineId)
+                : Pipeline::query()->first();
+
+            $stageId = $pipeline?->stages()->orderBy('order', 'asc')->first()?->id;
+
+            if ($pipeline !== null && $stageId !== null) {
+                $finalDealName = $dealName ?? "MQL Deal: {$contact->full_name}";
+                $finalAmount = $amount ?? (float) config('focal-marketing.sales_handoff.default_deal_amount', 10000.00);
+
+                /** @var Deal $deal */
+                $deal = Deal::create([
+                    'pipeline_id' => $pipeline->id,
+                    'stage_id' => $stageId,
+                    'name' => $finalDealName,
+                    'amount' => $finalAmount,
+                    'status' => DealStatus::Open,
+                    'owner_id' => $contact->owner_id,
+                ]);
+
+                // Associate Deal with Contact and primary Company
+                $contact->associateWith($deal, 'primary');
+
+                /** @var Company|null $company */
+                $company = $contact->companies()->first();
+                if ($company !== null) {
+                    $company->associateWith($deal, 'primary');
+                }
+            }
+        }
+
+        // 4. Create Immediate Priority Sales Task
+        $ownerName = $owner !== null ? ($owner->name ?? "User #{$owner->getKey()}") : 'Unassigned';
+        $contact->logTask(
+            title: "🔥 High-Intent MQL Hand-off: {$contact->full_name}",
+            dueAt: now()->addHour(),
+            body: "Marketing has qualified this contact (Lead Score: {$contact->lead_score}). Immediate outreach required. Assigned to: {$ownerName}."
+        );
+
+        return [
+            'contact' => $contact->fresh() ?? $contact,
+            'deal' => $deal,
+            'owner' => $owner,
+            'task_created' => true,
+        ];
+    }
+}

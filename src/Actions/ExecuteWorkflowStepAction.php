@@ -1,0 +1,446 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Focal\Marketing\Actions;
+
+use Focal\Core\Enums\LifecycleStage;
+use Focal\Core\Support\UserModel;
+use Focal\Marketing\Enums\WorkflowEnrollmentStatus;
+use Focal\Marketing\Enums\WorkflowStepType;
+use Focal\Marketing\Models\MarketingTemplate;
+use Focal\Marketing\Models\WorkflowEnrollment;
+use Focal\Marketing\Models\WorkflowLog;
+use Focal\Marketing\Models\WorkflowStep;
+use Focal\Sales\Enums\DealStatus;
+use Focal\Sales\Models\Deal;
+use Focal\Sales\Models\Pipeline;
+use Illuminate\Support\Facades\Http;
+
+class ExecuteWorkflowStepAction
+{
+    /**
+     * Execute the current step for an enrolled contact.
+     */
+    public function execute(WorkflowEnrollment $enrollment): void
+    {
+        if ($enrollment->status !== WorkflowEnrollmentStatus::Active) {
+            return;
+        }
+
+        /** @var WorkflowStep|null $step */
+        $step = $enrollment->currentStep;
+
+        if ($step === null) {
+            $this->completeEnrollment($enrollment);
+
+            return;
+        }
+
+        $contact = $enrollment->contact;
+        $workflow = $enrollment->workflow;
+
+        switch ($step->type) {
+            case WorkflowStepType::SendEmail:
+                $templateId = (int) ($step->config['template_id'] ?? 0);
+                $subject = (string) ($step->config['subject'] ?? 'Marketing Update');
+
+                /** @var MarketingTemplate|null $template */
+                $template = MarketingTemplate::query()->find($templateId);
+                $body = $template->body_html ?? ($step->config['body'] ?? 'Hello from Focal Marketing!');
+
+                $compiler = app(CompileCampaignMessageAction::class);
+                $rendered = $compiler->compileForContact($body, $contact);
+
+                // Record activity log on contact
+                $contact->logTask(
+                    title: "Workflow Email: {$subject}",
+                    dueAt: now(),
+                    body: "Automated workflow email sent via workflow [{$workflow->name}]."
+                );
+
+                WorkflowLog::create([
+                    'enrollment_id' => $enrollment->id,
+                    'step_id' => $step->id,
+                    'contact_id' => $contact->id,
+                    'action_taken' => "Sent email: {$subject}",
+                    'status' => 'success',
+                    'details' => ['template_id' => $templateId, 'subject' => $subject],
+                    'created_at' => now(),
+                ]);
+
+                $nextStepNum = array_key_exists('next_step', $step->config)
+                    ? ($step->config['next_step'] !== null ? (int) $step->config['next_step'] : null)
+                    : ($step->step_number + 1);
+
+                $this->advanceToNextStep($enrollment, $nextStepNum);
+                break;
+
+            case WorkflowStepType::Delay:
+                $delayMinutes = max(1, (int) ($step->config['delay_minutes'] ?? 60));
+
+                WorkflowLog::create([
+                    'enrollment_id' => $enrollment->id,
+                    'step_id' => $step->id,
+                    'contact_id' => $contact->id,
+                    'action_taken' => "Wait timer started ({$delayMinutes} minutes)",
+                    'status' => 'success',
+                    'details' => ['delay_minutes' => $delayMinutes],
+                    'created_at' => now(),
+                ]);
+
+                // Point to next step but schedule execution in the future
+                /** @var WorkflowStep|null $nextStep */
+                $nextStep = $workflow->steps()->where('step_number', $step->step_number + 1)->first();
+                if ($nextStep !== null) {
+                    $enrollment->update([
+                        'current_step_id' => $nextStep->id,
+                        'next_run_at' => now()->addMinutes($delayMinutes),
+                    ]);
+                } else {
+                    $this->completeEnrollment($enrollment);
+                }
+                break;
+
+            case WorkflowStepType::Condition:
+                $property = (string) ($step->config['property'] ?? 'lead_score');
+                $operator = (string) ($step->config['operator'] ?? '>=');
+                $targetVal = $step->config['value'] ?? 50;
+
+                $actualVal = match ($property) {
+                    'lead_score' => $contact->lead_score,
+                    'lifecycle_stage' => $contact->lifecycle_stage->value,
+                    default => $contact->properties[$property] ?? null,
+                };
+
+                $conditionMet = match ($operator) {
+                    '>=' => (int) $actualVal >= (int) $targetVal,
+                    '>' => (int) $actualVal > (int) $targetVal,
+                    '<=' => (int) $actualVal <= (int) $targetVal,
+                    '<' => (int) $actualVal < (int) $targetVal,
+                    '!=' => (string) $actualVal !== (string) $targetVal,
+                    default => (string) $actualVal === (string) $targetVal,
+                };
+
+                $nextStepNum = $conditionMet
+                    ? ($step->next_step_on_true ?? ($step->step_number + 1))
+                    : ($step->next_step_on_false ?? null);
+
+                WorkflowLog::create([
+                    'enrollment_id' => $enrollment->id,
+                    'step_id' => $step->id,
+                    'contact_id' => $contact->id,
+                    'action_taken' => 'Evaluated condition: '.($conditionMet ? 'Passed (True)' : 'Failed (False)'),
+                    'status' => 'success',
+                    'details' => ['property' => $property, 'result' => $conditionMet, 'next_step' => $nextStepNum],
+                    'created_at' => now(),
+                ]);
+
+                if ($nextStepNum !== null) {
+                    $this->advanceToNextStep($enrollment, $nextStepNum);
+                } else {
+                    $this->completeEnrollment($enrollment);
+                }
+                break;
+
+            case WorkflowStepType::UpdateContact:
+                $updates = [];
+                if (isset($step->config['lifecycle_stage'])) {
+                    $updates['lifecycle_stage'] = LifecycleStage::from((string) $step->config['lifecycle_stage']);
+                }
+                if (! empty($updates)) {
+                    $contact->update($updates);
+                }
+
+                WorkflowLog::create([
+                    'enrollment_id' => $enrollment->id,
+                    'step_id' => $step->id,
+                    'contact_id' => $contact->id,
+                    'action_taken' => 'Updated contact properties',
+                    'status' => 'success',
+                    'details' => $updates,
+                    'created_at' => now(),
+                ]);
+
+                $nextStepNum = array_key_exists('next_step', $step->config)
+                    ? ($step->config['next_step'] !== null ? (int) $step->config['next_step'] : null)
+                    : ($step->step_number + 1);
+
+                $this->advanceToNextStep($enrollment, $nextStepNum);
+                break;
+
+            case WorkflowStepType::SendSms:
+                $message = (string) ($step->config['message'] ?? 'Marketing Update');
+                $requiresConsent = (bool) ($step->config['requires_consent'] ?? true);
+
+                /** @var DispatchSmsAction $dispatchSms */
+                $dispatchSms = app(DispatchSmsAction::class);
+                $sms = $dispatchSms->execute($contact, $message, null, $requiresConsent, "Workflow SMS: {$workflow->name}");
+
+                $status = $sms->status === 'delivered' ? 'success' : 'skipped';
+                $actionTaken = $sms->status === 'delivered'
+                    ? "Dispatched SMS to {$contact->phone}"
+                    : "Skipped SMS ({$sms->error_message})";
+
+                WorkflowLog::create([
+                    'enrollment_id' => $enrollment->id,
+                    'step_id' => $step->id,
+                    'contact_id' => $contact->id,
+                    'action_taken' => $actionTaken,
+                    'status' => $status,
+                    'details' => [
+                        'phone' => $contact->phone,
+                        'message' => $sms->message_body,
+                        'sms_id' => $sms->id,
+                        'status' => $sms->status,
+                        'error' => $sms->error_message,
+                    ],
+                    'created_at' => now(),
+                ]);
+
+                $nextStepNum = array_key_exists('next_step', $step->config)
+                    ? ($step->config['next_step'] !== null ? (int) $step->config['next_step'] : null)
+                    : ($step->step_number + 1);
+
+            case WorkflowStepType::AssignOwner:
+                $ownerId = $step->config['owner_id'] ?? null;
+                if ($ownerId === null) {
+                    $ownerId = UserModel::query()->first()?->getKey();
+                }
+
+                if ($ownerId !== null) {
+                    $contact->update(['owner_id' => (int) $ownerId]);
+                }
+
+                WorkflowLog::create([
+                    'enrollment_id' => $enrollment->id,
+                    'step_id' => $step->id,
+                    'contact_id' => $contact->id,
+                    'action_taken' => "Assigned sales owner #{$ownerId} to contact",
+                    'status' => 'success',
+                    'details' => ['owner_id' => $ownerId],
+                    'created_at' => now(),
+                ]);
+
+                $nextStepNum = array_key_exists('next_step', $step->config)
+                    ? ($step->config['next_step'] !== null ? (int) $step->config['next_step'] : null)
+                    : ($step->step_number + 1);
+
+                $this->advanceToNextStep($enrollment, $nextStepNum);
+                break;
+
+            case WorkflowStepType::CreateDeal:
+                $dealName = (string) ($step->config['deal_name'] ?? "Deal for {$contact->first_name} {$contact->last_name}");
+                $amount = (float) ($step->config['amount'] ?? 10000.00);
+                $pipelineId = $step->config['pipeline_id'] ?? null;
+                $stageId = $step->config['stage_id'] ?? null;
+
+                if ($pipelineId === null && class_exists('Focal\\Sales\\Models\\Pipeline')) {
+                    /** @var Pipeline|null $defaultPipeline */
+                    $defaultPipeline = Pipeline::query()->first();
+                    $pipelineId = $defaultPipeline?->id;
+                    $stageId = $defaultPipeline?->stages()->first()?->id;
+                }
+
+                $deal = null;
+                if ($pipelineId !== null && $stageId !== null && class_exists('Focal\\Sales\\Models\\Deal')) {
+                    /** @var Deal $deal */
+                    $deal = Deal::create([
+                        'pipeline_id' => (int) $pipelineId,
+                        'stage_id' => (int) $stageId,
+                        'name' => $dealName,
+                        'amount' => $amount,
+                        'status' => DealStatus::Open,
+                        'owner_id' => $contact->owner_id,
+                    ]);
+
+                    $contact->associateWith($deal, 'primary');
+                }
+
+                WorkflowLog::create([
+                    'enrollment_id' => $enrollment->id,
+                    'step_id' => $step->id,
+                    'contact_id' => $contact->id,
+                    'action_taken' => $deal !== null ? "Created Deal: {$dealName} (\${$amount})" : 'Skipped Deal creation (no pipeline)',
+                    'status' => $deal !== null ? 'success' : 'skipped',
+                    'details' => ['deal_id' => $deal?->id, 'amount' => $amount, 'name' => $dealName],
+                    'created_at' => now(),
+                ]);
+
+                $nextStepNum = array_key_exists('next_step', $step->config)
+                    ? ($step->config['next_step'] !== null ? (int) $step->config['next_step'] : null)
+                    : ($step->step_number + 1);
+
+                $this->advanceToNextStep($enrollment, $nextStepNum);
+                break;
+
+            case WorkflowStepType::CreateSalesTask:
+                $taskTitle = (string) ($step->config['title'] ?? 'High-Priority Lead Follow-up');
+                $dueInHours = (int) ($step->config['due_in_hours'] ?? 2);
+
+                $contact->logTask(
+                    title: $taskTitle,
+                    dueAt: now()->addHours($dueInHours),
+                    body: "Priority sales SLA follow-up task automatically created via workflow [{$workflow->name}]."
+                );
+
+                WorkflowLog::create([
+                    'enrollment_id' => $enrollment->id,
+                    'step_id' => $step->id,
+                    'contact_id' => $contact->id,
+                    'action_taken' => "Created sales task: {$taskTitle}",
+                    'status' => 'success',
+                    'details' => ['title' => $taskTitle, 'due_in_hours' => $dueInHours],
+                    'created_at' => now(),
+                ]);
+
+                $nextStepNum = array_key_exists('next_step', $step->config)
+                    ? ($step->config['next_step'] !== null ? (int) $step->config['next_step'] : null)
+                    : ($step->step_number + 1);
+
+                $this->advanceToNextStep($enrollment, $nextStepNum);
+                break;
+
+            case WorkflowStepType::InternalNotification:
+                $alertMessage = (string) ($step->config['message'] ?? 'High-intent lead requires sales attention');
+
+                $contact->logTask(
+                    title: "Internal Alert: {$alertMessage}",
+                    dueAt: now(),
+                    body: "Automated alert generated by workflow [{$workflow->name}]."
+                );
+
+                WorkflowLog::create([
+                    'enrollment_id' => $enrollment->id,
+                    'step_id' => $step->id,
+                    'contact_id' => $contact->id,
+                    'action_taken' => "Logged internal notification: {$alertMessage}",
+                    'status' => 'success',
+                    'details' => ['message' => $alertMessage],
+                    'created_at' => now(),
+                ]);
+
+                $nextStepNum = array_key_exists('next_step', $step->config)
+                    ? ($step->config['next_step'] !== null ? (int) $step->config['next_step'] : null)
+                    : ($step->step_number + 1);
+
+                $this->advanceToNextStep($enrollment, $nextStepNum);
+                break;
+
+            case WorkflowStepType::Webhook:
+                $webhookUrl = (string) ($step->config['url'] ?? '');
+                $method = strtoupper((string) ($step->config['method'] ?? 'POST'));
+
+                $status = 'success';
+                $responseCode = 200;
+
+                if (! empty($webhookUrl)) {
+                    try {
+                        $payload = [
+                            'workflow_id' => $workflow->id,
+                            'workflow_name' => $workflow->name,
+                            'contact' => [
+                                'id' => $contact->id,
+                                'email' => $contact->email,
+                                'first_name' => $contact->first_name,
+                                'last_name' => $contact->last_name,
+                                'lead_score' => $contact->lead_score,
+                                'lifecycle_stage' => $contact->lifecycle_stage->value,
+                            ],
+                            'timestamp' => now()->toIso8601String(),
+                        ];
+
+                        $secret = (string) ($step->config['secret'] ?? config('app.key', 'focal-secret'));
+                        $jsonPayload = (string) json_encode($payload);
+                        $signature = hash_hmac('sha256', $jsonPayload, $secret);
+
+                        $customHeaders = isset($step->config['headers']) && is_array($step->config['headers'])
+                            ? $step->config['headers']
+                            : [];
+
+                        $headers = array_merge([
+                            'X-Focal-Signature' => $signature,
+                            'X-Focal-Workflow-ID' => (string) $workflow->id,
+                            'User-Agent' => 'Focal-RevOps-Webhook/1.0',
+                        ], $customHeaders);
+
+                        $response = Http::withHeaders($headers)
+                            ->timeout(5)
+                            ->send($method, $webhookUrl, [
+                                'json' => $payload,
+                            ]);
+                        $responseCode = $response->status();
+                        $status = $response->successful() ? 'success' : 'failed';
+                    } catch (\Throwable) {
+                        $status = 'failed';
+                        $responseCode = 500;
+                    }
+                }
+
+                WorkflowLog::create([
+                    'enrollment_id' => $enrollment->id,
+                    'step_id' => $step->id,
+                    'contact_id' => $contact->id,
+                    'action_taken' => "Webhook {$method} to {$webhookUrl}",
+                    'status' => $status,
+                    'details' => ['url' => $webhookUrl, 'method' => $method, 'response_code' => $responseCode],
+                    'created_at' => now(),
+                ]);
+
+                $nextStepNum = array_key_exists('next_step', $step->config)
+                    ? ($step->config['next_step'] !== null ? (int) $step->config['next_step'] : null)
+                    : ($step->step_number + 1);
+
+                $this->advanceToNextStep($enrollment, $nextStepNum);
+                break;
+        }
+    }
+
+    /**
+     * Advance enrollment to specified step number and recursively run next step if ready.
+     */
+    protected function advanceToNextStep(WorkflowEnrollment $enrollment, ?int $stepNumber): void
+    {
+        if ($stepNumber === null) {
+            $this->completeEnrollment($enrollment);
+
+            return;
+        }
+
+        /** @var WorkflowStep|null $nextStep */
+        $nextStep = $enrollment->workflow->steps()->where('step_number', $stepNumber)->first();
+
+        if ($nextStep === null) {
+            $this->completeEnrollment($enrollment);
+
+            return;
+        }
+
+        $enrollment->update([
+            'current_step_id' => $nextStep->id,
+            'next_run_at' => now(),
+        ]);
+
+        // Continue running next step immediately if it's not a delay
+        if ($nextStep->type !== WorkflowStepType::Delay) {
+            $this->execute($enrollment->fresh() ?? $enrollment);
+        } else {
+            // Execute delay timer
+            $this->execute($enrollment->fresh() ?? $enrollment);
+        }
+    }
+
+    /**
+     * Mark an enrollment as successfully completed.
+     */
+    protected function completeEnrollment(WorkflowEnrollment $enrollment): void
+    {
+        $enrollment->update([
+            'status' => WorkflowEnrollmentStatus::Completed,
+            'current_step_id' => null,
+            'completed_at' => now(),
+        ]);
+
+        $enrollment->workflow->increment('completed_count');
+    }
+}

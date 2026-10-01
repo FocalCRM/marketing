@@ -1,0 +1,144 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Focal\Marketing\Http\Controllers;
+
+use Focal\Core\Models\Contact;
+use Focal\Marketing\Actions\ApplyLeadScoringEventAction;
+use Focal\Marketing\Enums\LeadScoringEventType;
+use Focal\Marketing\Models\CampaignRecipient;
+use Focal\Marketing\Models\MarketingSubscription;
+use Focal\Marketing\Models\MarketingSubscriptionTopic;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\View\View;
+
+class MarketingPreferencesController extends Controller
+{
+    /**
+     * Display the self-service subscriber preference center.
+     */
+    public function showPreferences(string $token): View
+    {
+        $contact = $this->resolveContact($token);
+
+        // Fetch or seed default communication topics
+        $dbTopics = MarketingSubscriptionTopic::orderBy('sort_order')->get();
+        if ($dbTopics->isEmpty()) {
+            $defaultTopics = [
+                ['name' => 'Product Releases & Changelogs', 'slug' => 'product_updates', 'description' => 'Stay informed on the newest capabilities shipped in Focal.', 'sort_order' => 1],
+                ['name' => 'Weekly Growth & RevOps Digest', 'slug' => 'newsletter', 'description' => 'Best practices, pipeline strategies, and sales playbooks.', 'sort_order' => 2],
+                ['name' => 'Live Briefings & Executive Webinars', 'slug' => 'webinars', 'description' => 'Invitations to live product walkthroughs and VIP sessions.', 'sort_order' => 3],
+                ['name' => 'Security & Reliability Advisories', 'slug' => 'security', 'description' => 'Essential updates regarding platform maintenance and security.', 'sort_order' => 4],
+            ];
+            foreach ($defaultTopics as $dt) {
+                MarketingSubscriptionTopic::create($dt);
+            }
+            $dbTopics = MarketingSubscriptionTopic::orderBy('sort_order')->get();
+        }
+
+        $topics = [];
+        $currentTopics = [];
+        $email = $contact->email ?? '';
+
+        foreach ($dbTopics as $t) {
+            $topics[$t->slug] = [
+                'id' => $t->id,
+                'name' => $t->name,
+                'description' => $t->description ?? '',
+            ];
+            if ($email !== '' && MarketingSubscriptionTopic::isSubscribed($email, $t->id)) {
+                $currentTopics[] = $t->slug;
+            } elseif ($email === '' && $t->is_default) {
+                $currentTopics[] = $t->slug;
+            }
+        }
+
+        $isSuppressed = $contact !== null && MarketingSubscription::isSuppressed($contact->email);
+
+        return view('focal-marketing::preferences', compact('contact', 'topics', 'currentTopics', 'token', 'isSuppressed'));
+    }
+
+    /**
+     * Update topic preferences or execute a global opt-out.
+     */
+    public function updatePreferences(Request $request, string $token): RedirectResponse
+    {
+        $contact = $this->resolveContact($token);
+
+        if ($contact === null) {
+            abort(404, 'Invalid preference token.');
+        }
+
+        if ($request->boolean('opt_out_all')) {
+            MarketingSubscription::unsubscribe($contact->email, $contact->id);
+            $contact->updateQuietly(['marketing_topics' => []]);
+
+            return redirect()->back()->with('success', 'You have been unsubscribed from all marketing communications.');
+        }
+
+        /** @var list<string> $selectedTopics */
+        $selectedTopics = $request->input('topics', []);
+
+        $allTopics = MarketingSubscriptionTopic::all();
+        foreach ($allTopics as $t) {
+            $isSubscribed = in_array($t->slug, $selectedTopics, true) || in_array((string) $t->id, $selectedTopics, true);
+            MarketingSubscriptionTopic::setSubscription($contact->email, $t->id, $isSubscribed, $contact->id);
+        }
+
+        $contact->update([
+            'marketing_topics' => $selectedTopics,
+        ]);
+
+        return redirect()->back()->with('success', 'Your subscription preferences have been updated successfully.');
+    }
+
+    /**
+     * Confirm double opt-in email address.
+     */
+    public function confirmEmail(string $token, ApplyLeadScoringEventAction $scoringAction): View
+    {
+        /** @var Contact $contact */
+        $contact = Contact::query()
+            ->where('marketing_verification_token', $token)
+            ->firstOrFail();
+
+        $isFirstVerification = $contact->marketing_email_verified_at === null;
+
+        $contact->update([
+            'marketing_email_verified_at' => $contact->marketing_email_verified_at ?? now(),
+        ]);
+
+        if ($isFirstVerification) {
+            $scoringAction->execute(
+                contact: $contact,
+                eventType: LeadScoringEventType::PropertyMatch,
+                description: 'Double Opt-In Email Verified (+10 pts)',
+            );
+        }
+
+        return view('focal-marketing::confirmed', compact('contact'));
+    }
+
+    /**
+     * Resolve contact record from verification token or recipient unsubscribe token.
+     */
+    protected function resolveContact(string $token): ?Contact
+    {
+        /** @var Contact|null $contact */
+        $contact = Contact::query()->where('marketing_verification_token', $token)->first();
+        if ($contact !== null) {
+            return $contact;
+        }
+
+        /** @var CampaignRecipient|null $recipient */
+        $recipient = CampaignRecipient::query()->where('unsubscribe_token', $token)->first();
+        if ($recipient !== null) {
+            return $recipient->contact;
+        }
+
+        return null;
+    }
+}

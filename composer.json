@@ -1,0 +1,40 @@
+{
+    "name": "focalcrm/marketing",
+    "description": "Email Marketing, Lead Capture Forms, Drip Campaigns, and Analytics for Focal CRM",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Focal Team"
+        }
+    ],
+    "require": {
+        "php": "^8.3",
+        "dophp/laravel-mail-builder": "^1.0",
+        "focalcrm/core": "self.version",
+        "guzzlehttp/guzzle": "^7.8.2 || ^8.0",
+        "laravel/framework": "^11.0 || ^12.0 || ^13.0"
+    },
+    "suggest": {
+        "focalcrm/sales": "Enables closed-loop revenue attribution, sales cycle velocity, and automated deal creation"
+    },
+    "autoload": {
+        "psr-4": {
+            "Focal\\Marketing\\": "src/",
+            "Focal\\Marketing\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Focal\\Marketing\\MarketingServiceProvider"
+            ]
+        },
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

@@ -1,0 +1,236 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Focal\Marketing\Http\Controllers;
+
+use DoPHP\MailBuilder\Mail\TemplateMailable;
+use DoPHP\MailBuilder\MailBuilder;
+use Focal\Marketing\Models\MarketingTemplate;
+use Focal\Marketing\Services\DomainThrottler;
+use Focal\Marketing\Services\MarketingWebhookDispatcher;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Mail;
+
+class TransactionalTemplateController extends Controller
+{
+    /**
+     * Dispatch a transactional email using a pre-built MarketingTemplate.
+     */
+    public function send(Request $request, string|int $template): JsonResponse
+    {
+        /** @var MarketingTemplate|null $record */
+        $record = is_numeric($template)
+            ? MarketingTemplate::query()->find($template)
+            : MarketingTemplate::query()->where('slug', $template)->first();
+
+        if ($record === null) {
+            return response()->json([
+                'error' => 'Marketing template not found.',
+            ], 404);
+        }
+
+        $validated = $request->validate([
+            'to' => 'required|email|max:255',
+            'name' => 'nullable|string|max:255',
+            'data' => 'nullable|array',
+            'context' => 'nullable|array',
+            'subject' => 'nullable|string|max:255',
+            'from_email' => 'nullable|email|max:255',
+            'from_name' => 'nullable|string|max:255',
+            'reply_to' => 'nullable|email|max:255',
+            'variant' => 'nullable|string|in:A,B,a,b',
+            'webhook_url' => 'nullable|url|max:500',
+            'webhook_secret' => 'nullable|string|max:255',
+            'attachments' => 'nullable|array',
+            'attachments.*.name' => 'required_with:attachments|string|max:255',
+            'attachments.*.path' => 'nullable|string|max:500',
+            'attachments.*.data' => 'nullable|string',
+            'attachments.*.mime' => 'nullable|string|max:100',
+            'attachments.*.is_base64' => 'nullable|boolean',
+        ]);
+
+        /** @var string $to */
+        $to = (string) $validated['to'];
+        /** @var array<string, mixed> $data */
+        $data = isset($validated['data']) && is_array($validated['data']) ? $validated['data'] : [];
+        /** @var array<string, mixed> $context */
+        $context = isset($validated['context']) && is_array($validated['context']) ? $validated['context'] : [];
+
+        // If recipient name is provided, map to default tokens if not present
+        if (! empty($validated['name']) && ! isset($data['contact.first_name'])) {
+            $data['contact.first_name'] = (string) $validated['name'];
+        }
+
+        $variant = isset($validated['variant'])
+            ? strtoupper((string) $validated['variant'])
+            : ($record->ab_winner_variant ?? 'A');
+
+        $slots = ($variant === 'B' && ! empty($record->slots_variant_b))
+            ? $record->slots_variant_b
+            : $record->slots;
+
+        $subject = ! empty($validated['subject'])
+            ? (string) $validated['subject']
+            : $record->getVariantSubject($variant);
+
+        if (! empty($slots)) {
+            $html = MailBuilder::compile($slots, [
+                'theme' => $record->theme ?? [],
+                'context' => $context,
+                'subject' => $subject,
+            ]);
+        } else {
+            $html = $record->getVariantHtml($variant);
+        }
+
+        $mailable = new TemplateMailable(
+            template: $html,
+            data: $data,
+            subjectLine: $subject,
+            fromEmail: isset($validated['from_email']) ? (string) $validated['from_email'] : null,
+            fromName: isset($validated['from_name']) ? (string) $validated['from_name'] : null,
+            replyToEmail: isset($validated['reply_to']) ? (string) $validated['reply_to'] : null,
+            customAttachments: isset($validated['attachments']) && is_array($validated['attachments']) ? array_values($validated['attachments']) : [],
+        );
+
+        $recipientName = isset($validated['name']) ? (string) $validated['name'] : null;
+        Mail::to($to, $recipientName)->send($mailable);
+
+        if (! empty($validated['webhook_url'])) {
+            MarketingWebhookDispatcher::dispatch(
+                event: 'template.email.sent',
+                data: [
+                    'template_id' => $record->id,
+                    'template_slug' => $record->slug,
+                    'recipient' => $to,
+                    'variant' => $variant,
+                    'subject' => $mailable->subjectLine,
+                ],
+                endpointUrl: (string) $validated['webhook_url'],
+                secret: isset($validated['webhook_secret']) ? (string) $validated['webhook_secret'] : null
+            );
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Transactional email sent successfully.',
+            'template_id' => $record->id,
+            'template_slug' => $record->slug,
+            'recipient' => $to,
+            'variant' => $variant,
+            'subject' => $mailable->subjectLine,
+        ]);
+    }
+
+    /**
+     * Dispatch a batch of transactional emails (up to 1,000) using a pre-built MarketingTemplate.
+     */
+    public function sendBatch(Request $request, string|int $template): JsonResponse
+    {
+        /** @var MarketingTemplate|null $record */
+        $record = is_numeric($template)
+            ? MarketingTemplate::query()->find($template)
+            : MarketingTemplate::query()->where('slug', $template)->first();
+
+        if ($record === null) {
+            return response()->json([
+                'error' => 'Marketing template not found.',
+            ], 404);
+        }
+
+        $validated = $request->validate([
+            'recipients' => 'required|array|min:1|max:1000',
+            'recipients.*.to' => 'required|email|max:255',
+            'recipients.*.name' => 'nullable|string|max:255',
+            'recipients.*.data' => 'nullable|array',
+            'subject' => 'nullable|string|max:255',
+            'from_email' => 'nullable|email|max:255',
+            'from_name' => 'nullable|string|max:255',
+            'reply_to' => 'nullable|email|max:255',
+            'variant' => 'nullable|string|in:A,B,a,b',
+            'webhook_url' => 'nullable|url|max:500',
+            'webhook_secret' => 'nullable|string|max:255',
+            'throttle_domains' => 'nullable|boolean',
+        ]);
+
+        $variant = isset($validated['variant'])
+            ? strtoupper((string) $validated['variant'])
+            : ($record->ab_winner_variant ?? 'A');
+
+        $slots = ($variant === 'B' && ! empty($record->slots_variant_b))
+            ? $record->slots_variant_b
+            : $record->slots;
+
+        $subject = ! empty($validated['subject'])
+            ? (string) $validated['subject']
+            : $record->getVariantSubject($variant);
+
+        if (! empty($slots)) {
+            $baseHtml = MailBuilder::compile($slots, [
+                'theme' => $record->theme ?? [],
+                'subject' => $subject,
+            ]);
+        } else {
+            $baseHtml = $record->getVariantHtml($variant);
+        }
+
+        /** @var list<array{to: string, name?: string, data?: array<string, mixed>}> $recipients */
+        $recipients = $validated['recipients'];
+        $dispatched = [];
+
+        foreach ($recipients as $recipient) {
+            $toEmail = $recipient['to'];
+            $recipientName = $recipient['name'] ?? null;
+            $data = $recipient['data'] ?? [];
+
+            if (! empty($recipientName) && ! isset($data['contact.first_name'])) {
+                $data['contact.first_name'] = $recipientName;
+            }
+
+            $mailable = new TemplateMailable(
+                template: $baseHtml,
+                data: $data,
+                subjectLine: $subject,
+                fromEmail: isset($validated['from_email']) ? (string) $validated['from_email'] : null,
+                fromName: isset($validated['from_name']) ? (string) $validated['from_name'] : null,
+                replyToEmail: isset($validated['reply_to']) ? (string) $validated['reply_to'] : null,
+            );
+
+            Mail::to($toEmail, $recipientName)->send($mailable);
+            $dispatched[] = $toEmail;
+        }
+
+        if (! empty($validated['webhook_url'])) {
+            MarketingWebhookDispatcher::dispatch(
+                event: 'template.email.batch_sent',
+                data: [
+                    'template_id' => $record->id,
+                    'template_slug' => $record->slug,
+                    'dispatched_count' => count($dispatched),
+                    'recipients' => $dispatched,
+                    'variant' => $variant,
+                ],
+                endpointUrl: (string) $validated['webhook_url'],
+                secret: isset($validated['webhook_secret']) ? (string) $validated['webhook_secret'] : null
+            );
+        }
+
+        $response = [
+            'success' => true,
+            'message' => 'Batch transactional emails dispatched successfully.',
+            'template_id' => $record->id,
+            'template_slug' => $record->slug,
+            'dispatched_count' => count($dispatched),
+            'recipients' => $dispatched,
+        ];
+
+        if (! empty($validated['throttle_domains'])) {
+            $response['throttle_plan'] = DomainThrottler::calculateThrottledBatches($recipients);
+        }
+
+        return response()->json($response);
+    }
+}

@@ -1,0 +1,179 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Focal\Marketing\Models;
+
+use Carbon\CarbonInterface;
+use Focal\Core\Models\Contact;
+use Focal\Marketing\Enums\RecipientStatus;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
+
+/**
+ * @property int $id
+ * @property int $campaign_id
+ * @property int|null $contact_id
+ * @property string $email
+ * @property RecipientStatus $status
+ * @property string|null $variant
+ * @property string $tracking_token
+ * @property string $unsubscribe_token
+ * @property CarbonInterface|null $sent_at
+ * @property CarbonInterface|null $opened_at
+ * @property CarbonInterface|null $clicked_at
+ * @property CarbonInterface|null $created_at
+ * @property CarbonInterface|null $updated_at
+ * @property-read Campaign $campaign
+ * @property-read Contact|null $contact
+ */
+class CampaignRecipient extends Model
+{
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'campaign_id',
+        'contact_id',
+        'email',
+        'status',
+        'variant',
+        'tracking_token',
+        'unsubscribe_token',
+        'scheduled_send_at',
+        'sent_at',
+        'opened_at',
+        'clicked_at',
+    ];
+
+    /**
+     * Get the table associated with the model.
+     */
+    public function getTable(): string
+    {
+        return config('focal-marketing.tables.recipients', 'focal_marketing_campaign_recipients');
+    }
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'status' => RecipientStatus::class,
+            'scheduled_send_at' => 'datetime',
+            'sent_at' => 'datetime',
+            'opened_at' => 'datetime',
+            'clicked_at' => 'datetime',
+        ];
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $recipient): void {
+            if (empty($recipient->tracking_token)) {
+                $recipient->tracking_token = Str::random(40);
+            }
+            if (empty($recipient->unsubscribe_token)) {
+                $recipient->unsubscribe_token = Str::random(40);
+            }
+        });
+    }
+
+    /**
+     * Associated broadcast campaign.
+     *
+     * @return BelongsTo<Campaign, $this>
+     */
+    public function campaign(): BelongsTo
+    {
+        return $this->belongsTo(Campaign::class, 'campaign_id');
+    }
+
+    /**
+     * Associated contact record.
+     *
+     * @return BelongsTo<Contact, $this>
+     */
+    public function contact(): BelongsTo
+    {
+        return $this->belongsTo(Contact::class, 'contact_id');
+    }
+
+    /**
+     * Record an email open event.
+     */
+    public function recordOpen(): void
+    {
+        $isFirstOpen = $this->opened_at === null;
+
+        $this->update([
+            'status' => RecipientStatus::Opened,
+            'opened_at' => $this->opened_at ?? now(),
+        ]);
+
+        $this->campaign->increment('opens_count');
+
+        if ($isFirstOpen) {
+            $this->campaign->increment('unique_opens_count');
+        }
+    }
+
+    /**
+     * Record an email link click event.
+     */
+    public function recordClick(): void
+    {
+        $isFirstClick = $this->clicked_at === null;
+
+        $this->update([
+            'status' => RecipientStatus::Clicked,
+            'clicked_at' => $this->clicked_at ?? now(),
+        ]);
+
+        $this->campaign->increment('clicks_count');
+
+        if ($isFirstClick) {
+            $this->campaign->increment('unique_clicks_count');
+        }
+    }
+
+    /**
+     * Get the tracking pixel URL for this recipient.
+     */
+    public function getTrackingPixelUrl(): string
+    {
+        return route('focal.marketing.track.open', $this->tracking_token);
+    }
+
+    /**
+     * Get the click tracking redirect URL for a destination link.
+     */
+    public function getClickRedirectUrl(string $destinationUrl): string
+    {
+        return route('focal.marketing.track.click', ['token' => $this->tracking_token, 'url' => $destinationUrl]);
+    }
+
+    /**
+     * Get the 1-click unsubscribe URL.
+     */
+    public function getUnsubscribeUrl(): string
+    {
+        return route('focal.marketing.unsubscribe.show', $this->unsubscribe_token);
+    }
+
+    /**
+     * Path that every unsubscribe link starts with (e.g. "/marketing/unsubscribe/"),
+     * honoring any configured route prefix. Used to exempt these links from click
+     * tracking and UTM tagging.
+     */
+    public static function unsubscribePathPrefix(): string
+    {
+        return Str::before(route('focal.marketing.unsubscribe.show', '__token__', false), '__token__');
+    }
+}
