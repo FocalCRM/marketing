@@ -137,7 +137,7 @@ class DispatchCampaignAction
 
             if ($useTimezoneSending) {
                 $targetTime = $campaign->calculateScheduledTimeForContact($contact);
-                if ($targetTime->isFuture() && $targetTime->diffInMinutes(now()) > 5) {
+                if ($targetTime->isFuture() && now()->diffInMinutes($targetTime) > 5) {
                     $campaign->recipients()->create([
                         'contact_id' => $contact->id,
                         'email' => $email,

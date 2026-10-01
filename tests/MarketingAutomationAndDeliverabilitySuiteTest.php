@@ -17,6 +17,7 @@ use Focal\Marketing\Models\MarketingTemplate;
 use Focal\Marketing\Models\MarketingWorkflow;
 use Focal\Marketing\Models\WorkflowStep;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
 
 class MarketingAutomationAndDeliverabilitySuiteTest extends TestCase
@@ -112,7 +113,10 @@ class MarketingAutomationAndDeliverabilitySuiteTest extends TestCase
         $this->assertSame(CampaignStatus::Sent, $campaign->status);
         $this->assertGreaterThanOrEqual(1, $campaign->delivered_count);
 
-        // 2. Sending campaign with pending timezone wave
+        // 2. Sending campaign with pending timezone wave. The contact is in New York and the
+        // campaign sends at 09:00 local time, so freeze the clock two minutes before.
+        $this->travelTo(Carbon::parse('2026-06-15 08:58', 'America/New_York'));
+
         $tzCampaign = Campaign::create([
             'name' => 'Timezone Wave Campaign',
             'subject' => 'Morning Digest',
@@ -136,6 +140,19 @@ class MarketingAutomationAndDeliverabilitySuiteTest extends TestCase
         $pendingRecipient->refresh();
         $this->assertSame(RecipientStatus::Sent, $pendingRecipient->status);
         $this->assertNotNull($pendingRecipient->sent_at);
+
+        // 3. Hours before the local send window, the recipient must wait.
+        $this->travelTo(Carbon::parse('2026-06-16 06:00', 'America/New_York'));
+
+        $earlyRecipient = $tzCampaign->recipients()->create([
+            'contact_id' => $contact->id,
+            'email' => $contact->email,
+            'status' => RecipientStatus::Pending,
+        ]);
+
+        Artisan::call('marketing:dispatch-scheduled');
+
+        $this->assertSame(RecipientStatus::Pending, $earlyRecipient->fresh()?->status);
     }
 
     public function test_pre_flight_deliverability_and_spam_inspector(): void

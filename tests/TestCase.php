@@ -19,14 +19,14 @@ use Focal\Marketing\Tests\Fixtures\User;
 use Focal\Sales\SalesServiceProvider;
 use Kirschbaum\PowerJoins\PowerJoinsServiceProvider;
 use Livewire\LivewireServiceProvider;
-use Orchestra\Testbench\Concerns\WithLaravelMigrations;
 use Orchestra\Testbench\TestCase as Orchestra;
 use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 
+use function Orchestra\Testbench\after_resolving;
+use function Orchestra\Testbench\default_migration_path;
+
 abstract class TestCase extends Orchestra
 {
-    use WithLaravelMigrations;
-
     public const API_TOKEN = 'test-api-token';
 
     /**
@@ -76,5 +76,17 @@ abstract class TestCase extends Orchestra
         parent::setUp();
 
         $this->withHeader('X-Focal-Token', self::API_TOKEN);
+    }
+
+    /**
+     * Laravel's own migrations (users, cache, jobs). Registered on the migrator rather than
+     * run and rolled back per test: RefreshDatabase owns the schema, and rolling back
+     * users fails on databases that enforce foreign keys (PostgreSQL, MySQL).
+     */
+    protected function defineDatabaseMigrations(): void
+    {
+        after_resolving($this->app, 'migrator', static function ($migrator): void {
+            $migrator->path(default_migration_path());
+        });
     }
 }

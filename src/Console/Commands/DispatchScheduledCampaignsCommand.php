@@ -75,7 +75,7 @@ class DispatchScheduledCampaignsCommand extends Command
                 $targetTime = $recipient->scheduled_send_at ?? $campaign->calculateScheduledTimeForContact($contact);
 
                 // If local window has arrived (or is now past in their timezone)
-                if ($targetTime->isPast() || $targetTime->diffInMinutes(now()) <= 5) {
+                if ($targetTime->isPast() || now()->diffInMinutes($targetTime) <= 5) {
                     $recipient->update([
                         'status' => RecipientStatus::Sent,
                         'sent_at' => now(),

@@ -62,7 +62,7 @@ class HandoffLeadToSalesAction
                 ? Pipeline::query()->find($pipelineId)
                 : Pipeline::query()->first();
 
-            $stageId = $pipeline?->stages()->orderBy('order', 'asc')->first()?->id;
+            $stageId = $pipeline?->stages()->orderBy('sort_order', 'asc')->first()?->id;
 
             if ($pipeline !== null && $stageId !== null) {
                 $finalDealName = $dealName ?? "MQL Deal: {$contact->full_name}";
