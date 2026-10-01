@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Focal\Marketing\Tests;
 
-use App\Models\User;
 use Focal\Core\Enums\LeadStatus;
 use Focal\Core\Enums\LifecycleStage;
 use Focal\Core\Models\Company;
@@ -21,13 +20,13 @@ use Focal\Marketing\Enums\WorkflowTriggerType;
 use Focal\Marketing\Models\Campaign;
 use Focal\Marketing\Models\MarketingTemplate;
 use Focal\Marketing\Models\MarketingWorkflow;
+use Focal\Marketing\Tests\Fixtures\User;
 use Focal\Sales\Enums\DealStatus;
 use Focal\Sales\Models\Deal;
 use Focal\Sales\Models\Pipeline;
 use Focal\Sales\Models\PipelineStage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
-use Tests\TestCase;
 
 class MarketingEnterpriseDifferentiationSuiteTest extends TestCase
 {

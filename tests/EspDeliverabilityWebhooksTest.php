@@ -13,7 +13,6 @@ use Focal\Marketing\Models\CampaignRecipient;
 use Focal\Marketing\Models\EspEvent;
 use Focal\Marketing\Models\MarketingSubscription;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class EspDeliverabilityWebhooksTest extends TestCase
 {

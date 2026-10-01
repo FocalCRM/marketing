@@ -10,7 +10,6 @@ use Focal\Marketing\Models\Campaign;
 use Focal\Marketing\Models\CampaignRecipient;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
-use Tests\TestCase;
 
 class CalculateRecipientOptimalSendTimeActionTest extends TestCase
 {

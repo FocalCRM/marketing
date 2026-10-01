@@ -17,7 +17,6 @@ use Focal\Marketing\Models\MarketingSubscription;
 use Focal\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
-use Tests\TestCase;
 
 class EmailSuppressionAndProofTest extends TestCase
 {

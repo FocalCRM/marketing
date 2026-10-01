@@ -10,7 +10,6 @@ use Focal\Marketing\Actions\StitchVisitorToContactAction;
 use Focal\Marketing\Models\PageView;
 use Focal\Marketing\Models\VisitorSession;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class WebTrackingAndIdentityStitchingTest extends TestCase
 {

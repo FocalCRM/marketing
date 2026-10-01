@@ -13,18 +13,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // 1. ABM & Intent Scoring on Companies
-        Schema::table('focal_companies', function (Blueprint $table): void {
-            $table->string('account_tier', 20)->nullable()->after('industry'); // tier_1, tier_2, tier_3
-            $table->unsignedInteger('intent_score')->default(0)->after('account_tier');
-            $table->boolean('intent_surge')->default(false)->after('intent_score');
-            $table->unsignedInteger('buying_committee_size')->default(0)->after('intent_surge');
-            $table->timestamp('last_intent_activity_at')->nullable()->after('buying_committee_size');
+        // ABM & intent scoring columns on companies are owned by focalcrm/core.
 
-            $table->index(['account_tier', 'intent_score']);
-        });
-
-        // 2. Sunset Policy & List Hygiene on Contacts
+        // Sunset Policy & List Hygiene on Contacts
         Schema::table('focal_contacts', function (Blueprint $table): void {
             $table->boolean('is_unengaged')->default(false)->after('last_marketing_email_sent_at');
             $table->timestamp('unengaged_since')->nullable()->after('is_unengaged');
@@ -42,17 +33,6 @@ return new class extends Migration
         Schema::table('focal_contacts', function (Blueprint $table): void {
             $table->dropIndex(['is_unengaged', 'sunset_stage']);
             $table->dropColumn(['is_unengaged', 'unengaged_since', 'sunset_stage']);
-        });
-
-        Schema::table('focal_companies', function (Blueprint $table): void {
-            $table->dropIndex(['account_tier', 'intent_score']);
-            $table->dropColumn([
-                'account_tier',
-                'intent_score',
-                'intent_surge',
-                'buying_committee_size',
-                'last_intent_activity_at',
-            ]);
         });
     }
 };

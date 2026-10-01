@@ -6,7 +6,6 @@ namespace Focal\Marketing\Tests;
 
 use Focal\Marketing\Actions\AppendUtmParametersAction;
 use Focal\Marketing\Models\Campaign;
-use Tests\TestCase;
 
 class AppendUtmParametersActionTest extends TestCase
 {

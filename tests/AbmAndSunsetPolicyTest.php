@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Focal\Marketing\Tests;
 
-use App\Models\User;
 use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
 use Focal\Marketing\Actions\CalculateCompanyIntentScoreAction;
@@ -12,7 +11,6 @@ use Focal\Marketing\Actions\CheckFatiguePolicyAction;
 use Focal\Marketing\Actions\DetectUnengagedContactsAction;
 use Focal\Marketing\Actions\ExecuteSunsetPolicyAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class AbmAndSunsetPolicyTest extends TestCase
 {
@@ -123,23 +121,5 @@ class AbmAndSunsetPolicyTest extends TestCase
 
         $this->assertFalse($fatigueResult['can_send']);
         $this->assertSame('Contact suppressed under deliverability sunset policy', $fatigueResult['reason']);
-    }
-
-    public function test_filament_company_resource_displays_abm_tier(): void
-    {
-        $user = User::factory()->create();
-
-        $company = Company::create([
-            'name' => 'Datadog Europe',
-            'domain' => 'datadog.com',
-            'account_tier' => 'tier_1',
-            'intent_score' => 85,
-            'intent_surge' => true,
-        ]);
-
-        $response = $this->actingAs($user)->get('/admin/companies');
-        $response->assertStatus(200);
-        $response->assertSee('Datadog Europe');
-        $response->assertSee('Tier 1');
     }
 }

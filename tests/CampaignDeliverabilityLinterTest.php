@@ -8,7 +8,6 @@ use Focal\Marketing\Actions\LintCampaignDeliverabilityAction;
 use Focal\Marketing\Models\Campaign;
 use Focal\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class CampaignDeliverabilityLinterTest extends TestCase
 {

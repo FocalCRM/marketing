@@ -15,7 +15,6 @@ use Focal\Marketing\Models\MarketingForm;
 use Focal\Marketing\Models\MarketingWorkflow;
 use Focal\Marketing\Models\WorkflowEnrollment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class DripWorkflowsTest extends TestCase
 {

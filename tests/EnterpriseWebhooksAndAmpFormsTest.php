@@ -18,7 +18,6 @@ use Focal\Marketing\Services\MarketingWebhookDispatcher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
-use Tests\TestCase;
 
 class EnterpriseWebhooksAndAmpFormsTest extends TestCase
 {

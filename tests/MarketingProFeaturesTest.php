@@ -20,7 +20,6 @@ use Focal\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
-use Tests\TestCase;
 
 class MarketingProFeaturesTest extends TestCase
 {

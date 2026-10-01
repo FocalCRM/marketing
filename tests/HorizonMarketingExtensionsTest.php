@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Focal\Marketing\Tests;
 
-use App\Models\User;
 use Focal\Core\Models\Contact;
 use Focal\Marketing\Actions\DispatchSmsAction;
 use Focal\Marketing\Actions\EnrollContactInWorkflowAction;
@@ -16,7 +15,6 @@ use Focal\Marketing\Models\MarketingWorkflow;
 use Focal\Marketing\Models\NpsResponse;
 use Focal\Marketing\Models\NpsSurvey;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class HorizonMarketingExtensionsTest extends TestCase
 {
@@ -227,20 +225,5 @@ class HorizonMarketingExtensionsTest extends TestCase
         $bold = $generator->execute('Cloud Migration', 'bold');
         $this->assertCount(3, $bold['suggestions']);
         $this->assertStringContainsString('🚀', $bold['suggestions'][0]);
-    }
-
-    public function test_nps_survey_filament_page_is_accessible_to_authenticated_users(): void
-    {
-        $user = User::factory()->create();
-
-        $survey = NpsSurvey::create([
-            'name' => 'Executive NPS Assessment',
-            'is_active' => true,
-            'description' => 'Targeting C-suite accounts after 90 days',
-        ]);
-
-        $response = $this->actingAs($user)->get('/admin/nps-surveys');
-        $response->assertStatus(200);
-        $response->assertSee('Executive NPS Assessment');
     }
 }

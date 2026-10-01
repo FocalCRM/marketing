@@ -28,11 +28,7 @@ return new class extends Migration
         $enrollmentsTable = config('focal-marketing.tables.workflow_enrollments', 'focal_marketing_workflow_enrollments');
         $workflowLogsTable = config('focal-marketing.tables.workflow_logs', 'focal_marketing_workflow_logs');
 
-        // 1. Add lead score to contacts table
-        Schema::table($contactsTable, function (Blueprint $table): void {
-            $table->integer('lead_score')->default(0)->after('lifecycle_stage');
-            $table->timestamp('lead_score_updated_at')->nullable()->after('lead_score');
-        });
+        // 1. Lead score columns on contacts are owned by focalcrm/core.
 
         // 2. Lead Scoring Rules Table
         Schema::create($rulesTable, function (Blueprint $table): void {
@@ -185,8 +181,5 @@ return new class extends Migration
         Schema::dropIfExists($scoreLogsTable);
         Schema::dropIfExists($rulesTable);
 
-        Schema::table($contactsTable, function (Blueprint $table): void {
-            $table->dropColumn(['lead_score', 'lead_score_updated_at']);
-        });
     }
 };

@@ -19,7 +19,6 @@ use Focal\Marketing\Services\DomainHealthCheckService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
-use Tests\TestCase;
 
 class MarketingEnterpriseSuiteTest extends TestCase
 {

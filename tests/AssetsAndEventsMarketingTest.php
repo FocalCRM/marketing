@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Focal\Marketing\Tests;
 
-use App\Models\User;
 use Focal\Core\Actions\EvaluateActiveListAction;
 use Focal\Core\Enums\ListType;
 use Focal\Core\Models\Contact;
@@ -18,7 +17,6 @@ use Focal\Marketing\Models\MarketingAsset;
 use Focal\Marketing\Models\MarketingEvent;
 use Focal\Marketing\Models\MarketingWorkflow;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class AssetsAndEventsMarketingTest extends TestCase
 {
@@ -269,28 +267,5 @@ class AssetsAndEventsMarketingTest extends TestCase
         $this->assertSame(1, $matchedWebinar);
         $this->assertTrue($webinarList->hasMember($contactB));
         $this->assertFalse($webinarList->hasMember($contactA));
-    }
-
-    public function test_filament_admin_resources_accessible(): void
-    {
-        $user = User::factory()->create();
-
-        $asset = MarketingAsset::create([
-            'name' => 'Focal Architecture Guide',
-            'asset_type' => 'guide',
-        ]);
-
-        $event = MarketingEvent::create([
-            'title' => 'DevOps Modernization Summit',
-            'event_type' => 'in_person',
-        ]);
-
-        $this->actingAs($user)->get('/admin/marketing-assets')
-            ->assertStatus(200)
-            ->assertSee('Focal Architecture Guide');
-
-        $this->actingAs($user)->get('/admin/marketing-events')
-            ->assertStatus(200)
-            ->assertSee('DevOps Modernization Summit');
     }
 }

@@ -10,7 +10,6 @@ use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
 use Focal\Marketing\Models\MarketingForm;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class LeadCaptureFormsTest extends TestCase
 {

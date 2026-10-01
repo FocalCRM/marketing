@@ -18,7 +18,6 @@ use Focal\Marketing\Models\MarketingWorkflow;
 use Focal\Marketing\Models\WorkflowStep;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
-use Tests\TestCase;
 
 class MarketingAutomationAndDeliverabilitySuiteTest extends TestCase
 {

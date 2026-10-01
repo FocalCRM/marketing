@@ -15,7 +15,6 @@ use Focal\Marketing\Models\CampaignRecipient;
 use Focal\Marketing\Models\LeadScoringRule;
 use Focal\Marketing\Models\MarketingForm;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class LeadScoringTest extends TestCase
 {

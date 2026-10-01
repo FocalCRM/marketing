@@ -20,7 +20,6 @@ use Focal\Sales\Models\Pipeline;
 use Focal\Sales\Models\PipelineStage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
-use Tests\TestCase;
 
 class MultiChannelWorkflowsAndAttributionTest extends TestCase
 {

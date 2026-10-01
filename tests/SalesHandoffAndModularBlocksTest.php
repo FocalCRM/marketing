@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Focal\Marketing\Tests;
 
-use App\Models\User;
 use Focal\Core\Enums\LifecycleStage;
 use Focal\Core\Models\Contact;
 use Focal\Marketing\Actions\EnrollContactInWorkflowAction;
@@ -15,11 +14,11 @@ use Focal\Marketing\Enums\WorkflowTriggerType;
 use Focal\Marketing\Models\Campaign;
 use Focal\Marketing\Models\MarketingWorkflow;
 use Focal\Marketing\Services\EmailBlockRenderer;
+use Focal\Marketing\Tests\Fixtures\User;
 use Focal\Sales\Enums\DealStatus;
 use Focal\Sales\Models\Deal;
 use Focal\Sales\Models\Pipeline;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class SalesHandoffAndModularBlocksTest extends TestCase
 {

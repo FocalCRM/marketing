@@ -7,7 +7,6 @@ namespace Focal\Marketing\Tests;
 use Focal\Marketing\Models\FormSubmission;
 use Focal\Marketing\Models\MarketingForm;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class MarketingFormEmbedTest extends TestCase
 {

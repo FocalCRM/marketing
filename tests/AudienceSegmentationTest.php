@@ -14,7 +14,6 @@ use Focal\Marketing\Enums\RecipientStatus;
 use Focal\Marketing\Models\Campaign;
 use Focal\Marketing\Models\MarketingSubscription;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class AudienceSegmentationTest extends TestCase
 {

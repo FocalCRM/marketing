@@ -8,7 +8,6 @@ use Focal\Core\Models\Contact;
 use Focal\Marketing\Models\MarketingSubscription;
 use Focal\Marketing\Models\MarketingSubscriptionTopic;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class MarketingSubscriptionTopicTest extends TestCase
 {

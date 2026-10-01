@@ -18,7 +18,6 @@ use Focal\Sales\Models\Pipeline;
 use Focal\Sales\Models\PipelineStage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Tests\TestCase;
 
 class MultiTouchAttributionModelsTest extends TestCase
 {

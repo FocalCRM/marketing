@@ -20,7 +20,6 @@ use Focal\Sales\Models\Pipeline;
 use Focal\Sales\Models\PipelineStage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
-use Tests\TestCase;
 
 class AbTestingAndAttributionTest extends TestCase
 {

@@ -6,7 +6,6 @@ namespace Focal\Marketing\Tests;
 
 use DoPHP\MailBuilder\MailBuilder;
 use DoPHP\MailBuilder\MergeTags\MergeTagRegistry;
-use Tests\TestCase;
 
 class MergeTagRegistrationTest extends TestCase
 {

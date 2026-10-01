@@ -8,7 +8,6 @@ use DoPHP\MailBuilder\Filament\Components\EmailSlotBuilder;
 use Filament\Forms\Components\Builder;
 use Focal\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class MarketingTemplateSlotIntegrationTest extends TestCase
 {

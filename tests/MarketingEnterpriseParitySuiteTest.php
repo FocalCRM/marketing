@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Focal\Marketing\Tests;
 
-use App\Models\User;
 use Focal\Core\Enums\LifecycleStage;
 use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
@@ -17,8 +16,8 @@ use Focal\Marketing\Actions\SyncAdAudienceAction;
 use Focal\Marketing\Models\AdAudienceSync;
 use Focal\Marketing\Models\Campaign;
 use Focal\Marketing\Models\MarketingForm;
+use Focal\Marketing\Tests\Fixtures\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class MarketingEnterpriseParitySuiteTest extends TestCase
 {

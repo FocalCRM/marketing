@@ -12,7 +12,6 @@ use Focal\Marketing\Models\MarketingSavedBlock;
 use Focal\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
-use Tests\TestCase;
 
 class TransactionalTemplateApiAndRevisionsTest extends TestCase
 {

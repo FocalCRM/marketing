@@ -8,7 +8,6 @@ use Focal\Core\Models\Contact;
 use Focal\Marketing\Models\LandingPage;
 use Focal\Marketing\Models\MarketingForm;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class LandingPagesTest extends TestCase
 {

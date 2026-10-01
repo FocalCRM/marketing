@@ -16,7 +16,6 @@ use Focal\Marketing\Models\MarketingSubscription;
 use Focal\Marketing\Models\MarketingTemplate;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
 class CampaignDispatchAndTrackingTest extends TestCase
 {
