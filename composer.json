@@ -54,10 +54,6 @@
             "options": {
                 "symlink": true
             }
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/doPHP/laravel-mail-builder"
         }
     ],
     "autoload": {
