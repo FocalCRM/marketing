@@ -1,5 +1,7 @@
 # Focal Marketing (`focalcrm/marketing`)
 
+> This is a read-only split of the [focalcrm/focal](https://github.com/focalcrm/focal) monorepo. Please open issues and pull requests there.
+
 The omnichannel marketing automation, lead generation, and closed-loop revenue attribution engine for the Focal RevOps platform. Delivers visual drip workflows, dynamic landing pages, lead capture forms, multi-touch attribution modeling, behavioral lead scoring, and account-based marketing (ABM) intent tracking.
 
 ---
