@@ -48,22 +48,27 @@ class AppendUtmParametersAction
             return $url;
         }
 
+        // Keep the link's own query string byte for byte (re-encoding it through
+        // parse_str() would rename keys such as "a.b"), and append only the UTM
+        // parameters it does not already carry.
+        $existingQueryString = $parts['query'] ?? '';
         $existingQuery = [];
-        if (isset($parts['query'])) {
-            parse_str($parts['query'], $existingQuery);
-        }
+        parse_str($existingQueryString, $existingQuery);
 
-        // Only append UTM params if they don't already exist in the target URL
-        $mergedQuery = array_merge($utmParams, $existingQuery);
-        $queryString = http_build_query($mergedQuery);
+        $missingUtmParams = array_diff_key($utmParams, $existingQuery);
+        $queryString = implode('&', array_filter(
+            [$existingQueryString, http_build_query($missingUtmParams, '', '&', PHP_QUERY_RFC3986)],
+            fn (string $part): bool => $part !== '',
+        ));
 
         $scheme = $parts['scheme'];
+        $userInfo = isset($parts['user']) ? $parts['user'].(isset($parts['pass']) ? ':'.$parts['pass'] : '').'@' : '';
         $host = $parts['host'];
         $port = isset($parts['port']) ? ':'.$parts['port'] : '';
         $path = $parts['path'] ?? '';
         $fragment = isset($parts['fragment']) ? '#'.$parts['fragment'] : '';
 
-        return "{$scheme}://{$host}{$port}{$path}?{$queryString}{$fragment}";
+        return "{$scheme}://{$userInfo}{$host}{$port}{$path}".($queryString !== '' ? "?{$queryString}" : '').$fragment;
     }
 
     /**
@@ -80,7 +85,9 @@ class AppendUtmParametersAction
             function (array $matches) use ($campaign, $variant): string {
                 $before = $matches[1];
                 $quote = $matches[2];
-                $originalUrl = $matches[3];
+                // The attribute value is HTML: decode it to the real URL, tag it, and
+                // escape it once on the way back out.
+                $originalUrl = html_entity_decode($matches[3], ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 $after = $matches[4];
 
                 $taggedUrl = $this->execute($originalUrl, $campaign, $variant);

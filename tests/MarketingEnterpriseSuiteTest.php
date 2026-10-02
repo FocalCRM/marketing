@@ -121,19 +121,24 @@ class MarketingEnterpriseSuiteTest extends TestCase
             'last_marketing_email_sent_at' => now()->subDays(100),
         ]);
 
-        $campaign = Campaign::create([
-            'name' => 'Historical Broadcast',
-            'subject' => 'Archive news',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
-            'status' => CampaignStatus::Sent,
-            'type' => CampaignType::Regular,
-        ]);
+        // One campaign per send: a contact is a recipient of a campaign at most once.
+        $campaigns = [];
+        for ($i = 1; $i <= 3; $i++) {
+            $campaigns[$i] = Campaign::create([
+                'name' => "Historical Broadcast {$i}",
+                'subject' => 'Archive news',
+                'sender_name' => 'Focal',
+                'sender_email' => 'news@focal.test',
+                'status' => CampaignStatus::Sent,
+                'type' => CampaignType::Regular,
+            ]);
+        }
+        $campaign = $campaigns[1];
 
         // Create 3 sends for engaged contact, with 1 recent click
         for ($i = 1; $i <= 3; $i++) {
             CampaignRecipient::create([
-                'campaign_id' => $campaign->id,
+                'campaign_id' => $campaigns[$i]->id,
                 'contact_id' => $engagedContact->id,
                 'email' => $engagedContact->email,
                 'status' => 'sent',
@@ -147,7 +152,7 @@ class MarketingEnterpriseSuiteTest extends TestCase
         // Create 3 sends for dormant contact with 0 opens/clicks
         for ($i = 1; $i <= 3; $i++) {
             CampaignRecipient::create([
-                'campaign_id' => $campaign->id,
+                'campaign_id' => $campaigns[$i]->id,
                 'contact_id' => $dormantContact->id,
                 'email' => $dormantContact->email,
                 'status' => 'sent',

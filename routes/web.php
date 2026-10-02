@@ -44,8 +44,12 @@ Route::group(RouteGroup::attributes('focal-marketing.routes.web'), function () u
 
     // Unsubscribe & Compliance Center
     Route::get('/marketing/unsubscribe/{token}', [MarketingTrackingController::class, 'showUnsubscribe'])->name('focal.marketing.unsubscribe.show');
+    // Also the RFC 8058 one-click endpoint (List-Unsubscribe-Post): mailbox providers POST
+    // without a session, so it is CSRF-exempt; the unsubscribe token is the credential.
+    // Those POSTs come from a few provider IPs, so it uses the server-to-server limit.
     Route::post('/marketing/unsubscribe/{token}', [MarketingTrackingController::class, 'processUnsubscribe'])
-        ->middleware('throttle:focal-public')
+        ->withoutMiddleware(CsrfExemption::middleware())
+        ->middleware('throttle:focal-api')
         ->name('focal.marketing.unsubscribe.process');
 
     // Inbound Web Tracking & Client Script

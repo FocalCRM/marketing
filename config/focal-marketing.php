@@ -58,6 +58,24 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Mail Delivery
+    |--------------------------------------------------------------------------
+    |
+    | Campaign messages, workflow emails, proofs and transactional API emails
+    | are queued, never sent during the request: run a queue worker. Leave
+    | "queue" and "connection" empty to use the default queue connection and
+    | its default queue. "mailer" names a mailer from config/mail.php (for
+    | example a dedicated bulk-sending mailer); empty uses the default mailer.
+    |
+    */
+    'mail' => [
+        'mailer' => env('FOCAL_MARKETING_MAILER'),
+        'connection' => env('FOCAL_MARKETING_MAIL_CONNECTION'),
+        'queue' => env('FOCAL_MARKETING_MAIL_QUEUE'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Send Frequency Capping & Fatigue Protection
     |--------------------------------------------------------------------------
     |

@@ -14,7 +14,7 @@ class ExternalLeadWebhookController extends Controller
     /**
      * Handle inbound webhook lead ingestion (Zapier, LinkedIn Lead Gen, Zoom, etc.).
      */
-    public function handle(Request $request, ?string $source, IngestExternalLeadAction $action): JsonResponse
+    public function handle(Request $request, IngestExternalLeadAction $action, ?string $source = null): JsonResponse
     {
         $validated = $request->validate([
             'email' => ['required', 'string', 'email', 'max:255'],

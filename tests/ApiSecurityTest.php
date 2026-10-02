@@ -31,7 +31,7 @@ class ApiSecurityTest extends TestCase
             ->postJson(route('focal.marketing.templates.send-batch', ['template' => $template->slug]), ['recipients' => [['email' => 'victim@example.com']]])
             ->assertUnauthorized();
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     public function test_webhooks_reject_requests_without_the_token(): void

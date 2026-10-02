@@ -11,6 +11,7 @@ use Focal\Core\Models\Contact;
 use Focal\Marketing\Enums\LeadScoringEventType;
 use Focal\Marketing\Models\FormSubmission;
 use Focal\Marketing\Models\MarketingForm;
+use Focal\Marketing\Support\VisitorToken;
 
 class ProcessFormSubmissionAction
 {
@@ -76,9 +77,11 @@ class ProcessFormSubmissionAction
                 ]);
             }
 
-            // Stitch anonymous visitor sessions if visitor_token was passed
-            if (! empty($data['visitor_token'])) {
-                app(StitchVisitorToContactAction::class)->execute((string) $data['visitor_token'], $contact);
+            // Stitch anonymous visitor sessions if a well-formed visitor_token was passed (malformed values,
+            // including arrays, are ignored)
+            $visitorToken = $data['visitor_token'] ?? null;
+            if (VisitorToken::isValid($visitorToken)) {
+                app(StitchVisitorToContactAction::class)->execute($visitorToken, $contact);
             }
 
             // Link company if provided, or perform Lead-to-Account domain auto-match

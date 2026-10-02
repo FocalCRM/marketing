@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace Focal\Marketing;
 
 use DoPHP\MailBuilder\MergeTags\MergeTagRegistry;
+use Focal\Core\Events\CompaniesMerged;
+use Focal\Core\Events\ContactsMerged;
 use Focal\Core\Models\Contact;
 use Focal\Marketing\Console\Commands\DecayLeadScoresCommand;
 use Focal\Marketing\Console\Commands\DispatchScheduledCampaignsCommand;
 use Focal\Marketing\Console\Commands\EvaluateAbTestsCommand;
 use Focal\Marketing\Console\Commands\ProcessWorkflowsCommand;
 use Focal\Marketing\Console\Commands\SunsetInactiveSubscribersCommand;
+use Focal\Marketing\Listeners\MoveMergedRecords;
 use Focal\Marketing\Models\CampaignRecipient;
 use Focal\Marketing\Models\CustomBehavioralEvent;
 use Focal\Marketing\Models\FormSubmission;
@@ -21,6 +24,7 @@ use Focal\Marketing\Models\WorkflowEnrollment;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 class MarketingServiceProvider extends ServiceProvider
@@ -125,6 +129,10 @@ class MarketingServiceProvider extends ServiceProvider
                 return $contact->hasMany(CustomBehavioralEvent::class, 'contact_id');
             });
         }
+
+        // Synchronous on purpose: these run inside Core's merge transaction.
+        Event::listen(ContactsMerged::class, [MoveMergedRecords::class, 'handleContactsMerged']);
+        Event::listen(CompaniesMerged::class, [MoveMergedRecords::class, 'handleCompaniesMerged']);
 
         if ($this->app->runningInConsole()) {
             $this->commands([

@@ -43,7 +43,7 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
                 'recipient' => 'customer@example.com',
             ]);
 
-        Mail::assertSent(TemplateMailable::class, function (TemplateMailable $mail): bool {
+        Mail::assertQueued(TemplateMailable::class, function (TemplateMailable $mail): bool {
             return $mail->hasTo('customer@example.com')
                 && $mail->subjectLine === 'Your Order #ORD-99882 is Confirmed'
                 && str_contains($mail->compiledHtml, 'Hi Alex Customer')
@@ -84,7 +84,7 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
                 'template_id' => $template->id,
             ]);
 
-        Mail::assertSent(TemplateMailable::class, function (TemplateMailable $mail): bool {
+        Mail::assertQueued(TemplateMailable::class, function (TemplateMailable $mail): bool {
             return $mail->hasTo('developer@example.com')
                 && $mail->subjectLine === 'Welcome to Acme Inc'
                 && str_contains($mail->compiledHtml, 'Focal Cloud')
@@ -125,7 +125,7 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
                 'template_slug' => 'license-alert',
             ]);
 
-        Mail::assertSent(TemplateMailable::class, 2);
+        Mail::assertQueued(TemplateMailable::class, 2);
     }
 
     public function test_send_fails_with_404_if_template_not_found(): void

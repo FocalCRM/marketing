@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Focal\Marketing\Console\Commands;
 
 use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\CompileCampaignMessageAction;
+use Focal\Marketing\Actions\DeliverCampaignMessageAction;
 use Focal\Marketing\Actions\DispatchCampaignAction;
 use Focal\Marketing\Enums\CampaignStatus;
 use Focal\Marketing\Enums\RecipientStatus;
+use Focal\Marketing\Exceptions\CampaignHasNoAudienceException;
 use Focal\Marketing\Models\Campaign;
 use Focal\Marketing\Models\CampaignRecipient;
 use Illuminate\Console\Command;
@@ -33,8 +34,10 @@ class DispatchScheduledCampaignsCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(DispatchCampaignAction $dispatcher, CompileCampaignMessageAction $compiler): int
+    public function handle(DispatchCampaignAction $dispatcher, DeliverCampaignMessageAction $delivery): int
     {
+        $exitCode = self::SUCCESS;
+
         // 1. Dispatch due scheduled campaigns
         /** @var Collection<int, Campaign> $dueCampaigns */
         $dueCampaigns = Campaign::query()
@@ -44,8 +47,17 @@ class DispatchScheduledCampaignsCommand extends Command
 
         $dispatchedCount = 0;
         foreach ($dueCampaigns as $campaign) {
-            $results = $dispatcher->execute($campaign);
-            $this->info("Dispatched scheduled campaign [{$campaign->name}]: delivered {$results['delivered_count']} recipients.");
+            try {
+                $results = $dispatcher->execute($campaign);
+            } catch (CampaignHasNoAudienceException $e) {
+                // Left scheduled, so it goes out once a list is assigned.
+                $this->error($e->getMessage());
+                $exitCode = self::FAILURE;
+
+                continue;
+            }
+
+            $this->info("Dispatched scheduled campaign [{$campaign->name}]: queued {$results['delivered_count']} message(s).");
             $dispatchedCount++;
         }
 
@@ -69,6 +81,7 @@ class DispatchScheduledCampaignsCommand extends Command
                 ->get();
 
             $batchDelivered = 0;
+            $modeLabel = $campaign->use_sto ? 'Send Time Optimization' : 'Local Timezone';
             foreach ($pendingRecipients as $recipient) {
                 /** @var Contact|null $contact */
                 $contact = $recipient->contact;
@@ -76,30 +89,17 @@ class DispatchScheduledCampaignsCommand extends Command
 
                 // If local window has arrived (or is now past in their timezone)
                 if ($targetTime->isPast() || now()->diffInMinutes($targetTime) <= 5) {
-                    $recipient->update([
-                        'status' => RecipientStatus::Sent,
-                        'sent_at' => now(),
-                    ]);
+                    $outcome = $delivery->execute($campaign, $recipient, activityTitle: "Marketing Campaign ({$modeLabel}): {$campaign->name}");
 
-                    $compiler->execute($campaign, $recipient);
-
-                    if ($contact !== null) {
-                        $modeLabel = $campaign->use_sto ? 'Send Time Optimization' : 'Local Timezone';
-                        $contact->logTask(
-                            title: "Marketing Campaign ({$modeLabel}): {$campaign->name}",
-                            dueAt: now(),
-                            body: "Delivered scheduled wave to {$recipient->email}".($contact->timezone ? " ({$contact->timezone})" : '')
-                        );
-                        $contact->updateQuietly(['last_marketing_email_sent_at' => now()]);
+                    if ($outcome === DeliverCampaignMessageAction::QUEUED) {
+                        $batchDelivered++;
+                        $timezoneDelivered++;
                     }
-
-                    $batchDelivered++;
-                    $timezoneDelivered++;
                 }
             }
 
             if ($batchDelivered > 0) {
-                $campaign->increment('delivered_count', $batchDelivered);
+                $campaign->update(['delivered_count' => $campaign->recipients()->whereNotNull('sent_at')->count()]);
             }
 
             // Check if all recipients for this campaign have completed
@@ -110,8 +110,8 @@ class DispatchScheduledCampaignsCommand extends Command
             }
         }
 
-        $this->info("Completed scheduled dispatcher run. Dispatched {$dispatchedCount} campaign(s), {$timezoneDelivered} timezone wave email(s).");
+        $this->info("Completed scheduled dispatcher run. Dispatched {$dispatchedCount} campaign(s), queued {$timezoneDelivered} timezone wave email(s).");
 
-        return self::SUCCESS;
+        return $exitCode;
     }
 }

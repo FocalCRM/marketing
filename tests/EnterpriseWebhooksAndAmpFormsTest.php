@@ -306,7 +306,7 @@ class EnterpriseWebhooksAndAmpFormsTest extends TestCase
 
         $response->assertOk();
 
-        Mail::assertSent(TemplateMailable::class, function ($mailable) {
+        Mail::assertQueued(TemplateMailable::class, function ($mailable) {
             $attachments = $mailable->attachments();
             expect($attachments)->toHaveCount(1);
 

@@ -78,8 +78,16 @@ class CalculateRecipientOptimalSendTimeActionTest extends TestCase
             'opened_at' => Carbon::parse('2026-09-10 18:15:00', 'UTC'), // 14:15 New York
         ]);
 
+        // A second past campaign: a contact is a recipient of a campaign at most once.
+        $campaignPast2 = Campaign::create([
+            'name' => 'Past 2',
+            'subject' => 'Old',
+            'sender_name' => 'Focal',
+            'sender_email' => 'news@focal.test',
+        ]);
+
         CampaignRecipient::create([
-            'campaign_id' => $campaignPast->id,
+            'campaign_id' => $campaignPast2->id,
             'contact_id' => $contact->id,
             'email' => $contact->email,
             'tracking_token' => 'tok2',

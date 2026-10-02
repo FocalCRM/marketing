@@ -113,7 +113,7 @@ class MergeTagEscapingTest extends TestCase
 
         app(SendCampaignProofAction::class)->execute($campaign, 'staff@focal.test', $this->contact);
 
-        Mail::assertSent(CampaignProofMailable::class, fn (CampaignProofMailable $mail): bool => str_contains($mail->htmlBody, '&lt;script&gt;alert(1)&lt;/script&gt;')
+        Mail::assertQueued(CampaignProofMailable::class, fn (CampaignProofMailable $mail): bool => str_contains($mail->htmlBody, '&lt;script&gt;alert(1)&lt;/script&gt;')
             && str_contains($mail->htmlBody, '&lt;a href=&quot;https://evil.test&quot;&gt;Win&lt;/a&gt;')
             && ! str_contains($mail->htmlBody, '<script>'));
     }

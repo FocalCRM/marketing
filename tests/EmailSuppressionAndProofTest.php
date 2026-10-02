@@ -135,7 +135,7 @@ class EmailSuppressionAndProofTest extends TestCase
         $this->assertTrue($result['success']);
         $this->assertCount(2, $result['sent_to']);
 
-        Mail::assertSentCount(2);
+        Mail::assertQueuedCount(2);
     }
 
     public function test_campaign_duplication_creates_clean_draft_replica(): void

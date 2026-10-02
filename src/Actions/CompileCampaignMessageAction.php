@@ -9,6 +9,7 @@ use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
 use Focal\Marketing\Models\Campaign;
 use Focal\Marketing\Models\CampaignRecipient;
+use Focal\Marketing\Models\MarketingTemplate;
 
 class CompileCampaignMessageAction
 {
@@ -18,12 +19,8 @@ class CompileCampaignMessageAction
     public function execute(Campaign $campaign, CampaignRecipient $recipient): string
     {
         $isVariantB = $recipient->variant === 'B';
-        $template = ($isVariantB && $campaign->variantBTemplate !== null)
-            ? $campaign->variantBTemplate
-            : $campaign->template;
-        $subject = ($isVariantB && ! empty($campaign->variant_b_subject))
-            ? $campaign->variant_b_subject
-            : ($template !== null && $isVariantB ? $template->getVariantSubject('B') : $campaign->subject);
+        $template = $this->templateFor($campaign, $recipient);
+        $subject = $this->subjectFor($campaign, $recipient);
 
         /** @var Contact|null $contact */
         $contact = $recipient->contact ?? ($recipient->contact_id !== null ? Contact::find($recipient->contact_id) : null);
@@ -76,11 +73,13 @@ class CompileCampaignMessageAction
         // 2. Append UTM tracking parameters
         $html = app(AppendUtmParametersAction::class)->appendHtmlLinks($html, $campaign, $recipient->variant);
 
-        // 3. Wrap links for click tracking (excluding mailto:, tel:, and unsubscribe)
+        // 3. Wrap links for click tracking (excluding mailto:, tel:, and unsubscribe).
+        // The href attribute is HTML: decode it to the real URL before signing it, and
+        // escape the tracking URL when writing it back, so "&" is encoded exactly once.
         $html = (string) preg_replace_callback(
-            '/<a\s+(?:[^>]*?\s+)?href=(["\'])(.*?)\1/i',
+            '/(<a\s+(?:[^>]*?\s+)?href=)(["\'])(.*?)\2/i',
             function (array $matches) use ($recipient, $unsubscribeUrl): string {
-                $originalUrl = $matches[2];
+                $originalUrl = html_entity_decode($matches[3], ENT_QUOTES | ENT_HTML5, 'UTF-8');
                 if (
                     str_starts_with($originalUrl, 'mailto:') ||
                     str_starts_with($originalUrl, 'tel:') ||
@@ -93,7 +92,7 @@ class CompileCampaignMessageAction
 
                 $trackingUrl = $recipient->getClickRedirectUrl($originalUrl);
 
-                return str_replace($originalUrl, $trackingUrl, $matches[0]);
+                return $matches[1].$matches[2].htmlspecialchars($trackingUrl, ENT_QUOTES, 'UTF-8').$matches[2];
             },
             $html
         );
@@ -107,6 +106,48 @@ class CompileCampaignMessageAction
         }
 
         return $html;
+    }
+
+    /**
+     * The template a recipient receives: the variant B template for variant B recipients when one is set.
+     */
+    public function templateFor(Campaign $campaign, CampaignRecipient $recipient): ?MarketingTemplate
+    {
+        return ($recipient->variant === 'B' && $campaign->variantBTemplate !== null)
+            ? $campaign->variantBTemplate
+            : $campaign->template;
+    }
+
+    /**
+     * The subject line a recipient receives, honoring the A/B variant.
+     */
+    public function subjectFor(Campaign $campaign, CampaignRecipient $recipient): string
+    {
+        if ($recipient->variant !== 'B') {
+            return $campaign->subject;
+        }
+
+        if (! empty($campaign->variant_b_subject)) {
+            return $campaign->variant_b_subject;
+        }
+
+        $template = $this->templateFor($campaign, $recipient);
+
+        return $template !== null ? $template->getVariantSubject('B') : $campaign->subject;
+    }
+
+    /**
+     * Plain-text alternative of a compiled HTML message: links become "label (url)".
+     */
+    public function plainText(string $html): string
+    {
+        $html = (string) preg_replace('#<(head|style|script|title)\b[^>]*>.*?</\1>#is', '', $html);
+        $text = MailBuilder::plainText($html);
+
+        // Trim each line and collapse the blank lines that block markup leaves behind.
+        $text = implode("\n", array_map(trim(...), explode("\n", $text)));
+
+        return trim((string) preg_replace("/\n{3,}/", "\n\n", $text));
     }
 
     /**

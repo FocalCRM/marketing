@@ -84,12 +84,11 @@ class WorkflowEnrollmentWebhookController extends Controller
             }
         }
 
-        // Handle custom properties
+        // Persist scalar custom properties; nested values are ignored.
         if (! empty($validated['properties'])) {
-            foreach ($validated['properties'] as $key => $value) {
-                if (is_scalar($value)) {
-                    $contact->setProperty((string) $key, $value);
-                }
+            $properties = array_filter($validated['properties'], is_scalar(...));
+            if ($properties !== []) {
+                $contact->setProperties(array_combine(array_map('strval', array_keys($properties)), $properties))->save();
             }
         }
 

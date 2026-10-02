@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Focal\Marketing\Tests;
 
 use Focal\Core\Models\Contact;
+use Focal\Core\Models\CrmList;
 use Focal\Marketing\Actions\AuditCampaignDeliverabilityAction;
 use Focal\Marketing\Enums\CampaignStatus;
 use Focal\Marketing\Enums\RecipientStatus;
@@ -94,8 +95,12 @@ class MarketingAutomationAndDeliverabilitySuiteTest extends TestCase
             'body_html' => '<p>Hello {{contact.first_name}}</p><p><a href="{{unsubscribe_url}}">Unsubscribe</a></p>',
         ]);
 
-        // 1. Due scheduled campaign
+        // 1. Due scheduled campaign (dispatch needs an audience list)
+        $list = CrmList::create(['name' => 'Scheduled audience', 'type' => 'static']);
+        $list->addMember($contact);
+
         $campaign = Campaign::create([
+            'list_id' => $list->id,
             'name' => 'Matured Scheduled Campaign',
             'subject' => 'Scheduled News',
             'sender_name' => 'Focal',
@@ -144,9 +149,16 @@ class MarketingAutomationAndDeliverabilitySuiteTest extends TestCase
         // 3. Hours before the local send window, the recipient must wait.
         $this->travelTo(Carbon::parse('2026-06-16 06:00', 'America/New_York'));
 
+        // A second New York contact: a contact is a recipient of a campaign at most once.
+        $earlyContact = Contact::create([
+            'first_name' => 'Katherine',
+            'email' => 'katherine@johnson.test',
+            'timezone' => 'America/New_York',
+        ]);
+
         $earlyRecipient = $tzCampaign->recipients()->create([
-            'contact_id' => $contact->id,
-            'email' => $contact->email,
+            'contact_id' => $earlyContact->id,
+            'email' => $earlyContact->email,
             'status' => RecipientStatus::Pending,
         ]);
 

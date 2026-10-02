@@ -8,7 +8,8 @@ use Focal\Core\Enums\ActivityType;
 use Focal\Core\Enums\LifecycleStage;
 use Focal\Core\Models\Contact;
 use Focal\Marketing\Actions\RecordWebVisitAction;
-use Focal\Marketing\Models\VisitorSession;
+use Focal\Marketing\Actions\StitchVisitorToContactAction;
+use Focal\Marketing\Support\VisitorToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -21,7 +22,9 @@ class WebTrackingController extends Controller
      */
     public function pageview(Request $request, RecordWebVisitAction $action): JsonResponse
     {
-        $visitorToken = $request->input('visitor_token') ?: $request->cookie('focal_vid');
+        $this->mergeRawJsonBody($request);
+
+        $visitorToken = VisitorToken::fromRequest($request);
 
         $defaultUrl = (string) config('app.url', 'http://localhost');
         $referer = is_string($ref = $request->header('referer')) ? $ref : $defaultUrl;
@@ -48,15 +51,17 @@ class WebTrackingController extends Controller
             'status' => 'success',
             'session_id' => $result['session']->id,
             'visitor_token' => $token,
-        ])->cookie('focal_vid', $token, 525600); // 1 year cookie
+        ])->cookie(VisitorToken::COOKIE, $token, 525600); // 1 year cookie, for hosted (same-site) pages
     }
 
     /**
      * Ingestion endpoint for external website form auto-capture.
      * Automatically ingests HTML forms submitted on host websites into Focal Leads.
      */
-    public function autoCapture(Request $request): JsonResponse
+    public function autoCapture(Request $request, StitchVisitorToContactAction $stitch): JsonResponse
     {
+        $this->mergeRawJsonBody($request);
+
         $email = strtolower(trim((string) $request->input('email')));
         if (empty($email) || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return response()->json(['status' => 'error', 'message' => 'Valid email address is required.'], 422);
@@ -97,13 +102,10 @@ class WebTrackingController extends Controller
 
         $contact->save();
 
-        // Link with visitor tracking session if token provided
-        $visitorToken = $request->input('visitor_token') ?: $request->cookie('focal_vid');
-        if (! empty($visitorToken) && class_exists(VisitorSession::class)) {
-            VisitorSession::query()
-                ->where('visitor_token', $visitorToken)
-                ->whereNull('contact_id')
-                ->update(['contact_id' => $contact->id]);
+        // Link the visitor's anonymous sessions (and their page views) to the contact
+        $visitorToken = VisitorToken::fromRequest($request);
+        if ($visitorToken !== null) {
+            $stitch->execute($visitorToken, $contact);
         }
 
         // Log timeline activity
@@ -130,12 +132,27 @@ class WebTrackingController extends Controller
     var FOCAL_PAGEVIEW_URL = __FOCAL_PAGEVIEW_URL__;
     var FOCAL_AUTO_CAPTURE_URL = __FOCAL_AUTO_CAPTURE_URL__;
 
-    function getCookie(name) {
-        var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-        return match ? match[2] : null;
+__FOCAL_VISITOR_ID_JS__
+    // JSON sent as text/plain is a CORS-safelisted request: no preflight, so it works from
+    // any domain. fetch() only sends cookies same-origin (hosted landing pages); the visitor
+    // id travels in the body. The endpoints parse the raw body as JSON.
+    function post(url, payload, beacon) {
+        var body = JSON.stringify(payload);
+        try {
+            if (beacon && navigator.sendBeacon && navigator.sendBeacon(url, new Blob([body], { type: 'text/plain;charset=UTF-8' }))) {
+                return;
+            }
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+                body: body,
+                keepalive: true
+            }).catch(function() {});
+        } catch (e) {}
     }
+
     function sendPageView() {
-        var vid = getCookie('focal_vid');
+        var vid = focalVisitorId();
         var params = new URLSearchParams(window.location.search);
         var payload = {
             visitor_token: vid,
@@ -147,11 +164,7 @@ class WebTrackingController extends Controller
             utm_medium: params.get('utm_medium'),
             utm_campaign: params.get('utm_campaign')
         };
-        fetch(FOCAL_PAGEVIEW_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+        post(FOCAL_PAGEVIEW_URL, payload, false);
     }
 
     function interceptForms() {
@@ -169,7 +182,7 @@ class WebTrackingController extends Controller
                 var params = new URLSearchParams(window.location.search);
 
                 var payload = {
-                    visitor_token: getCookie('focal_vid'),
+                    visitor_token: focalVisitorId(),
                     email: emailInput.value,
                     name: nameInput ? nameInput.value : null,
                     first_name: firstInput ? firstInput.value : null,
@@ -181,18 +194,7 @@ class WebTrackingController extends Controller
                     utm_campaign: params.get('utm_campaign')
                 };
 
-                try {
-                    if (navigator.sendBeacon) {
-                        navigator.sendBeacon(FOCAL_AUTO_CAPTURE_URL, JSON.stringify(payload));
-                    } else {
-                        fetch(FOCAL_AUTO_CAPTURE_URL, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(payload),
-                            keepalive: true
-                        });
-                    }
-                } catch(e) {}
+                post(FOCAL_AUTO_CAPTURE_URL, payload, true);
             });
         });
     }
@@ -213,11 +215,34 @@ JS;
         $script = strtr($script, [
             '__FOCAL_PAGEVIEW_URL__' => json_encode(route('focal.marketing.track.pageview'), JSON_UNESCAPED_SLASHES),
             '__FOCAL_AUTO_CAPTURE_URL__' => json_encode(route('focal.marketing.forms.auto-capture'), JSON_UNESCAPED_SLASHES),
+            "__FOCAL_VISITOR_ID_JS__\n" => VisitorToken::javascript(),
         ]);
 
         return response($script, 200, [
             'Content-Type' => 'application/javascript',
             'Cache-Control' => 'public, max-age=86400',
         ]);
+    }
+
+    /**
+     * navigator.sendBeacon() and cross-domain fetch() send the JSON payload as text/plain
+     * (a CORS-safelisted type, so browsers skip the preflight). Laravel only parses JSON
+     * bodies with a JSON content type, so decode the raw body here.
+     */
+    private function mergeRawJsonBody(Request $request): void
+    {
+        if ($request->isJson()) {
+            return;
+        }
+
+        $content = $request->getContent();
+        if (! str_starts_with(ltrim($content), '{')) {
+            return;
+        }
+
+        $decoded = json_decode($content, true);
+        if (is_array($decoded) && ! array_is_list($decoded)) {
+            $request->merge($decoded);
+        }
     }
 }

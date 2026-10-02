@@ -24,6 +24,7 @@ class CsrfExemptRoutesTest extends TestCase
 
         foreach ([
             'focal.marketing.track.pageview',
+            'focal.marketing.unsubscribe.process',
             'focal.marketing.forms.auto-capture',
             'focal.marketing.webhooks.esp',
             'focal.marketing.forms.api-submit',

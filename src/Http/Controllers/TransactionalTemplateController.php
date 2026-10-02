@@ -5,20 +5,21 @@ declare(strict_types=1);
 namespace Focal\Marketing\Http\Controllers;
 
 use Closure;
-use DoPHP\MailBuilder\Mail\TemplateMailable;
 use DoPHP\MailBuilder\MailBuilder;
+use Focal\Marketing\Mail\TransactionalTemplateMailable;
 use Focal\Marketing\Models\MarketingTemplate;
 use Focal\Marketing\Services\DomainThrottler;
 use Focal\Marketing\Services\MarketingWebhookDispatcher;
+use Focal\Marketing\Support\MarketingMailer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Mail;
 
 class TransactionalTemplateController extends Controller
 {
     /**
-     * Dispatch a transactional email using a pre-built MarketingTemplate.
+     * Queue a transactional email using a pre-built MarketingTemplate. Returns once the
+     * message is on the queue (focal-marketing.mail); a queue worker delivers it.
      */
     public function send(Request $request, string|int $template): JsonResponse
     {
@@ -97,7 +98,7 @@ class TransactionalTemplateController extends Controller
             $html = $record->getVariantHtml($variant);
         }
 
-        $mailable = new TemplateMailable(
+        $mailable = new TransactionalTemplateMailable(
             template: $html,
             data: $data,
             subjectLine: $subject,
@@ -108,7 +109,7 @@ class TransactionalTemplateController extends Controller
         );
 
         $recipientName = isset($validated['name']) ? (string) $validated['name'] : null;
-        Mail::to($to, $recipientName)->send($mailable);
+        MarketingMailer::queue($mailable, $to, $recipientName);
 
         if (! empty($validated['webhook_url'])) {
             MarketingWebhookDispatcher::dispatch(
@@ -127,7 +128,8 @@ class TransactionalTemplateController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Transactional email sent successfully.',
+            'message' => 'Transactional email queued for delivery.',
+            'queued' => true,
             'template_id' => $record->id,
             'template_slug' => $record->slug,
             'recipient' => $to,
@@ -137,7 +139,7 @@ class TransactionalTemplateController extends Controller
     }
 
     /**
-     * Dispatch a batch of transactional emails (up to 1,000) using a pre-built MarketingTemplate.
+     * Queue a batch of transactional emails (up to 1,000) using a pre-built MarketingTemplate.
      */
     public function sendBatch(Request $request, string|int $template): JsonResponse
     {
@@ -201,7 +203,7 @@ class TransactionalTemplateController extends Controller
                 $data['contact.first_name'] = $recipientName;
             }
 
-            $mailable = new TemplateMailable(
+            $mailable = new TransactionalTemplateMailable(
                 template: $baseHtml,
                 data: $data,
                 subjectLine: $subject,
@@ -210,7 +212,7 @@ class TransactionalTemplateController extends Controller
                 replyToEmail: isset($validated['reply_to']) ? (string) $validated['reply_to'] : null,
             );
 
-            Mail::to($toEmail, $recipientName)->send($mailable);
+            MarketingMailer::queue($mailable, $toEmail, $recipientName);
             $dispatched[] = $toEmail;
         }
 
@@ -231,7 +233,8 @@ class TransactionalTemplateController extends Controller
 
         $response = [
             'success' => true,
-            'message' => 'Batch transactional emails dispatched successfully.',
+            'message' => 'Batch transactional emails queued for delivery.',
+            'queued' => true,
             'template_id' => $record->id,
             'template_slug' => $record->slug,
             'dispatched_count' => count($dispatched),

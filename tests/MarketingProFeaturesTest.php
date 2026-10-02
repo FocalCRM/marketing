@@ -179,8 +179,17 @@ class MarketingProFeaturesTest extends TestCase
             'unsubscribe_token' => Str::random(40),
             'sent_at' => now()->subDays(2),
         ]);
+        // A second campaign: a contact is a recipient of a campaign at most once.
+        $earlierCampaign = Campaign::create([
+            'name' => 'Earlier Campaign',
+            'subject' => 'Hello',
+            'sender_name' => 'Focal',
+            'sender_email' => 'test@focal.test',
+            'status' => CampaignStatus::Sent,
+            'type' => CampaignType::Regular,
+        ]);
         CampaignRecipient::create([
-            'campaign_id' => $campaign->id,
+            'campaign_id' => $earlierCampaign->id,
             'contact_id' => $contact->id,
             'email' => $contact->email,
             'status' => 'sent',

@@ -4,16 +4,20 @@ declare(strict_types=1);
 
 namespace Focal\Marketing\Mail;
 
+use Focal\Marketing\Mail\Concerns\UsesMarketingMailQueue;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
 
-class CampaignProofMailable extends Mailable
+/**
+ * A campaign proof for internal reviewers, queued on the queue set in focal-marketing.mail.
+ */
+class CampaignProofMailable extends Mailable implements ShouldQueue
 {
-    use Queueable, SerializesModels;
+    use Queueable, UsesMarketingMailQueue;
 
     public function __construct(
         public string $subjectLine,
@@ -21,7 +25,9 @@ class CampaignProofMailable extends Mailable
         public string $fromEmail,
         public string $fromName,
         public ?string $replyToEmail = null
-    ) {}
+    ) {
+        $this->useMarketingMailQueue();
+    }
 
     public function envelope(): Envelope
     {

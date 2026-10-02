@@ -8,6 +8,7 @@ use Focal\Core\Models\Contact;
 use Focal\Marketing\Actions\ProcessFormSubmissionAction;
 use Focal\Marketing\Models\MarketingForm;
 use Focal\Marketing\Support\ContactToken;
+use Focal\Marketing\Support\VisitorToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -149,17 +150,15 @@ class MarketingFormController extends Controller
         // Absolute URL template so the script works when embedded on other domains and honors route prefixes.
         $schemaUrlTemplate = json_encode(route('focal.marketing.forms.schema', '__SLUG__'), JSON_UNESCAPED_SLASHES);
         $targetSlug = $slug !== null ? json_encode($slug) : 'null';
+        // Same visitor id helper as focal.js, so embedded submissions stitch to tracked sessions.
+        $visitorIdJs = VisitorToken::javascript();
 
         $js = <<<JAVASCRIPT
 (function() {
     var FOCAL_SCHEMA_URL = {$schemaUrlTemplate};
     var TARGET_SLUG = {$targetSlug};
 
-    function getCookie(name) {
-        var match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-        return match ? decodeURIComponent(match[2]) : null;
-    }
-
+{$visitorIdJs}
     function renderForm(container, formSchema) {
         var form = document.createElement('form');
         form.className = 'focal-embedded-form';
@@ -279,10 +278,7 @@ class MarketingFormController extends Controller
                 payload[key] = value;
             });
 
-            var vid = getCookie('_focal_visitor_token') || localStorage.getItem('_focal_vid');
-            if (vid) {
-                payload['visitor_token'] = vid;
-            }
+            payload['visitor_token'] = focalVisitorId();
 
             fetch(formSchema.action_url, {
                 method: 'POST',

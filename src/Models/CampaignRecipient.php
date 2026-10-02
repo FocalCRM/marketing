@@ -200,6 +200,16 @@ class CampaignRecipient extends Model
     }
 
     /**
+     * URL for the List-Unsubscribe header. A GET shows the confirmation page; an
+     * RFC 8058 one-click POST ("List-Unsubscribe=One-Click") unsubscribes at once.
+     * The unsubscribe token in the URL is the credential, so the POST is CSRF-exempt.
+     */
+    public function getOneClickUnsubscribeUrl(): string
+    {
+        return route('focal.marketing.unsubscribe.process', $this->unsubscribe_token);
+    }
+
+    /**
      * Path that every unsubscribe link starts with (e.g. "/marketing/unsubscribe/"),
      * honoring any configured route prefix. Used to exempt these links from click
      * tracking and UTM tagging.

@@ -56,38 +56,27 @@ class EvaluateAbTestWinnerAction
             ->with('contact')
             ->get();
 
-        $compiler = app(CompileCampaignMessageAction::class);
+        $delivery = app(DeliverCampaignMessageAction::class);
         $remainingSent = 0;
 
         foreach ($pendingRecipients as $recipient) {
-            $recipient->update([
-                'status' => RecipientStatus::Sent,
-                'variant' => $winner,
-                'sent_at' => now(),
-            ]);
+            $outcome = $delivery->execute(
+                $campaign,
+                $recipient,
+                variant: $winner,
+                activityTitle: "Marketing Campaign: {$campaign->name} (Winning Variant {$winner})",
+            );
 
-            $compiler->execute($campaign, $recipient);
-
-            if ($recipient->contact !== null) {
-                $subject = ($winner === 'B' && ! empty($campaign->variant_b_subject))
-                    ? $campaign->variant_b_subject
-                    : $campaign->subject;
-
-                $recipient->contact->logTask(
-                    title: "Marketing Campaign: {$campaign->name} (Winning Variant {$winner})",
-                    dueAt: now(),
-                    body: "Delivered winning email with subject: \"{$subject}\""
-                );
+            if ($outcome === DeliverCampaignMessageAction::QUEUED) {
+                $remainingSent++;
             }
-
-            $remainingSent++;
         }
 
         $campaign->update([
             'ab_winner_variant' => $winner,
             'ab_test_evaluated_at' => now(),
             'status' => CampaignStatus::Sent,
-            'delivered_count' => $campaign->delivered_count + $remainingSent,
+            'delivered_count' => $campaign->recipients()->whereNotNull('sent_at')->count(),
         ]);
 
         return [

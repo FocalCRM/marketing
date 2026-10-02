@@ -108,6 +108,63 @@ class WorkflowEnrollment extends Model
     }
 
     /**
+     * Atomically claim the step this enrollment is due to run, before running its side effects.
+     *
+     * One conditional UPDATE: it only matches while the enrollment is still active, still on
+     * $stepId, and still due (next_run_at set), and it clears next_run_at. Whoever runs it first
+     * wins; a second worker holding a stale copy (an overlapping scheduler run, or the scheduler
+     * racing the inline run after enrolment) gets false and must do nothing. The step then sets
+     * next_run_at again when it moves the enrollment on.
+     */
+    public function claimStep(int $stepId): bool
+    {
+        $attributes = ['next_run_at' => null];
+        $updatedAt = $this->getUpdatedAtColumn();
+        if ($updatedAt !== null) {
+            $attributes[$updatedAt] = $this->freshTimestampString();
+        }
+
+        $claimed = static::query()
+            ->whereKey($this->getKey())
+            ->where('status', WorkflowEnrollmentStatus::Active->value)
+            ->where('current_step_id', $stepId)
+            ->whereNotNull('next_run_at')
+            ->update($attributes) === 1;
+
+        if ($claimed) {
+            $this->refresh();
+        }
+
+        return $claimed;
+    }
+
+    /**
+     * Atomically mark this enrollment completed. False when it was no longer active.
+     */
+    public function claimCompletion(): bool
+    {
+        $attributes = [
+            'status' => WorkflowEnrollmentStatus::Completed->value,
+            'current_step_id' => null,
+            'next_run_at' => null,
+            'completed_at' => $this->freshTimestampString(),
+        ];
+        $updatedAt = $this->getUpdatedAtColumn();
+        if ($updatedAt !== null) {
+            $attributes[$updatedAt] = $this->freshTimestampString();
+        }
+
+        $claimed = static::query()
+            ->whereKey($this->getKey())
+            ->where('status', WorkflowEnrollmentStatus::Active->value)
+            ->update($attributes) === 1;
+
+        $this->refresh();
+
+        return $claimed;
+    }
+
+    /**
      * Execution step logs.
      *
      * @return HasMany<WorkflowLog, $this>

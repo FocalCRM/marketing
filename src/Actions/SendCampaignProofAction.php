@@ -9,14 +9,13 @@ use Focal\Core\Models\Company;
 use Focal\Core\Models\Contact;
 use Focal\Marketing\Mail\CampaignProofMailable;
 use Focal\Marketing\Models\Campaign;
-use Illuminate\Mail\Message;
-use Illuminate\Support\Facades\Mail;
+use Focal\Marketing\Support\MarketingMailer;
 use Throwable;
 
 class SendCampaignProofAction
 {
     /**
-     * Send a proof / test email for a campaign to internal reviewers.
+     * Queue a proof / test email for a campaign to internal reviewers.
      *
      * @param  string|list<string>  $recipientEmails
      * @return array{success: bool, sent_to: list<string>, message: string}
@@ -81,25 +80,25 @@ class SendCampaignProofAction
 
         try {
             foreach ($cleanEmails as $recipientEmail) {
-                Mail::to($recipientEmail)->send(new CampaignProofMailable(
+                MarketingMailer::queue(new CampaignProofMailable(
                     subjectLine: $subject,
                     htmlBody: $html,
                     fromEmail: $fromEmail,
                     fromName: $fromName,
                     replyToEmail: $replyTo !== '' ? $replyTo : null,
-                ));
+                ), $recipientEmail);
             }
 
             return [
                 'success' => true,
                 'sent_to' => $cleanEmails,
-                'message' => 'Proof email successfully dispatched to '.implode(', ', $cleanEmails),
+                'message' => 'Proof email queued for '.implode(', ', $cleanEmails),
             ];
         } catch (Throwable $e) {
             return [
                 'success' => false,
                 'sent_to' => [],
-                'message' => 'Failed to send test email: '.$e->getMessage(),
+                'message' => 'Failed to queue test email: '.$e->getMessage(),
             ];
         }
     }

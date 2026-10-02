@@ -8,10 +8,13 @@ use Focal\Core\Enums\LifecycleStage;
 use Focal\Core\Support\UserModel;
 use Focal\Marketing\Enums\WorkflowEnrollmentStatus;
 use Focal\Marketing\Enums\WorkflowStepType;
+use Focal\Marketing\Mail\MarketingMessageMailable;
+use Focal\Marketing\Models\MarketingSubscription;
 use Focal\Marketing\Models\MarketingTemplate;
 use Focal\Marketing\Models\WorkflowEnrollment;
 use Focal\Marketing\Models\WorkflowLog;
 use Focal\Marketing\Models\WorkflowStep;
+use Focal\Marketing\Support\MarketingMailer;
 use Focal\Sales\Enums\DealStatus;
 use Focal\Sales\Models\Deal;
 use Focal\Sales\Models\Pipeline;
@@ -21,6 +24,10 @@ class ExecuteWorkflowStepAction
 {
     /**
      * Execute the current step for an enrolled contact.
+     *
+     * The step is claimed first (WorkflowEnrollment::claimStep()), so when two workers run the
+     * same due enrollment at once only one of them sends its email, SMS, or webhook; the other
+     * returns without doing anything. Only a due enrollment (next_run_at set) can be claimed.
      */
     public function execute(WorkflowEnrollment $enrollment): void
     {
@@ -37,37 +44,75 @@ class ExecuteWorkflowStepAction
             return;
         }
 
+        if (! $enrollment->claimStep($step->id)) {
+            return;
+        }
+
         $contact = $enrollment->contact;
         $workflow = $enrollment->workflow;
 
         switch ($step->type) {
             case WorkflowStepType::SendEmail:
                 $templateId = (int) ($step->config['template_id'] ?? 0);
-                $subject = (string) ($step->config['subject'] ?? 'Marketing Update');
 
                 /** @var MarketingTemplate|null $template */
                 $template = MarketingTemplate::query()->find($templateId);
                 $body = $template->body_html ?? ($step->config['body'] ?? 'Hello from Focal Marketing!');
 
                 $compiler = app(CompileCampaignMessageAction::class);
-                $rendered = $compiler->compileForContact($body, $contact);
-
-                // Record activity log on contact
-                $contact->logTask(
-                    title: "Workflow Email: {$subject}",
-                    dueAt: now(),
-                    body: "Automated workflow email sent via workflow [{$workflow->name}]."
+                $subject = $compiler->compileForContact(
+                    (string) ($step->config['subject'] ?? $template->subject ?? 'Marketing Update'),
+                    $contact,
+                    escape: false,
                 );
 
-                WorkflowLog::create([
-                    'enrollment_id' => $enrollment->id,
-                    'step_id' => $step->id,
-                    'contact_id' => $contact->id,
-                    'action_taken' => "Sent email: {$subject}",
-                    'status' => 'success',
-                    'details' => ['template_id' => $templateId, 'subject' => $subject],
-                    'created_at' => now(),
-                ]);
+                $email = mb_strtolower(trim((string) $contact->email));
+                // Unsubscribed, bounced or suppressed addresses are skipped, as is a contact not
+                // subscribed to the step's optional subscription topic (config "topic_id").
+                $topic = $step->config['topic_id'] ?? null;
+                $suppressed = $email === '' || MarketingSubscription::isSuppressed($email, is_int($topic) || is_string($topic) ? $topic : null);
+
+                if ($suppressed) {
+                    WorkflowLog::create([
+                        'enrollment_id' => $enrollment->id,
+                        'step_id' => $step->id,
+                        'contact_id' => $contact->id,
+                        'action_taken' => "Skipped email (unsubscribed or suppressed): {$subject}",
+                        'status' => 'skipped',
+                        'details' => ['template_id' => $templateId, 'subject' => $subject],
+                        'created_at' => now(),
+                    ]);
+                } else {
+                    $rendered = $compiler->compileForContact((string) $body, $contact);
+
+                    // Same delivery path as campaigns: a queued MarketingMessageMailable.
+                    MarketingMailer::queue(new MarketingMessageMailable(
+                        subjectLine: $subject,
+                        htmlBody: $rendered,
+                        textBody: $compiler->plainText($rendered),
+                        fromEmail: (string) ($step->config['from_email'] ?? config('focal-marketing.defaults.sender_email')),
+                        fromName: (string) ($step->config['from_name'] ?? config('focal-marketing.defaults.sender_name')),
+                        replyToEmail: ($step->config['reply_to'] ?? config('focal-marketing.defaults.reply_to')) ?: null,
+                        listUnsubscribeUrl: $contact->getPreferenceCenterUrl(),
+                    ), $email);
+
+                    // Record activity log on contact
+                    $contact->logTask(
+                        title: "Workflow Email: {$subject}",
+                        dueAt: now(),
+                        body: "Automated workflow email queued via workflow [{$workflow->name}]."
+                    );
+
+                    WorkflowLog::create([
+                        'enrollment_id' => $enrollment->id,
+                        'step_id' => $step->id,
+                        'contact_id' => $contact->id,
+                        'action_taken' => "Sent email: {$subject}",
+                        'status' => 'success',
+                        'details' => ['template_id' => $templateId, 'subject' => $subject],
+                        'created_at' => now(),
+                    ]);
+                }
 
                 $nextStepNum = array_key_exists('next_step', $step->config)
                     ? ($step->config['next_step'] !== null ? (int) $step->config['next_step'] : null)
@@ -201,6 +246,9 @@ class ExecuteWorkflowStepAction
                 $nextStepNum = array_key_exists('next_step', $step->config)
                     ? ($step->config['next_step'] !== null ? (int) $step->config['next_step'] : null)
                     : ($step->step_number + 1);
+
+                $this->advanceToNextStep($enrollment, $nextStepNum);
+                break;
 
             case WorkflowStepType::AssignOwner:
                 $ownerId = $step->config['owner_id'] ?? null;
@@ -435,12 +483,8 @@ class ExecuteWorkflowStepAction
      */
     protected function completeEnrollment(WorkflowEnrollment $enrollment): void
     {
-        $enrollment->update([
-            'status' => WorkflowEnrollmentStatus::Completed,
-            'current_step_id' => null,
-            'completed_at' => now(),
-        ]);
-
-        $enrollment->workflow->increment('completed_count');
+        if ($enrollment->claimCompletion()) {
+            $enrollment->workflow->increment('completed_count');
+        }
     }
 }

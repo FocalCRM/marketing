@@ -8,7 +8,7 @@ use Focal\Core\Models\Contact;
 use Focal\Marketing\Enums\LeadScoringEventType;
 use Focal\Marketing\Models\PageView;
 use Focal\Marketing\Models\VisitorSession;
-use Illuminate\Support\Str;
+use Focal\Marketing\Support\VisitorToken;
 
 class RecordWebVisitAction
 {
@@ -46,7 +46,10 @@ class RecordWebVisitAction
      */
     public function execute(array $data): array
     {
-        $visitorToken = ! empty($data['visitor_token']) ? (string) $data['visitor_token'] : Str::random(40);
+        // Malformed tokens (see VisitorToken::PATTERN) are replaced by a fresh one.
+        $visitorToken = VisitorToken::isValid($data['visitor_token'] ?? null)
+            ? (string) $data['visitor_token']
+            : VisitorToken::generate();
         $url = $data['url'];
         $path = $data['path'] ?? (parse_url($url, PHP_URL_PATH) ?: '/');
         $contactId = $data['contact_id'] ?? null;

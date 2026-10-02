@@ -13,6 +13,9 @@ enum RecipientStatus: string
     case Bounced = 'bounced';
     case Unsubscribed = 'unsubscribed';
 
+    /** Skipped at send time: unsubscribed, bounced or suppressed after the campaign was dispatched. */
+    case Suppressed = 'suppressed';
+
     public function getLabel(): string
     {
         return match ($this) {
@@ -22,6 +25,7 @@ enum RecipientStatus: string
             self::Clicked => 'Clicked',
             self::Bounced => 'Bounced',
             self::Unsubscribed => 'Unsubscribed',
+            self::Suppressed => 'Suppressed',
         };
     }
 
@@ -34,6 +38,7 @@ enum RecipientStatus: string
             self::Clicked => 'success',
             self::Bounced => 'danger',
             self::Unsubscribed => 'warning',
+            self::Suppressed => 'gray',
         };
     }
 }

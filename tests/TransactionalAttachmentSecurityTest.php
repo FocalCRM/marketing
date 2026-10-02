@@ -46,7 +46,7 @@ class TransactionalAttachmentSecurityTest extends TestCase
             ],
         ])->assertStatus(422)->assertJsonValidationErrors('attachments.0.path');
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     public function test_attachments_require_base64_data(): void
@@ -63,7 +63,7 @@ class TransactionalAttachmentSecurityTest extends TestCase
             'attachments' => [['name' => 'a.txt', 'data' => 'not base64!']],
         ])->assertStatus(422)->assertJsonValidationErrors('attachments.0.data');
 
-        Mail::assertNothingSent();
+        Mail::assertNothingOutgoing();
     }
 
     public function test_base64_attachments_are_sent_decoded(): void
@@ -77,7 +77,7 @@ class TransactionalAttachmentSecurityTest extends TestCase
             ],
         ])->assertOk();
 
-        Mail::assertSent(TemplateMailable::class, function (TemplateMailable $mailable): bool {
+        Mail::assertQueued(TemplateMailable::class, function (TemplateMailable $mailable): bool {
             $this->assertSame([['name' => 'note.txt', 'data' => base64_encode('hello world'), 'mime' => 'text/plain', 'is_base64' => true]], $mailable->customAttachments);
 
             return true;
