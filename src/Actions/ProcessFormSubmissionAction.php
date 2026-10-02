@@ -17,13 +17,17 @@ class ProcessFormSubmissionAction
     /**
      * Process an incoming form submission, auto-provision contact/company, and record activity.
      *
+     * Pass $contact only when the caller has verified the submitter's identity (for
+     * example with a signed ContactToken). Submitted data never selects a contact by id.
+     *
      * @param  array<string, mixed>  $data
      */
     public function execute(
         MarketingForm $form,
         array $data,
         ?string $ipAddress = null,
-        ?string $userAgent = null
+        ?string $userAgent = null,
+        ?Contact $contact = null,
     ): FormSubmission {
         $email = isset($data['email']) ? mb_strtolower(trim((string) $data['email'])) : null;
         $firstName = isset($data['first_name']) ? trim((string) $data['first_name']) : null;
@@ -31,11 +35,7 @@ class ProcessFormSubmissionAction
         $phone = isset($data['phone']) ? trim((string) $data['phone']) : null;
         $companyName = isset($data['company']) ? trim((string) $data['company']) : null;
 
-        $contact = null;
-        if (! empty($data['contact_id']) && is_numeric($data['contact_id'])) {
-            /** @var Contact|null $contact */
-            $contact = Contact::query()->find((int) $data['contact_id']);
-        }
+        unset($data['contact_id'], $data['contact']);
 
         if ($contact === null && ! empty($email)) {
             /** @var Contact|null $contact */

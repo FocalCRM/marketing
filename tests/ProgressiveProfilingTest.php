@@ -6,6 +6,7 @@ namespace Focal\Marketing\Tests;
 
 use Focal\Core\Models\Contact;
 use Focal\Marketing\Models\MarketingForm;
+use Focal\Marketing\Support\ContactToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ProgressiveProfilingTest extends TestCase
@@ -53,8 +54,8 @@ class ProgressiveProfilingTest extends TestCase
         $this->assertTrue($resolvedFields[1]['is_progressive']);
         $this->assertSame('company', $resolvedFields[2]['name']);
 
-        // 3. Render GET /forms/{slug}?contact_id={id}
-        $response = $this->get('/forms/enterprise-demo?contact_id='.$contact->id);
+        // 3. Render the contact's signed personalized link
+        $response = $this->get($form->getPublicUrl($contact));
         $response->assertOk();
         $response->assertSee('Welcome back, <strong>Sarah</strong>!', false);
         $response->assertSee('Annual Budget');
@@ -63,7 +64,7 @@ class ProgressiveProfilingTest extends TestCase
 
         // 4. Submit progressive form data
         $postResponse = $this->post('/forms/enterprise-demo', [
-            'contact_id' => $contact->id,
+            'contact' => ContactToken::make($contact, ContactToken::forForm($form->id)),
             'budget' => '$100,000+',
             'timeline' => 'Immediate',
             'crm_replaced' => 'Salesforce',

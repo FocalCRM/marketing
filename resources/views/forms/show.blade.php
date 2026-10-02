@@ -19,7 +19,7 @@
             @csrf
 
             @if (isset($contact) && $contact !== null)
-                <input type="hidden" name="contact_id" value="{{ $contact->id }}" />
+                <input type="hidden" name="contact" value="{{ $contactToken }}" />
                 <div class="p-3 bg-sky-50 border border-sky-200 text-sky-900 rounded-lg text-xs flex justify-between items-center">
                     <span>Welcome back, <strong>{{ $contact->first_name ?: $contact->email }}</strong>!</span>
                     <a href="{{ route('focal.marketing.forms.show', $form->slug) }}" class="underline text-sky-700 hover:text-sky-900">Not you?</a>

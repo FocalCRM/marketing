@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Focal\Marketing\Http\Controllers;
 
-use Focal\Core\Models\Contact;
 use Focal\Marketing\Actions\TrackAssetDownloadAction;
 use Focal\Marketing\Models\MarketingAsset;
 use Illuminate\Http\RedirectResponse;
@@ -25,11 +24,8 @@ class MarketingAssetController extends Controller
         /** @var MarketingAsset $asset */
         $asset = MarketingAsset::query()->where('slug', $slug)->firstOrFail();
 
-        $contactId = $request->query('contact_id');
-        $contact = null;
-        if (! empty($contactId)) {
-            $contact = Contact::query()->find((int) $contactId);
-        }
+        // Unsigned or tampered links still download, but aren't attributed to a contact.
+        $contact = $asset->resolveSignedContact($request->query('contact_id'), $request->query('signature'));
 
         $tracker->execute(
             asset: $asset,

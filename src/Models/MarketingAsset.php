@@ -123,9 +123,31 @@ class MarketingAsset extends Model
         $params = [];
         if ($contact !== null) {
             $params['contact_id'] = $contact->id;
-            $params['signature'] = hash_hmac('sha256', "asset_{$this->id}_contact_{$contact->id}", config('app.key'));
+            $params['signature'] = $this->downloadSignature($contact->id);
         }
 
         return route('focal.marketing.assets.download', array_merge(['slug' => $this->slug], $params));
+    }
+
+    /**
+     * Resolve the contact from a download link, only when its signature matches.
+     */
+    public function resolveSignedContact(mixed $contactId, mixed $signature): ?Contact
+    {
+        if (! is_numeric($contactId) || ! is_string($signature)) {
+            return null;
+        }
+
+        if (! hash_equals($this->downloadSignature((int) $contactId), $signature)) {
+            return null;
+        }
+
+        /** @var Contact|null */
+        return Contact::query()->find((int) $contactId);
+    }
+
+    private function downloadSignature(int $contactId): string
+    {
+        return hash_hmac('sha256', "asset_{$this->id}_contact_{$contactId}", (string) config('app.key'));
     }
 }

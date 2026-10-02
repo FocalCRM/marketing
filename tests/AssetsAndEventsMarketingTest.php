@@ -86,10 +86,7 @@ class AssetsAndEventsMarketingTest extends TestCase
         ]);
 
         // Verify HTTP download route redirects to external URL
-        $response = $this->get(route('focal.marketing.assets.download', [
-            'slug' => $asset->slug,
-            'contact_id' => $contact->id,
-        ]));
+        $response = $this->get($asset->getDownloadUrl($contact));
 
         $response->assertRedirect('https://example.com/reports/saas-2026.pdf');
         $asset->refresh();

@@ -7,6 +7,7 @@ namespace Focal\Marketing\Http\Controllers;
 use Focal\Core\Models\Contact;
 use Focal\Marketing\Actions\ProcessFormSubmissionAction;
 use Focal\Marketing\Models\MarketingForm;
+use Focal\Marketing\Support\ContactToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,23 +27,16 @@ class MarketingFormController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        $contact = null;
-        $contactId = $request->query('contact_id');
-        $email = $request->query('email');
-
-        if ($contactId !== null && is_numeric($contactId)) {
-            /** @var Contact|null $contact */
-            $contact = Contact::query()->find((int) $contactId);
-        } elseif (! empty($email) && is_string($email)) {
-            /** @var Contact|null $contact */
-            $contact = Contact::query()->where('email', strtolower(trim($email)))->first();
-        }
+        // Only a signed link identifies a returning contact; a bare id or email would
+        // let anyone read another contact's name and profile gaps.
+        $contact = ContactToken::resolve($request->query('contact'), ContactToken::forForm($form->id));
 
         $fields = $form->resolveFieldsForContact($contact);
 
         return response()->view('focal-marketing::forms.show', [
             'form' => $form,
             'contact' => $contact,
+            'contactToken' => $contact !== null ? ContactToken::make($contact, ContactToken::forForm($form->id)) : null,
             'fields' => $fields,
         ]);
     }
@@ -58,11 +52,10 @@ class MarketingFormController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        $contact = null;
-        if ($request->has('contact_id') && is_numeric($request->input('contact_id'))) {
-            /** @var Contact|null $contact */
-            $contact = Contact::query()->find((int) $request->input('contact_id'));
-        } elseif ($request->filled('email')) {
+        $verifiedContact = ContactToken::resolve($request->input('contact'), ContactToken::forForm($form->id));
+
+        $contact = $verifiedContact;
+        if ($contact === null && $request->filled('email')) {
             /** @var Contact|null $contact */
             $contact = Contact::query()->where('email', strtolower(trim((string) $request->input('email'))))->first();
         }
@@ -95,9 +88,10 @@ class MarketingFormController extends Controller
 
         $submission = $action->execute(
             form: $form,
-            data: $request->all(),
+            data: $request->except(['contact']),
             ipAddress: $request->ip(),
-            userAgent: $request->userAgent()
+            userAgent: $request->userAgent(),
+            contact: $verifiedContact,
         );
 
         if ($request->expectsJson() || $request->is('api/*')) {
@@ -129,17 +123,9 @@ class MarketingFormController extends Controller
             ->where('is_active', true)
             ->firstOrFail();
 
-        $contact = null;
-        $contactId = $request->query('contact_id');
-        $email = $request->query('email');
-
-        if ($contactId !== null && is_numeric($contactId)) {
-            /** @var Contact|null $contact */
-            $contact = Contact::query()->find((int) $contactId);
-        } elseif (! empty($email) && is_string($email)) {
-            /** @var Contact|null $contact */
-            $contact = Contact::query()->where('email', strtolower(trim($email)))->first();
-        }
+        // Only a signed link identifies a returning contact; a bare id or email would
+        // let anyone read another contact's name and profile gaps.
+        $contact = ContactToken::resolve($request->query('contact'), ContactToken::forForm($form->id));
 
         $fields = $form->resolveFieldsForContact($contact);
 

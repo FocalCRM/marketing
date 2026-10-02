@@ -6,6 +6,7 @@ namespace Focal\Marketing\Models;
 
 use Carbon\CarbonInterface;
 use Focal\Core\Models\Contact;
+use Focal\Marketing\Support\ContactToken;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -94,10 +95,19 @@ class MarketingForm extends Model
 
     /**
      * Get the public hosted URL for this form.
+     *
+     * Pass a contact to get a personalized link (for emails to that contact) that
+     * greets them and asks progressive profiling questions. The link is signed,
+     * so it can't be altered to identify a different contact.
      */
-    public function getPublicUrl(): string
+    public function getPublicUrl(?Contact $contact = null): string
     {
-        return route('focal.marketing.forms.show', $this->slug);
+        $parameters = ['slug' => $this->slug];
+        if ($contact !== null) {
+            $parameters['contact'] = ContactToken::make($contact, ContactToken::forForm($this->id));
+        }
+
+        return route('focal.marketing.forms.show', $parameters);
     }
 
     /**
