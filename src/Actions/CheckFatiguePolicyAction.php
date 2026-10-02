@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Models\CampaignRecipient;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Models\CampaignRecipient;
 
 class CheckFatiguePolicyAction
 {
@@ -34,8 +34,8 @@ class CheckFatiguePolicyAction
             ];
         }
 
-        $minHours = (int) config('focal-marketing.fatigue_protection.min_hours_between_sends', self::MIN_HOURS_BETWEEN_SENDS);
-        $max7Days = (int) config('focal-marketing.fatigue_protection.max_emails_per_7_days', self::MAX_EMAILS_PER_7_DAYS);
+        $minHours = (int) config('odden-marketing.fatigue_protection.min_hours_between_sends', self::MIN_HOURS_BETWEEN_SENDS);
+        $max7Days = (int) config('odden-marketing.fatigue_protection.max_emails_per_7_days', self::MAX_EMAILS_PER_7_DAYS);
 
         // 1. Check minimum interval since last send
         if ($contact->last_marketing_email_sent_at !== null) {

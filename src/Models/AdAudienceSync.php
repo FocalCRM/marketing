@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\CrmList;
+use Odden\Core\Models\CrmList;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -46,7 +46,7 @@ class AdAudienceSync extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.ad_audience_syncs', 'focal_ad_audience_syncs');
+        return config('odden-marketing.tables.ad_audience_syncs', 'odden_ad_audience_syncs');
     }
 
     /**

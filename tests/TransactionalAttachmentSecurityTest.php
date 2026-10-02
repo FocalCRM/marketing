@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use DoPHP\MailBuilder\Mail\TemplateMailable;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\MailBuilder\Mail\TemplateMailable;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 
@@ -32,14 +32,14 @@ class TransactionalAttachmentSecurityTest extends TestCase
     {
         Mail::fake();
 
-        $this->postJson(route('focal.marketing.templates.send', ['template' => 'receipt']), [
+        $this->postJson(route('odden.marketing.templates.send', ['template' => 'receipt']), [
             'to' => 'sam@example.com',
             'attachments' => [
                 ['name' => 'env.txt', 'path' => base_path('.env')],
             ],
         ])->assertStatus(422)->assertJsonValidationErrors('attachments.0.path');
 
-        $this->postJson(route('focal.marketing.templates.send', ['template' => 'receipt']), [
+        $this->postJson(route('odden.marketing.templates.send', ['template' => 'receipt']), [
             'to' => 'sam@example.com',
             'attachments' => [
                 ['name' => 'env.txt', 'path' => __FILE__, 'data' => base64_encode('x')],
@@ -53,12 +53,12 @@ class TransactionalAttachmentSecurityTest extends TestCase
     {
         Mail::fake();
 
-        $this->postJson(route('focal.marketing.templates.send', ['template' => 'receipt']), [
+        $this->postJson(route('odden.marketing.templates.send', ['template' => 'receipt']), [
             'to' => 'sam@example.com',
             'attachments' => [['name' => 'a.txt']],
         ])->assertStatus(422)->assertJsonValidationErrors('attachments.0.data');
 
-        $this->postJson(route('focal.marketing.templates.send', ['template' => 'receipt']), [
+        $this->postJson(route('odden.marketing.templates.send', ['template' => 'receipt']), [
             'to' => 'sam@example.com',
             'attachments' => [['name' => 'a.txt', 'data' => 'not base64!']],
         ])->assertStatus(422)->assertJsonValidationErrors('attachments.0.data');
@@ -70,7 +70,7 @@ class TransactionalAttachmentSecurityTest extends TestCase
     {
         Mail::fake();
 
-        $this->postJson(route('focal.marketing.templates.send', ['template' => 'receipt']), [
+        $this->postJson(route('odden.marketing.templates.send', ['template' => 'receipt']), [
             'to' => 'sam@example.com',
             'attachments' => [
                 ['name' => 'note.txt', 'data' => base64_encode('hello world'), 'mime' => 'text/plain'],

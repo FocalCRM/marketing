@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -47,7 +47,7 @@ class LeadDecayLog extends Model
      *
      * @var string
      */
-    protected $table = 'focal_marketing_lead_decay_logs';
+    protected $table = 'odden_marketing_lead_decay_logs';
 
     /**
      * Get the attributes that should be cast.

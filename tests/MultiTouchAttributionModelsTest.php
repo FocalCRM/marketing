@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\CalculateClosedLoopMetricsAction;
-use Focal\Marketing\Actions\GetCampaignAttributionAction;
-use Focal\Marketing\Enums\AttributionModel;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
-use Focal\Sales\Models\PipelineStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\CalculateClosedLoopMetricsAction;
+use Odden\Marketing\Actions\GetCampaignAttributionAction;
+use Odden\Marketing\Enums\AttributionModel;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
+use Odden\Sales\Models\PipelineStage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
@@ -34,8 +34,8 @@ class MultiTouchAttributionModelsTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Compiler Revolution',
             'subject' => 'The Future of COBOL',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'budget' => 10000.00,
             'actual_spend' => 5000.00,
         ]);
@@ -98,8 +98,8 @@ class MultiTouchAttributionModelsTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Enigma Analytics Briefing',
             'subject' => 'Decoding Data',
-            'sender_name' => 'Focal',
-            'sender_email' => 'intel@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'intel@odden.test',
             'actual_spend' => 10000.00,
             'delivered_count' => 1,
         ]);
@@ -123,7 +123,7 @@ class MultiTouchAttributionModelsTest extends TestCase
             'stage_id' => $stage->id,
         ]);
 
-        $associationsTable = config('focal-core.tables.associations', 'focal_associations');
+        $associationsTable = config('odden-core.tables.associations', 'odden_associations');
         DB::table($associationsTable)->insert([
             'parent_type' => (new Contact)->getMorphClass(),
             'parent_id' => $contact->id,

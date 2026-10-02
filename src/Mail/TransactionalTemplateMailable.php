@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Mail;
+namespace Odden\Marketing\Mail;
 
-use DoPHP\MailBuilder\Data\EmailDocument;
-use DoPHP\MailBuilder\Mail\TemplateMailable;
-use Focal\Marketing\Mail\Concerns\UsesMarketingMailQueue;
+use Odden\MailBuilder\Data\EmailDocument;
+use Odden\MailBuilder\Mail\TemplateMailable;
+use Odden\Marketing\Mail\Concerns\UsesMarketingMailQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 /**
- * A transactional API email, queued on the queue set in focal-marketing.mail.
+ * A transactional API email, queued on the queue set in odden-marketing.mail.
  * The template is compiled and interpolated when the mailable is built, so the
  * queued job carries the final HTML.
  */

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Console\Commands;
+namespace Odden\Marketing\Console\Commands;
 
-use Focal\Marketing\Actions\DecayInactiveLeadScoresAction;
+use Odden\Marketing\Actions\DecayInactiveLeadScoresAction;
 use Illuminate\Console\Command;
 
 class DecayLeadScoresCommand extends Command

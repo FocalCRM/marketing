@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use DoPHP\MailBuilder\Filament\Components\EmailSlotBuilder;
+use Odden\MailBuilder\Filament\Components\EmailSlotBuilder;
 use Filament\Forms\Components\Builder;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MarketingTemplateSlotIntegrationTest extends TestCase
@@ -17,14 +17,14 @@ class MarketingTemplateSlotIntegrationTest extends TestCase
     {
         $template = MarketingTemplate::create([
             'name' => 'Automated Slot Template',
-            'subject' => 'Welcome to Focal Slots',
+            'subject' => 'Welcome to Odden Slots',
             'preview_text' => 'High conversion emails made easy',
             'category' => 'onboarding',
             'slots' => [
                 [
                     'type' => 'header',
                     'data' => [
-                        'brand_name' => 'Focal Mailer',
+                        'brand_name' => 'Odden Mailer',
                     ],
                 ],
                 [
@@ -33,13 +33,13 @@ class MarketingTemplateSlotIntegrationTest extends TestCase
                         'title' => 'Hello from Slots!',
                         'subtitle' => 'This was compiled automatically from structured JSON slots.',
                         'button_text' => 'Get Started',
-                        'button_url' => 'https://focal.test/app',
+                        'button_url' => 'https://odden.test/app',
                     ],
                 ],
                 [
                     'type' => 'footer',
                     'data' => [
-                        'company_name' => 'Focal Global',
+                        'company_name' => 'Odden Global',
                         'address' => 'San Francisco, CA',
                     ],
                 ],
@@ -49,14 +49,14 @@ class MarketingTemplateSlotIntegrationTest extends TestCase
 
         $this->assertNotEmpty($template->body_html);
         $this->assertStringContainsString('<!DOCTYPE html>', $template->body_html);
-        $this->assertStringContainsString('Focal Mailer', $template->body_html);
+        $this->assertStringContainsString('Odden Mailer', $template->body_html);
         $this->assertStringContainsString('Hello from Slots!', $template->body_html);
-        $this->assertStringContainsString('https://focal.test/app', $template->body_html);
+        $this->assertStringContainsString('https://odden.test/app', $template->body_html);
 
         $this->assertNotEmpty($template->body_text);
         $this->assertIsString($template->body_text);
         $this->assertStringContainsString('Hello from Slots!', $template->body_text);
-        $this->assertStringContainsString('>> Get Started: https://focal.test/app', $template->body_text);
+        $this->assertStringContainsString('>> Get Started: https://odden.test/app', $template->body_text);
     }
 
     public function test_saving_raw_html_auto_extracts_plain_text_fallback(): void
@@ -65,13 +65,13 @@ class MarketingTemplateSlotIntegrationTest extends TestCase
             'name' => 'HTML Only Template',
             'subject' => 'Raw Code',
             'category' => 'general',
-            'body_html' => '<h2>Special Offer</h2><p>Click <a href="https://focal.test/buy">here to claim</a> your credit.</p>',
+            'body_html' => '<h2>Special Offer</h2><p>Click <a href="https://odden.test/buy">here to claim</a> your credit.</p>',
         ]);
 
         $this->assertNotNull($template->body_text);
         $this->assertIsString($template->body_text);
         $this->assertStringContainsString('Special Offer', $template->body_text);
-        $this->assertStringContainsString('here to claim (https://focal.test/buy)', $template->body_text);
+        $this->assertStringContainsString('here to claim (https://odden.test/buy)', $template->body_text);
     }
 
     public function test_email_slot_builder_filament_component_schema(): void
@@ -115,7 +115,7 @@ class MarketingTemplateSlotIntegrationTest extends TestCase
                 'container_width' => 640,
             ],
             'slots' => [
-                ['type' => 'button', 'data' => ['text' => 'Purple CTA', 'url' => 'https://focal.test']],
+                ['type' => 'button', 'data' => ['text' => 'Purple CTA', 'url' => 'https://odden.test']],
             ],
         ]);
 

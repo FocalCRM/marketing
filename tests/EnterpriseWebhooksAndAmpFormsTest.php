@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use DoPHP\MailBuilder\Mail\TemplateMailable;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\MarketingEvent;
-use Focal\Marketing\Models\MarketingEventRegistration;
-use Focal\Marketing\Models\MarketingTemplate;
-use Focal\Marketing\Models\NpsResponse;
-use Focal\Marketing\Models\NpsSurvey;
-use Focal\Marketing\Services\AbTestSignificanceCalculator;
-use Focal\Marketing\Services\ContactPersonaPreviewService;
-use Focal\Marketing\Services\DomainThrottler;
-use Focal\Marketing\Services\MarketingWebhookDispatcher;
+use Odden\MailBuilder\Mail\TemplateMailable;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\MarketingEvent;
+use Odden\Marketing\Models\MarketingEventRegistration;
+use Odden\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Models\NpsResponse;
+use Odden\Marketing\Models\NpsSurvey;
+use Odden\Marketing\Services\AbTestSignificanceCalculator;
+use Odden\Marketing\Services\ContactPersonaPreviewService;
+use Odden\Marketing\Services\DomainThrottler;
+use Odden\Marketing\Services\MarketingWebhookDispatcher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -60,7 +60,7 @@ class EnterpriseWebhooksAndAmpFormsTest extends TestCase
             'body_html' => '<p>Your invoice is available.</p>',
         ]);
 
-        $response = $this->postJson(route('focal.marketing.templates.send', ['template' => $template->slug]), [
+        $response = $this->postJson(route('odden.marketing.templates.send', ['template' => $template->slug]), [
             'to' => 'billing@enterprise.com',
             'webhook_url' => 'https://webhook.site/inbound-events',
             'webhook_secret' => 'whsec_12345',
@@ -70,8 +70,8 @@ class EnterpriseWebhooksAndAmpFormsTest extends TestCase
 
         Http::assertSent(function ($request) {
             return $request->url() === 'https://webhook.site/inbound-events'
-                && $request->header('X-Focal-Event')[0] === 'template.email.sent'
-                && ! empty($request->header('X-Focal-Signature')[0])
+                && $request->header('X-Odden-Event')[0] === 'template.email.sent'
+                && ! empty($request->header('X-Odden-Signature')[0])
                 && $request['data']['recipient'] === 'billing@enterprise.com';
         });
     }
@@ -94,7 +94,7 @@ class EnterpriseWebhooksAndAmpFormsTest extends TestCase
             ['to' => 'user1@custom.org'],
         ];
 
-        $response = $this->postJson(route('focal.marketing.templates.send-batch', ['template' => $template->slug]), [
+        $response = $this->postJson(route('odden.marketing.templates.send-batch', ['template' => $template->slug]), [
             'recipients' => $recipients,
             'throttle_domains' => true,
         ]);
@@ -154,8 +154,8 @@ class EnterpriseWebhooksAndAmpFormsTest extends TestCase
 
         $response = $this->withHeaders([
             'Origin' => 'https://mail.google.com',
-            'AMP-Email-Sender' => 'surveys@focal.test',
-        ])->postJson(route('focal.marketing.amp.feedback'), [
+            'AMP-Email-Sender' => 'surveys@odden.test',
+        ])->postJson(route('odden.marketing.amp.feedback'), [
             'token' => 'nps_token_amp_123',
             'score' => 9,
             'feedback' => 'Loved the interactive email experience!',
@@ -163,7 +163,7 @@ class EnterpriseWebhooksAndAmpFormsTest extends TestCase
 
         $response->assertOk()
             ->assertHeader('Access-Control-Allow-Origin', 'https://mail.google.com')
-            ->assertHeader('AMP-Email-Allow-Sender', 'surveys@focal.test')
+            ->assertHeader('AMP-Email-Allow-Sender', 'surveys@odden.test')
             ->assertHeader('Access-Control-Expose-Headers', 'AMP-Email-Allow-Sender')
             ->assertJson([
                 'status' => 'success',
@@ -187,7 +187,7 @@ class EnterpriseWebhooksAndAmpFormsTest extends TestCase
 
         $contact = Contact::create(['first_name' => 'Jordan', 'email' => 'keynote_fan@example.com']);
 
-        $response = $this->withHeaders(['Origin' => 'https://mail.google.com'])->postJson(route('focal.marketing.amp.rsvp'), [
+        $response = $this->withHeaders(['Origin' => 'https://mail.google.com'])->postJson(route('odden.marketing.amp.rsvp'), [
             'event_slug' => 'keynote-2026',
             'token' => $event->rsvpTokenFor($contact),
             'status' => 'attending',
@@ -244,7 +244,7 @@ class EnterpriseWebhooksAndAmpFormsTest extends TestCase
         $slots = [
             [
                 'type' => 'header',
-                'data' => ['brand_name' => 'Focal HQ'],
+                'data' => ['brand_name' => 'Odden HQ'],
             ],
             [
                 'type' => 'body_text',
@@ -292,7 +292,7 @@ class EnterpriseWebhooksAndAmpFormsTest extends TestCase
             'body_html' => '<p>Please find attached your invoice.</p>',
         ]);
 
-        $response = $this->postJson(route('focal.marketing.templates.send', ['template' => $template->slug]), [
+        $response = $this->postJson(route('odden.marketing.templates.send', ['template' => $template->slug]), [
             'to' => 'accountant@client.com',
             'attachments' => [
                 [

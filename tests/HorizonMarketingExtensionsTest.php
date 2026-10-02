@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\DispatchSmsAction;
-use Focal\Marketing\Actions\EnrollContactInWorkflowAction;
-use Focal\Marketing\Actions\GenerateAiSubjectLinesAction;
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\MarketingSmsMessage;
-use Focal\Marketing\Models\MarketingWorkflow;
-use Focal\Marketing\Models\NpsResponse;
-use Focal\Marketing\Models\NpsSurvey;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\DispatchSmsAction;
+use Odden\Marketing\Actions\EnrollContactInWorkflowAction;
+use Odden\Marketing\Actions\GenerateAiSubjectLinesAction;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\MarketingSmsMessage;
+use Odden\Marketing\Models\MarketingWorkflow;
+use Odden\Marketing\Models\NpsResponse;
+use Odden\Marketing\Models\NpsSurvey;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class HorizonMarketingExtensionsTest extends TestCase
@@ -33,13 +33,13 @@ class HorizonMarketingExtensionsTest extends TestCase
         $action = new DispatchSmsAction;
 
         // 1. Success dispatch
-        $sms = $action->execute($contactWithConsent, 'Hello {{contact.first_name}}! Welcome to Focal.');
+        $sms = $action->execute($contactWithConsent, 'Hello {{contact.first_name}}! Welcome to Odden.');
 
         $this->assertInstanceOf(MarketingSmsMessage::class, $sms);
         $this->assertSame('delivered', $sms->status);
         $this->assertSame('+15551234567', $sms->phone_number);
         $this->assertStringContainsString('Hello Katherine!', $sms->message_body);
-        $this->assertDatabaseHas('focal_marketing_sms_messages', [
+        $this->assertDatabaseHas('odden_marketing_sms_messages', [
             'id' => $sms->id,
             'contact_id' => $contactWithConsent->id,
             'status' => 'delivered',
@@ -100,13 +100,13 @@ class HorizonMarketingExtensionsTest extends TestCase
         $enrollment = $action->execute($workflow, $contact);
 
         $this->assertNotNull($enrollment);
-        $this->assertDatabaseHas('focal_marketing_sms_messages', [
+        $this->assertDatabaseHas('odden_marketing_sms_messages', [
             'contact_id' => $contact->id,
             'status' => 'delivered',
             'phone_number' => '+15559876543',
         ]);
 
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_id' => $contact->id,
             'title' => 'Workflow SMS: SMS Onboarding Campaign',
         ]);
@@ -132,7 +132,7 @@ class HorizonMarketingExtensionsTest extends TestCase
         $this->assertNull($response->responded_at);
 
         // 1. Submit rating via 1-click URL
-        $getRatingUrl = route('focal.marketing.nps.rate', [
+        $getRatingUrl = route('odden.marketing.nps.rate', [
             'token' => $response->token,
             'score' => 10,
         ]);
@@ -154,7 +154,7 @@ class HorizonMarketingExtensionsTest extends TestCase
         $this->assertSame('promoter', $contact->properties['nps_sentiment']);
 
         // 2. Submit qualitative comment
-        $postFeedbackUrl = route('focal.marketing.nps.feedback', [
+        $postFeedbackUrl = route('odden.marketing.nps.feedback', [
             'token' => $response->token,
         ]);
 
@@ -178,7 +178,7 @@ class HorizonMarketingExtensionsTest extends TestCase
         ]);
 
         $detractorResp = NpsResponse::createForContact($survey, $detractorContact);
-        $this->get(route('focal.marketing.nps.rate', ['token' => $detractorResp->token, 'score' => 3]))
+        $this->get(route('odden.marketing.nps.rate', ['token' => $detractorResp->token, 'score' => 3]))
             ->assertStatus(200);
 
         $detractorContact->refresh();
@@ -196,7 +196,7 @@ class HorizonMarketingExtensionsTest extends TestCase
             'email' => 'p2@example.com',
         ]);
         $p2Resp = NpsResponse::createForContact($survey, $promoter2);
-        $this->get(route('focal.marketing.nps.rate', ['token' => $p2Resp->token, 'score' => 9]));
+        $this->get(route('odden.marketing.nps.rate', ['token' => $p2Resp->token, 'score' => 9]));
 
         // 2 promoters and 1 detractor out of 3 => (2 - 1) / 3 * 100 = 33%
         $this->assertSame(33, $survey->calculateNpsScore());

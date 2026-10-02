@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use DoPHP\MailBuilder\MailBuilder;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\MailBuilder\MailBuilder;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingTemplate;
 
 class CompileCampaignMessageAction
 {

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\HandoffLeadToSalesAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingTemplate;
-use Focal\Sales\Models\Pipeline;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\HandoffLeadToSalesAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingTemplate;
+use Odden\Sales\Models\Pipeline;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 
@@ -31,7 +31,7 @@ class CampaignTimingAndHandoffRegressionTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Timezone launch',
             'subject' => 'Launch',
-            'sender_name' => 'Focal',
+            'sender_name' => 'Odden',
             'sender_email' => 'news@example.com',
             'template_id' => $template->id,
             'status' => CampaignStatus::Sending,

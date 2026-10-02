@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Services;
+namespace Odden\Marketing\Services;
 
 class DomainHealthCheckService
 {
@@ -18,7 +18,7 @@ class DomainHealthCheckService
      *     mx: array{status: 'pass'|'warning'|'fail', label: string, found: list<string>, recommendation: string, note: string}
      * }
      */
-    public function diagnose(string $domain, string $dkimSelector = 'focal'): array
+    public function diagnose(string $domain, string $dkimSelector = 'odden'): array
     {
         $cleanDomain = mb_strtolower(trim($domain));
         if (str_starts_with($cleanDomain, 'https://') || str_starts_with($cleanDomain, 'http://')) {
@@ -33,7 +33,7 @@ class DomainHealthCheckService
                 'spf' => [
                     'status' => 'pass',
                     'label' => 'SPF Record Configured',
-                    'found' => 'v=spf1 include:_spf.focal.test ~all',
+                    'found' => 'v=spf1 include:_spf.odden.test ~all',
                     'recommendation' => 'v=spf1 include:_spf.your-esp.com ~all',
                     'note' => 'Valid SPF declaration authorizes your sending IPs.',
                 ],

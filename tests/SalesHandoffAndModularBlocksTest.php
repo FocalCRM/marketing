@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\EnrollContactInWorkflowAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\CampaignType;
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\MarketingWorkflow;
-use Focal\Marketing\Services\EmailBlockRenderer;
-use Focal\Marketing\Tests\Fixtures\User;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\EnrollContactInWorkflowAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\CampaignType;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\MarketingWorkflow;
+use Odden\Marketing\Services\EmailBlockRenderer;
+use Odden\Marketing\Tests\Fixtures\User;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SalesHandoffAndModularBlocksTest extends TestCase
@@ -113,12 +113,12 @@ class SalesHandoffAndModularBlocksTest extends TestCase
         $this->assertTrue($contact->isAssociatedWith($deal));
 
         // 3. Verify Sales Task and Internal Alert on activity timeline
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_id' => $contact->id,
             'title' => '2-Hour Outreach SLA: Executive Demo Call',
         ]);
 
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_id' => $contact->id,
             'title' => 'Internal Alert: High-value Enterprise Pilot Deal provisioned for Ada Lovelace.',
         ]);
@@ -134,7 +134,7 @@ class SalesHandoffAndModularBlocksTest extends TestCase
                 'title' => 'Next-Gen Marketing Intelligence',
                 'subtitle' => 'Empowering modern revenue teams with autonomous AI.',
                 'button_text' => 'Get Started Today',
-                'button_url' => 'https://focal.test/trial',
+                'button_url' => 'https://odden.test/trial',
             ],
             [
                 'type' => 'columns',
@@ -152,7 +152,7 @@ class SalesHandoffAndModularBlocksTest extends TestCase
             ],
             [
                 'type' => 'testimonial',
-                'quote' => 'Focal transformed our marketing ROI in 30 days.',
+                'quote' => 'Odden transformed our marketing ROI in 30 days.',
                 'author' => 'Jane Doe',
                 'role' => 'CMO',
                 'company' => 'Acme Labs',
@@ -162,11 +162,11 @@ class SalesHandoffAndModularBlocksTest extends TestCase
                 'heading' => 'Upgrade your CRM now',
                 'text' => 'Free 14-day trial for high-growth startups.',
                 'button_text' => 'Claim Your Seat',
-                'button_url' => 'https://focal.test/signup',
+                'button_url' => 'https://odden.test/signup',
             ],
             [
                 'type' => 'footer',
-                'company_name' => 'Focal HQ',
+                'company_name' => 'Odden HQ',
                 'address' => 'San Francisco, CA',
             ],
         ];
@@ -183,7 +183,7 @@ class SalesHandoffAndModularBlocksTest extends TestCase
 
         // Test preset rendering
         $presetHtml = $renderer->renderPreset('product_launch');
-        $this->assertStringContainsString('Introducing Focal 2.0 🚀', $presetHtml);
+        $this->assertStringContainsString('Introducing Odden 2.0 🚀', $presetHtml);
         $this->assertStringContainsString('Sarah Connor', $presetHtml);
     }
 
@@ -194,8 +194,8 @@ class SalesHandoffAndModularBlocksTest extends TestCase
             'subject' => 'The Future of Autonomous CRM',
             'status' => CampaignStatus::Draft,
             'type' => CampaignType::Regular,
-            'sender_name' => 'Focal Marketing',
-            'sender_email' => 'newsletter@focal.test',
+            'sender_name' => 'Odden Marketing',
+            'sender_email' => 'newsletter@odden.test',
             'target_leads' => 200,
             'target_pipeline' => 150000.00,
             'target_revenue' => 50000.00,

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests\Fixtures;
+namespace Odden\Marketing\Tests\Fixtures;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;

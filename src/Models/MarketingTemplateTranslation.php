@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -25,7 +25,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class MarketingTemplateTranslation extends Model
 {
-    protected $table = 'focal_marketing_template_translations';
+    protected $table = 'odden_marketing_template_translations';
 
     /**
      * @var list<string>

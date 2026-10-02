@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\ProcessSubscriberSunsetPolicyAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\CampaignType;
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Models\MarketingWorkflow;
-use Focal\Marketing\Services\DomainHealthCheckService;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\ProcessSubscriberSunsetPolicyAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\CampaignType;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\MarketingWorkflow;
+use Odden\Marketing\Services\DomainHealthCheckService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
@@ -58,7 +58,7 @@ class MarketingEnterpriseSuiteTest extends TestCase
         $response->assertJson([
             'success' => true,
             'is_new' => true,
-            'message' => 'Lead successfully ingested into Focal CRM.',
+            'message' => 'Lead successfully ingested into Odden CRM.',
         ]);
 
         $contact = Contact::where('email', 'prospect@acme-enterprises.com')->first();
@@ -77,7 +77,7 @@ class MarketingEnterpriseSuiteTest extends TestCase
         $this->assertTrue($contact->companies()->where('name', 'Acme Enterprises')->exists());
 
         // Check workflow enrollment
-        $this->assertDatabaseHas('focal_marketing_workflow_enrollments', [
+        $this->assertDatabaseHas('odden_marketing_workflow_enrollments', [
             'workflow_id' => $workflow->id,
             'contact_id' => $contact->id,
         ]);
@@ -127,8 +127,8 @@ class MarketingEnterpriseSuiteTest extends TestCase
             $campaigns[$i] = Campaign::create([
                 'name' => "Historical Broadcast {$i}",
                 'subject' => 'Archive news',
-                'sender_name' => 'Focal',
-                'sender_email' => 'news@focal.test',
+                'sender_name' => 'Odden',
+                'sender_email' => 'news@odden.test',
                 'status' => CampaignStatus::Sent,
                 'type' => CampaignType::Regular,
             ]);
@@ -206,9 +206,9 @@ class MarketingEnterpriseSuiteTest extends TestCase
     public function test_domain_health_check_service_evaluates_dns_standards(): void
     {
         $service = new DomainHealthCheckService;
-        $results = $service->diagnose('focal.test', 'focal');
+        $results = $service->diagnose('odden.test', 'odden');
 
-        $this->assertSame('focal.test', $results['domain']);
+        $this->assertSame('odden.test', $results['domain']);
         $this->assertSame('pass', $results['overall_status']);
         $this->assertSame('pass', $results['spf']['status']);
         $this->assertSame('pass', $results['dmarc']['status']);

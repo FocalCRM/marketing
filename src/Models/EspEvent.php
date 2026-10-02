@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -53,7 +53,7 @@ class EspEvent extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.esp_events', 'focal_marketing_esp_events');
+        return config('odden-marketing.tables.esp_events', 'odden_marketing_esp_events');
     }
 
     /**

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Support\UserModel;
+use Odden\Core\Support\UserModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -32,7 +32,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class MarketingTemplateRevision extends Model
 {
-    protected $table = 'focal_marketing_template_revisions';
+    protected $table = 'odden_marketing_template_revisions';
 
     /**
      * @var list<string>

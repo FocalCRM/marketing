@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -51,7 +51,7 @@ class FormSubmission extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.form_submissions', 'focal_marketing_form_submissions');
+        return config('odden-marketing.tables.form_submissions', 'odden_marketing_form_submissions');
     }
 
     /**

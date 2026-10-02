@@ -10,10 +10,10 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (! Schema::hasTable('focal_marketing_template_translations')) {
-            Schema::create('focal_marketing_template_translations', function (Blueprint $table): void {
+        if (! Schema::hasTable('odden_marketing_template_translations')) {
+            Schema::create('odden_marketing_template_translations', function (Blueprint $table): void {
                 $table->id();
-                $table->foreignId('template_id')->constrained('focal_marketing_templates')->cascadeOnDelete();
+                $table->foreignId('template_id')->constrained('odden_marketing_templates')->cascadeOnDelete();
                 $table->string('locale', 10); // e.g. 'es', 'de', 'fr', 'ja'
                 $table->string('subject');
                 $table->string('subject_variant_b')->nullable();
@@ -31,6 +31,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('focal_marketing_template_translations');
+        Schema::dropIfExists('odden_marketing_template_translations');
     }
 };

@@ -1,8 +1,8 @@
-# Focal Marketing (`focalcrm/marketing`)
+# Odden Marketing (`getodden/crm-marketing`)
 
-> This is a read-only split of the [focalcrm/focal](https://github.com/focalcrm/focal) monorepo. Please open issues and pull requests there.
+> This is a read-only split of the [getodden/crm](https://github.com/getodden/crm) monorepo. Please open issues and pull requests there.
 
-The omnichannel marketing automation, lead generation, and closed-loop revenue attribution engine for the Focal RevOps platform. Delivers visual drip workflows, dynamic landing pages, lead capture forms, multi-touch attribution modeling, behavioral lead scoring, and account-based marketing (ABM) intent tracking.
+The omnichannel marketing automation, lead generation, and closed-loop revenue attribution engine for the Odden RevOps platform. Delivers visual drip workflows, dynamic landing pages, lead capture forms, multi-touch attribution modeling, behavioral lead scoring, and account-based marketing (ABM) intent tracking.
 
 ---
 
@@ -10,7 +10,7 @@ The omnichannel marketing automation, lead generation, and closed-loop revenue a
 
 ```
 +-------------------------------------------------------------------------+
-|                              FOCAL MARKETING                            |
+|                              ODDEN MARKETING                            |
 |                                                                         |
 |  +--------------------+   +--------------------+   +-----------------+  |
 |  | Multi-Channel      |   | Visual Drip        |   | Lead Capture &  |  |
@@ -41,7 +41,7 @@ The omnichannel marketing automation, lead generation, and closed-loop revenue a
   - *U-Shaped / Position-Based* (40% first touch, 40% lead creation, 20% intermediate)
   - *W-Shaped* (30% first touch, 30% lead creation, 30% deal creation, 10% intermediate)
   - *Time Decay* (Exponential decay favoring touchpoints closer to the closed deal)
-- **Closed-Loop Sales Attribution:** Connects directly with `focalcrm/sales` to trace closed-won revenue back to initial campaign touches, UTM parameters, and ad spend.
+- **Closed-Loop Sales Attribution:** Connects directly with `getodden/crm-sales` to trace closed-won revenue back to initial campaign touches, UTM parameters, and ad spend.
 - **Behavioral Lead Scoring & Automated Decay:** Score contacts based on activities (email opens, whitepaper downloads, pricing page visits), with configurable time-decay rules to automatically degrade scores of dormant leads.
 - **Account-Based Marketing (ABM) Intent:** Aggregate multi-contact engagement at target companies into account-level intent scores to flag in-market opportunities.
 - **Deliverability Pre-Flight Linter & ESP Webhooks:** Audit campaigns before send (spam keyword triggers, missing unsubscribe headers, contrast issues). Ingest webhook delivery logs from SendGrid, Postmark, AWS SES, and Mailgun.
@@ -55,14 +55,14 @@ The omnichannel marketing automation, lead generation, and closed-loop revenue a
 ## Installation
 
 ```bash
-composer require focalcrm/marketing
+composer require getodden/crm-marketing
 ```
 
 Publish configuration and migrations:
 
 ```bash
-php artisan vendor:publish --tag=focal-marketing-migrations
-php artisan vendor:publish --tag=focal-marketing-config
+php artisan vendor:publish --tag=odden-marketing-migrations
+php artisan vendor:publish --tag=odden-marketing-config
 ```
 
 Run migrations:
@@ -78,8 +78,8 @@ php artisan migrate
 ### 1. Enrolling Contacts in a Drip Workflow
 
 ```php
-use Focal\Marketing\Actions\EnrollContactInWorkflowAction;
-use Focal\Marketing\Models\MarketingWorkflow;
+use Odden\Marketing\Actions\EnrollContactInWorkflowAction;
+use Odden\Marketing\Models\MarketingWorkflow;
 
 $workflow = MarketingWorkflow::where('name', 'Enterprise SaaS Onboarding')->first();
 
@@ -89,14 +89,14 @@ app(EnrollContactInWorkflowAction::class)->execute(
 );
 
 // Progress due workflow steps across all active enrollments:
-// Run automatically via: php artisan focal:marketing-process-workflows
+// Run automatically via: php artisan odden:marketing-process-workflows
 ```
 
 ### 2. Multi-Touch Attribution Analysis
 
 ```php
-use Focal\Marketing\Actions\GetCampaignAttributionAction;
-use Focal\Marketing\Enums\AttributionModel;
+use Odden\Marketing\Actions\GetCampaignAttributionAction;
+use Odden\Marketing\Enums\AttributionModel;
 
 // Compute attribution breakdown for a closed deal
 $attribution = app(GetCampaignAttributionAction::class)->execute(
@@ -113,8 +113,8 @@ foreach ($attribution as $touch) {
 ### 3. Behavioral Lead Scoring & Sales Handoff
 
 ```php
-use Focal\Marketing\Actions\ApplyLeadScoringEventAction;
-use Focal\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Actions\ApplyLeadScoringEventAction;
+use Odden\Marketing\Enums\LeadScoringEventType;
 
 // Award points for high-intent behavioral actions
 app(ApplyLeadScoringEventAction::class)->execute(
@@ -130,8 +130,8 @@ app(ApplyLeadScoringEventAction::class)->execute(
 ### 4. Dispatching a Campaign with Pre-Flight Audits
 
 ```php
-use Focal\Marketing\Actions\DispatchCampaignAction;
-use Focal\Marketing\Actions\LintCampaignDeliverabilityAction;
+use Odden\Marketing\Actions\DispatchCampaignAction;
+use Odden\Marketing\Actions\LintCampaignDeliverabilityAction;
 
 // Pre-flight check
 $audit = app(LintCampaignDeliverabilityAction::class)->execute($campaign);
@@ -146,7 +146,7 @@ if ($audit->passes()) {
 ### 5. Ingesting Form Submissions with Identity Stitching
 
 ```php
-use Focal\Marketing\Actions\ProcessFormSubmissionAction;
+use Odden\Marketing\Actions\ProcessFormSubmissionAction;
 
 // Ingest payload, update contact custom properties, and stitch anonymous visitor cookie
 $contact = app(ProcessFormSubmissionAction::class)->execute(
@@ -157,7 +157,7 @@ $contact = app(ProcessFormSubmissionAction::class)->execute(
         'company' => 'Enterprise Corp',
         'team_size' => '250-1000',
     ],
-    visitorCookie: request()->cookie('focal_vid')
+    visitorCookie: request()->cookie('odden_vid')
 );
 ```
 
@@ -167,22 +167,22 @@ $contact = app(ProcessFormSubmissionAction::class)->execute(
 
 Public pages (hosted forms, landing pages, email tracking, unsubscribe and preference center) are registered in the `web` group with no prefix by default. Webhooks and JSON APIs are registered in the `api` group under `/api/marketing`.
 
-Configure them in `config/focal-marketing.php` (publish with `php artisan vendor:publish --tag=focal-marketing-config`) or through environment variables:
+Configure them in `config/odden-marketing.php` (publish with `php artisan vendor:publish --tag=odden-marketing-config`) or through environment variables:
 
 ```env
-FOCAL_MARKETING_PREFIX=crm              # /forms/{slug} becomes /crm/forms/{slug}
-FOCAL_MARKETING_API_PREFIX=api/marketing
-FOCAL_MARKETING_DOMAIN=go.example.com   # optional, applies to both groups
-FOCAL_MARKETING_ROUTES_ENABLED=true
+ODDEN_MARKETING_PREFIX=crm              # /forms/{slug} becomes /crm/forms/{slug}
+ODDEN_MARKETING_API_PREFIX=api/marketing
+ODDEN_MARKETING_DOMAIN=go.example.com   # optional, applies to both groups
+ODDEN_MARKETING_ROUTES_ENABLED=true
 ```
 
-Each group also accepts `middleware`. To register the routes yourself, set `routes.enabled` to `false` and define routes with the same names (`focal.marketing.*`), because models, emails and notifications generate links from those names.
+Each group also accepts `middleware`. To register the routes yourself, set `routes.enabled` to `false` and define routes with the same names (`odden.marketing.*`), because models, emails and notifications generate links from those names.
 
 ---
 
 ## API tokens and rate limits
 
-Server-to-server endpoints require the marketing API token. Until `FOCAL_MARKETING_API_TOKEN` is set, they respond with `403` and do nothing:
+Server-to-server endpoints require the marketing API token. Until `ODDEN_MARKETING_API_TOKEN` is set, they respond with `403` and do nothing:
 
 - Transactional sending: `POST /api/marketing/templates/{template}/send` and `/send-batch`
 - Lead ingestion: `POST /api/marketing/leads/webhook/{source}`
@@ -190,12 +190,12 @@ Server-to-server endpoints require the marketing API token. Until `FOCAL_MARKETI
 - Workflow enrollment, behavioral events, and webinar attendance webhooks
 
 ```env
-FOCAL_MARKETING_API_TOKEN=   # e.g. php -r "echo bin2hex(random_bytes(32));"
+ODDEN_MARKETING_API_TOKEN=   # e.g. php -r "echo bin2hex(random_bytes(32));"
 ```
 
-Send it as `Authorization: Bearer <token>`, an `X-Focal-Token` header, or, for providers that only accept a URL, a `?token=<token>` query parameter.
+Send it as `Authorization: Bearer <token>`, an `X-Odden-Token` header, or, for providers that only accept a URL, a `?token=<token>` query parameter.
 
-Browser-facing endpoints (forms, landing pages, tracking, preferences, unsubscribe, event registration, AMP forms) stay public and are rate limited per IP. Adjust the limits with `FOCAL_PUBLIC_RATE_LIMIT` and `FOCAL_API_RATE_LIMIT` (requests per minute; see `config/focal-core.php`).
+Browser-facing endpoints (forms, landing pages, tracking, preferences, unsubscribe, event registration, AMP forms) stay public and are rate limited per IP. Adjust the limits with `ODDEN_PUBLIC_RATE_LIMIT` and `ODDEN_API_RATE_LIMIT` (requests per minute; see `config/odden-core.php`).
 
 ---
 

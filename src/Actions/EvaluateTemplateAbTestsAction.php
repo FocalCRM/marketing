@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingTemplate;
 
 class EvaluateTemplateAbTestsAction
 {

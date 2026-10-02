@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Marketing\Actions\AuditCampaignDeliverabilityAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Models\MarketingTemplate;
-use Focal\Marketing\Models\MarketingWorkflow;
-use Focal\Marketing\Models\WorkflowStep;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Marketing\Actions\AuditCampaignDeliverabilityAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Models\MarketingWorkflow;
+use Odden\Marketing\Models\WorkflowStep;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Artisan;
@@ -68,7 +68,7 @@ class MarketingAutomationAndDeliverabilitySuiteTest extends TestCase
         $this->assertCount(4, $workflow->steps);
 
         // Render Visual Journey view
-        $view = view('focal-marketing::workflow-journey', [
+        $view = view('odden-marketing::workflow-journey', [
             'workflow' => $workflow->load('steps'),
         ])->render();
 
@@ -103,8 +103,8 @@ class MarketingAutomationAndDeliverabilitySuiteTest extends TestCase
             'list_id' => $list->id,
             'name' => 'Matured Scheduled Campaign',
             'subject' => 'Scheduled News',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'status' => CampaignStatus::Scheduled,
             'scheduled_at' => now()->subMinutes(5),
             'template_id' => $template->id,
@@ -125,8 +125,8 @@ class MarketingAutomationAndDeliverabilitySuiteTest extends TestCase
         $tzCampaign = Campaign::create([
             'name' => 'Timezone Wave Campaign',
             'subject' => 'Morning Digest',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'status' => CampaignStatus::Sending,
             'send_in_recipient_timezone' => true,
             'recipient_send_hour' => 9,
@@ -181,8 +181,8 @@ class MarketingAutomationAndDeliverabilitySuiteTest extends TestCase
         $cleanCampaign = Campaign::create([
             'name' => 'Clean Campaign',
             'subject' => 'Q4 Strategic Overview & Performance Highlights',
-            'sender_name' => 'Focal Enterprise',
-            'sender_email' => 'insights@focal.test',
+            'sender_name' => 'Odden Enterprise',
+            'sender_email' => 'insights@odden.test',
             'template_id' => $cleanTemplate->id,
         ]);
 
@@ -215,7 +215,7 @@ class MarketingAutomationAndDeliverabilitySuiteTest extends TestCase
         $this->assertContains('Sender Domain Authentication', $failedChecks);
 
         // Render modal view
-        $view = view('focal-marketing::campaign-deliverability-audit', [
+        $view = view('odden-marketing::campaign-deliverability-audit', [
             'audit' => $spamAudit,
             'campaign' => $spamCampaign,
         ])->render();

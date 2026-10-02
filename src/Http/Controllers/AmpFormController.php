@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
-use Focal\Marketing\Models\MarketingEvent;
-use Focal\Marketing\Models\MarketingEventRegistration;
-use Focal\Marketing\Models\NpsResponse;
-use Focal\Marketing\Support\ContactToken;
+use Odden\Marketing\Models\MarketingEvent;
+use Odden\Marketing\Models\MarketingEventRegistration;
+use Odden\Marketing\Models\NpsResponse;
+use Odden\Marketing\Support\ContactToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -105,7 +105,7 @@ class AmpFormController extends Controller
     protected function ensureAllowedOrigin(Request $request): void
     {
         $origin = $request->header('Origin');
-        $allowed = (array) config('focal-marketing.amp.allowed_origins', []);
+        $allowed = (array) config('odden-marketing.amp.allowed_origins', []);
 
         abort_unless(is_string($origin) && in_array($origin, $allowed, true), 403);
     }

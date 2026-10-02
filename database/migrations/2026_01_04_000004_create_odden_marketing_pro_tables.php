@@ -13,8 +13,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $campaignsTable = config('focal-marketing.tables.campaigns', 'focal_marketing_campaigns');
-        $contactsTable = config('focal-core.tables.contacts', 'focal_contacts');
+        $campaignsTable = config('odden-marketing.tables.campaigns', 'odden_marketing_campaigns');
+        $contactsTable = config('odden-core.tables.contacts', 'odden_contacts');
 
         // 1. Add Budget & Costs to Campaigns
         Schema::table($campaignsTable, function (Blueprint $table): void {
@@ -32,7 +32,7 @@ return new class extends Migration
         });
 
         // 3. Lead Score Decay Audit Logs
-        Schema::create('focal_marketing_lead_decay_logs', function (Blueprint $table) use ($contactsTable): void {
+        Schema::create('odden_marketing_lead_decay_logs', function (Blueprint $table) use ($contactsTable): void {
             $table->id();
             $table->foreignId('contact_id')->constrained($contactsTable)->cascadeOnDelete();
             $table->integer('score_before');
@@ -48,10 +48,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $campaignsTable = config('focal-marketing.tables.campaigns', 'focal_marketing_campaigns');
-        $contactsTable = config('focal-core.tables.contacts', 'focal_contacts');
+        $campaignsTable = config('odden-marketing.tables.campaigns', 'odden_marketing_campaigns');
+        $contactsTable = config('odden-core.tables.contacts', 'odden_contacts');
 
-        Schema::dropIfExists('focal_marketing_lead_decay_logs');
+        Schema::dropIfExists('odden_marketing_lead_decay_logs');
 
         Schema::table($contactsTable, function (Blueprint $table): void {
             $table->dropColumn([

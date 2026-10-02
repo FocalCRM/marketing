@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use DoPHP\MailBuilder\Mail\TemplateMailable;
-use Focal\Marketing\Actions\EvaluateTemplateAbTestsAction;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingSavedBlock;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\MailBuilder\Mail\TemplateMailable;
+use Odden\Marketing\Actions\EvaluateTemplateAbTestsAction;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingSavedBlock;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 
@@ -28,7 +28,7 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
             'body_html' => '<p>Hi {{contact.first_name}}, thanks for your purchase of {{order_id}}!</p>',
         ]);
 
-        $response = $this->postJson(route('focal.marketing.templates.send', ['template' => 'order-receipt-notice']), [
+        $response = $this->postJson(route('odden.marketing.templates.send', ['template' => 'order-receipt-notice']), [
             'to' => 'customer@example.com',
             'name' => 'Alex Customer',
             'data' => [
@@ -61,7 +61,7 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
             'slots' => [
                 [
                     'type' => 'header',
-                    'data' => ['brand_name' => 'Focal Cloud'],
+                    'data' => ['brand_name' => 'Odden Cloud'],
                 ],
                 [
                     'type' => 'body_text',
@@ -70,7 +70,7 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
             ],
         ]);
 
-        $response = $this->postJson(route('focal.marketing.templates.send', ['template' => $template->id]), [
+        $response = $this->postJson(route('odden.marketing.templates.send', ['template' => $template->id]), [
             'to' => 'developer@example.com',
             'data' => [
                 'contact.first_name' => 'Jordan',
@@ -87,7 +87,7 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
         Mail::assertQueued(TemplateMailable::class, function (TemplateMailable $mail): bool {
             return $mail->hasTo('developer@example.com')
                 && $mail->subjectLine === 'Welcome to Acme Inc'
-                && str_contains($mail->compiledHtml, 'Focal Cloud')
+                && str_contains($mail->compiledHtml, 'Odden Cloud')
                 && str_contains($mail->compiledHtml, 'Hello Jordan!');
         });
     }
@@ -103,7 +103,7 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
             'body_html' => '<p>Hello {{contact.first_name}}, license expiring!</p>',
         ]);
 
-        $response = $this->postJson(route('focal.marketing.templates.send-batch', ['template' => 'license-alert']), [
+        $response = $this->postJson(route('odden.marketing.templates.send-batch', ['template' => 'license-alert']), [
             'recipients' => [
                 [
                     'to' => 'user1@acme.com',
@@ -130,7 +130,7 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
 
     public function test_send_fails_with_404_if_template_not_found(): void
     {
-        $response = $this->postJson(route('focal.marketing.templates.send', ['template' => 'non-existent-template']), [
+        $response = $this->postJson(route('odden.marketing.templates.send', ['template' => 'non-existent-template']), [
             'to' => 'dev@example.com',
         ]);
 
@@ -145,7 +145,7 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
             'body_html' => '<p>Test</p>',
         ]);
 
-        $response = $this->postJson(route('focal.marketing.templates.send', ['template' => $template->id]), [
+        $response = $this->postJson(route('odden.marketing.templates.send', ['template' => $template->id]), [
             'to' => 'not-an-email',
         ]);
 
@@ -203,8 +203,8 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
             'name' => 'Cohort 2026',
             'subject' => 'Trial Welcome',
             'template_id' => $template->id,
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'status' => 'sent',
         ]);
 
@@ -252,23 +252,23 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
             'category' => 'footers',
             'slot_type' => 'footer',
             'slot_data' => [
-                'company_name' => 'Focal Global HQ',
+                'company_name' => 'Odden Global HQ',
                 'address' => '100 Montgomery St, Suite 400, San Francisco, CA',
                 'unsubscribe_url' => '{{unsubscribe_url}}',
             ],
         ]);
 
-        $this->assertDatabaseHas('focal_marketing_saved_blocks', [
+        $this->assertDatabaseHas('odden_marketing_saved_blocks', [
             'name' => 'Corporate Legal Footer',
             'slot_type' => 'footer',
         ]);
 
-        $this->assertSame('Focal Global HQ', $block->slot_data['company_name']);
+        $this->assertSame('Odden Global HQ', $block->slot_data['company_name']);
     }
 
     public function test_countdown_timer_svg_endpoint_returns_realtime_image(): void
     {
-        $response = $this->get(route('focal.marketing.images.countdown-timer', [
+        $response = $this->get(route('odden.marketing.images.countdown-timer', [
             'until' => now()->addDays(2)->toIso8601String(),
             'label' => 'SUMMIT DEAL ENDS IN',
         ]));
@@ -283,7 +283,7 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
 
     public function test_personalized_badge_svg_endpoint_returns_svg(): void
     {
-        $response = $this->get(route('focal.marketing.images.badge', [
+        $response = $this->get(route('odden.marketing.images.badge', [
             'name' => 'Dr. Elena Rostova',
             'company' => 'Quantum Nexus',
             'role' => 'Keynote Speaker',
@@ -301,21 +301,21 @@ class TransactionalTemplateApiAndRevisionsTest extends TestCase
     {
         $template = MarketingTemplate::create([
             'name' => 'Global Product Launch',
-            'subject' => 'Welcome to Focal (English)',
-            'subject_variant_b' => 'Discover Focal (English B)',
+            'subject' => 'Welcome to Odden (English)',
+            'subject_variant_b' => 'Discover Odden (English B)',
             'body_html' => '<p>Welcome</p>',
         ]);
 
         $translation = $template->translations()->create([
             'locale' => 'es',
-            'subject' => 'Bienvenido a Focal',
-            'subject_variant_b' => 'Descubre Focal',
+            'subject' => 'Bienvenido an Odden',
+            'subject_variant_b' => 'Descubre Odden',
             'preview_text' => 'Texto preliminar',
         ]);
 
-        $this->assertSame('Bienvenido a Focal', $template->getLocalizedSubject('es', 'A'));
-        $this->assertSame('Descubre Focal', $template->getLocalizedSubject('es', 'B'));
+        $this->assertSame('Bienvenido an Odden', $template->getLocalizedSubject('es', 'A'));
+        $this->assertSame('Descubre Odden', $template->getLocalizedSubject('es', 'B'));
         // Fallback to default when locale does not exist
-        $this->assertSame('Welcome to Focal (English)', $template->getLocalizedSubject('de', 'A'));
+        $this->assertSame('Welcome to Odden (English)', $template->getLocalizedSubject('de', 'A'));
     }
 }

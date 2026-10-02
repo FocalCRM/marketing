@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Marketing\Actions\AutoMatchLeadToCompanyAction;
-use Focal\Marketing\Actions\DispatchCampaignAction;
-use Focal\Marketing\Actions\EvaluateSmartContentBlocksAction;
-use Focal\Marketing\Actions\ProcessFormSubmissionAction;
-use Focal\Marketing\Actions\SyncAdAudienceAction;
-use Focal\Marketing\Models\AdAudienceSync;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Tests\Fixtures\User;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Marketing\Actions\AutoMatchLeadToCompanyAction;
+use Odden\Marketing\Actions\DispatchCampaignAction;
+use Odden\Marketing\Actions\EvaluateSmartContentBlocksAction;
+use Odden\Marketing\Actions\ProcessFormSubmissionAction;
+use Odden\Marketing\Actions\SyncAdAudienceAction;
+use Odden\Marketing\Models\AdAudienceSync;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Tests\Fixtures\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MarketingEnterpriseParitySuiteTest extends TestCase
@@ -118,7 +118,7 @@ class MarketingEnterpriseParitySuiteTest extends TestCase
         $this->assertSame($rep->id, $contact->owner_id);
 
         // Verified L2A high-priority alert task created on Company timeline
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_type' => $targetCompany->getMorphClass(),
             'subject_id' => $targetCompany->id,
             'title' => "L2A Match: New Lead from Target Account {$targetCompany->name}",
@@ -161,14 +161,14 @@ class MarketingEnterpriseParitySuiteTest extends TestCase
                 'contact_id' => $contact->id,
             ]);
 
-        // Verify record in focal_custom_behavioral_events
-        $this->assertDatabaseHas('focal_custom_behavioral_events', [
+        // Verify record in odden_custom_behavioral_events
+        $this->assertDatabaseHas('odden_custom_behavioral_events', [
             'contact_id' => $contact->id,
             'event_name' => 'workspace_upgraded',
         ]);
 
         // Verify task logged on timeline
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_type' => $contact->getMorphClass(),
             'subject_id' => $contact->id,
             'title' => 'Custom Event: workspace_upgraded',
@@ -184,8 +184,8 @@ class MarketingEnterpriseParitySuiteTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Global Product Webinar',
             'subject' => 'Join us tomorrow',
-            'sender_name' => 'Focal',
-            'sender_email' => 'marketing@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'marketing@odden.test',
             'send_in_recipient_timezone' => true,
             'recipient_send_hour' => 9,
         ]);
@@ -213,7 +213,7 @@ class MarketingEnterpriseParitySuiteTest extends TestCase
         $result = $action->execute($campaign, collect([$nyContact, $tokyoContact]));
 
         $this->assertSame(2, $result['total_recipients']);
-        $this->assertDatabaseHas('focal_marketing_campaign_recipients', [
+        $this->assertDatabaseHas('odden_marketing_campaign_recipients', [
             'campaign_id' => $campaign->id,
             'email' => 'nyc@test.com',
         ]);

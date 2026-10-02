@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\LeadScoringEventType;
-use Focal\Marketing\Models\LeadDecayLog;
-use Focal\Marketing\Models\LeadScoreLog;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Models\LeadDecayLog;
+use Odden\Marketing\Models\LeadScoreLog;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 

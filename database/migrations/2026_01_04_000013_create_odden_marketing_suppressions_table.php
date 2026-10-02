@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $table = config('focal-marketing.tables.suppressions', 'focal_marketing_suppressions');
+        $table = config('odden-marketing.tables.suppressions', 'odden_marketing_suppressions');
 
         if (! Schema::hasTable($table)) {
             Schema::create($table, function (Blueprint $table): void {
@@ -32,7 +32,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $table = config('focal-marketing.tables.suppressions', 'focal_marketing_suppressions');
+        $table = config('odden-marketing.tables.suppressions', 'odden_marketing_suppressions');
         Schema::dropIfExists($table);
     }
 };

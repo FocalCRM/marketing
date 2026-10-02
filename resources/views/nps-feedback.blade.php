@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thank You for Your Feedback | Focal</title>
+    <title>Thank You for Your Feedback | Odden</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col justify-between">
     <header class="bg-white border-b border-slate-200 py-4">
         <div class="max-w-xl mx-auto px-4 flex justify-between items-center">
-            <span class="text-xl font-bold tracking-tight text-slate-900">Focal</span>
+            <span class="text-xl font-bold tracking-tight text-slate-900">Odden</span>
             <span class="text-xs text-slate-500">Customer Feedback</span>
         </div>
     </header>
@@ -35,7 +35,7 @@
                     {{ session('success') }}
                 </div>
             @else
-                <form action="{{ route('focal.marketing.nps.feedback', ['token' => $response->token]) }}" method="POST" class="text-left mt-6 pt-6 border-t border-slate-100">
+                <form action="{{ route('odden.marketing.nps.feedback', ['token' => $response->token]) }}" method="POST" class="text-left mt-6 pt-6 border-t border-slate-100">
                     @csrf
                     <label for="feedback" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
                         What was the primary reason for your score? (Optional)
@@ -60,7 +60,7 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        &copy; 2026 Focal. All rights reserved.
+        &copy; 2026 Odden. All rights reserved.
     </footer>
 </body>
 </html>

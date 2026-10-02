@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Database\Seeders;
+namespace Odden\Marketing\Database\Seeders;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\CampaignType;
-use Focal\Marketing\Enums\LeadScoringEventType;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\EspEvent;
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Marketing\Models\LandingPage;
-use Focal\Marketing\Models\LeadScoringRule;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Models\MarketingTemplate;
-use Focal\Marketing\Models\MarketingWorkflow;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\CampaignType;
+use Odden\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\EspEvent;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Marketing\Models\LandingPage;
+use Odden\Marketing\Models\LeadScoringRule;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Models\MarketingWorkflow;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -35,22 +35,22 @@ class MarketingDatabaseSeeder extends Seeder
         $newsletterTemplate = MarketingTemplate::firstOrCreate(
             ['name' => 'Monthly Product Digest & Spotlight'],
             [
-                'subject' => '{{contact.first_name}}, see what is new in Focal this month',
+                'subject' => '{{contact.first_name}}, see what is new in Odden this month',
                 'preview_text' => 'Major updates to Sales pipelines, Service SLAs, and Marketing automations.',
                 'category' => 'newsletter',
                 'body_html' => '<html><body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 20px;">'
-                    .'<h2 style="color: #0284c7;">Focal Monthly Product Digest</h2>'
+                    .'<h2 style="color: #0284c7;">Odden Monthly Product Digest</h2>'
                     .'<p>Hi {{contact.first_name}},</p>'
                     .'<p>We are thrilled to share the latest enhancements shipped for {{company.name}} to accelerate deal velocity and streamline customer care.</p>'
                     .'<div style="background: #f8fafc; border-left: 4px solid #0284c7; padding: 15px; margin: 20px 0;">'
                     .'<h3 style="margin-top: 0;">Featured Capabilities</h3>'
                     .'<ul><li>Enterprise Lead & Deal Prospecting Cockpit</li><li>Service Hub with Inbound Email Threading</li><li>Multi-channel Campaign Broadcasts</li></ul>'
                     .'</div>'
-                    .'<p><a href="https://focal.test/demo" style="background: #0284c7; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Explore the New Features</a></p>'
+                    .'<p><a href="https://odden.test/demo" style="background: #0284c7; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; display: inline-block;">Explore the New Features</a></p>'
                     .'<hr style="border: none; border-top: 1px solid #e2e8f0; margin: 30px 0;" />'
-                    .'<p style="font-size: 12px; color: #64748b;">You received this email because you are a valued customer of Focal. <a href="{{unsubscribe_url}}" style="color: #64748b;">Unsubscribe</a></p>'
+                    .'<p style="font-size: 12px; color: #64748b;">You received this email because you are a valued customer of Odden. <a href="{{unsubscribe_url}}" style="color: #64748b;">Unsubscribe</a></p>'
                     .'</body></html>',
-                'body_text' => "Focal Monthly Product Digest\n\nHi {{contact.first_name}},\n\nCheck out our latest product updates at https://focal.test/demo\n\nUnsubscribe: {{unsubscribe_url}}",
+                'body_text' => "Odden Monthly Product Digest\n\nHi {{contact.first_name}},\n\nCheck out our latest product updates at https://odden.test/demo\n\nUnsubscribe: {{unsubscribe_url}}",
             ]
         );
 
@@ -64,10 +64,10 @@ class MarketingDatabaseSeeder extends Seeder
                     .'<h2>Exclusive Executive Webinar</h2>'
                     .'<p>Hello {{contact.first_name}},</p>'
                     .'<p>Join us on Thursday at 10 AM PST for an intimate briefing on optimizing your sales pipeline and minimizing customer churn.</p>'
-                    .'<p><a href="https://focal.test/webinar/register">Reserve Your Seat Today</a></p>'
+                    .'<p><a href="https://odden.test/webinar/register">Reserve Your Seat Today</a></p>'
                     .'<p style="font-size: 11px; color: #999;"><a href="{{unsubscribe_url}}">Unsubscribe</a></p>'
                     .'</body></html>',
-                'body_text' => "Join our webinar at https://focal.test/webinar/register\n\nUnsubscribe: {{unsubscribe_url}}",
+                'body_text' => "Join our webinar at https://odden.test/webinar/register\n\nUnsubscribe: {{unsubscribe_url}}",
             ]
         );
 
@@ -76,7 +76,7 @@ class MarketingDatabaseSeeder extends Seeder
             ['slug' => 'request-demo'],
             [
                 'title' => 'Request an Enterprise Consultation & Demo',
-                'description' => 'Fill out this brief form to see Focal in action with a custom walkthrough tailored to your business.',
+                'description' => 'Fill out this brief form to see Odden in action with a custom walkthrough tailored to your business.',
                 'fields_schema' => [
                     ['name' => 'first_name', 'label' => 'First Name', 'type' => 'text', 'required' => true],
                     ['name' => 'last_name', 'label' => 'Last Name', 'type' => 'text', 'required' => true],
@@ -110,13 +110,13 @@ class MarketingDatabaseSeeder extends Seeder
 
         // 3. Demo Broadcast Campaigns
         $campaign1 = Campaign::firstOrCreate(
-            ['name' => 'Focal 2.0 Major Ecosystem Announcement'],
+            ['name' => 'Odden 2.0 Major Ecosystem Announcement'],
             [
-                'subject' => 'Introducing Focal 2.0: Unified Sales, Service, and Marketing',
+                'subject' => 'Introducing Odden 2.0: Unified Sales, Service, and Marketing',
                 'preview_text' => 'Discover the next generation CRM platform built for speed.',
-                'sender_name' => 'Focal Leadership',
-                'sender_email' => 'announcements@focal.test',
-                'reply_to_email' => 'support@focal.test',
+                'sender_name' => 'Odden Leadership',
+                'sender_email' => 'announcements@odden.test',
+                'reply_to_email' => 'support@odden.test',
                 'template_id' => $newsletterTemplate->id,
                 'status' => CampaignStatus::Sent,
                 'type' => CampaignType::Regular,
@@ -139,10 +139,10 @@ class MarketingDatabaseSeeder extends Seeder
         $campaign2 = Campaign::firstOrCreate(
             ['name' => 'Q4 RevOps Executive Webinar'],
             [
-                'subject' => 'VIP Invitation: Optimizing Your Pipeline with Focal',
+                'subject' => 'VIP Invitation: Optimizing Your Pipeline with Odden',
                 'preview_text' => 'Join industry leaders this Thursday at 10 AM PST.',
-                'sender_name' => 'Focal Events',
-                'sender_email' => 'events@focal.test',
+                'sender_name' => 'Odden Events',
+                'sender_email' => 'events@odden.test',
                 'template_id' => $webinarTemplate->id,
                 'status' => CampaignStatus::Sent,
                 'type' => CampaignType::Regular,
@@ -167,8 +167,8 @@ class MarketingDatabaseSeeder extends Seeder
             [
                 'subject' => 'Best practices for securing your customer data',
                 'preview_text' => 'Essential checklists before the holiday freeze.',
-                'sender_name' => 'Focal Security Team',
-                'sender_email' => 'security@focal.test',
+                'sender_name' => 'Odden Security Team',
+                'sender_email' => 'security@odden.test',
                 'template_id' => $newsletterTemplate->id,
                 'status' => CampaignStatus::Draft,
                 'type' => CampaignType::Regular,
@@ -284,7 +284,7 @@ class MarketingDatabaseSeeder extends Seeder
                     'type' => WorkflowStepType::SendEmail,
                     'config' => [
                         'template_id' => $newsletterTemplate->id,
-                        'subject' => 'Thank you for requesting a demo with Focal',
+                        'subject' => 'Thank you for requesting a demo with Odden',
                         'body' => '<p>Hello {{contact.first_name}}, our enterprise team is reviewing your requirements and will reach out shortly.</p>',
                     ],
                 ],
@@ -321,10 +321,10 @@ class MarketingDatabaseSeeder extends Seeder
         Campaign::firstOrCreate(
             ['name' => 'Q1 Subject Line Optimization: ROI vs Speed'],
             [
-                'subject' => 'Variant A: Unlock 10x ROI with Focal 2.0',
+                'subject' => 'Variant A: Unlock 10x ROI with Odden 2.0',
                 'preview_text' => 'Discover how modern teams accelerate deal closure.',
-                'sender_name' => 'Focal Growth Team',
-                'sender_email' => 'growth@focal.test',
+                'sender_name' => 'Odden Growth Team',
+                'sender_email' => 'growth@odden.test',
                 'template_id' => $newsletterTemplate->id,
                 'is_ab_test' => true,
                 'variant_b_subject' => 'Variant B: See how fast-growing teams close more deals',
@@ -346,9 +346,9 @@ class MarketingDatabaseSeeder extends Seeder
                 'title' => 'Enterprise RevOps Platform 2026',
                 'headline' => 'Scale Revenue Faster With Unified CRM & Care',
                 'subheadline' => 'Connect Sales, Service SLAs, and Lifecycle Automations seamlessly.',
-                'body_content' => '<p>Focal unifies your customer records across all touchpoints with sub-millisecond response times.</p>',
+                'body_content' => '<p>Odden unifies your customer records across all touchpoints with sub-millisecond response times.</p>',
                 'form_id' => $demoForm->id,
-                'meta_title' => 'Enterprise RevOps Platform | Focal',
+                'meta_title' => 'Enterprise RevOps Platform | Odden',
                 'meta_description' => 'Experience unified CRM architecture built for speed and velocity.',
                 'is_published' => true,
                 'views_count' => 24,
@@ -362,7 +362,7 @@ class MarketingDatabaseSeeder extends Seeder
             [
                 'provider' => 'mailgun',
                 'event_type' => 'delivered',
-                'email' => 'admin@focal.test',
+                'email' => 'admin@odden.test',
             ],
             [
                 'campaign_id' => $campaign1->id,

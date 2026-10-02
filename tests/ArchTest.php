@@ -8,7 +8,7 @@ it('marketing domain remains strictly headless (no Filament or Livewire)', funct
 });
 
 it('marketing does not depend on service or the Filament UI (sales is an optional, guarded integration)', function (): void {
-    expect(sourceFilesMatching('/\bFocal\\\\+(Service|Filament)\\\\+/'))->toBeEmpty();
+    expect(sourceFilesMatching('/\bOdden\\\\+(Service|Filament)\\\\+/'))->toBeEmpty();
 });
 
 arch('no debug functions are left in the code')
@@ -16,9 +16,9 @@ arch('no debug functions are left in the code')
     ->not->toBeUsed();
 
 arch('all marketing domain actions have an execute method')
-    ->expect('Focal\Marketing\Actions')
+    ->expect('Odden\Marketing\Actions')
     ->toHaveMethod('execute');
 
 arch('all marketing enums are string backed for database agnosticism')
-    ->expect('Focal\Marketing\Enums')
+    ->expect('Odden\Marketing\Enums')
     ->toBeStringBackedEnums();

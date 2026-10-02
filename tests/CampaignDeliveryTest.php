@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Marketing\Actions\DeliverCampaignMessageAction;
-use Focal\Marketing\Actions\DispatchCampaignAction;
-use Focal\Marketing\Actions\EvaluateAbTestWinnerAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Exceptions\CampaignHasNoAudienceException;
-use Focal\Marketing\Mail\MarketingMessageMailable;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Marketing\Actions\DeliverCampaignMessageAction;
+use Odden\Marketing\Actions\DispatchCampaignAction;
+use Odden\Marketing\Actions\EvaluateAbTestWinnerAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Exceptions\CampaignHasNoAudienceException;
+use Odden\Marketing\Mail\MarketingMessageMailable;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -35,7 +35,7 @@ class CampaignDeliveryTest extends TestCase
     public function test_dispatch_queues_one_message_per_eligible_recipient_with_compliance_headers(): void
     {
         Mail::fake();
-        config(['focal-marketing.mail.queue' => 'marketing-mail', 'focal-marketing.mail.mailer' => 'array']);
+        config(['odden-marketing.mail.queue' => 'marketing-mail', 'odden-marketing.mail.mailer' => 'array']);
 
         [$campaign, $list] = $this->campaignWithList(['ada@example.com', 'grace@example.com', 'gone@example.com']);
         MarketingSubscription::unsubscribe('gone@example.com');
@@ -62,7 +62,7 @@ class CampaignDeliveryTest extends TestCase
             $this->assertInstanceOf(ShouldQueue::class, $mail);
             $this->assertSame('marketing-mail', $mail->queue);
             $this->assertSame('array', $mail->mailer);
-            $this->assertTrue($mail->hasFrom('news@example.com', 'Focal News'));
+            $this->assertTrue($mail->hasFrom('news@example.com', 'Odden News'));
             $this->assertTrue($mail->hasReplyTo('replies@example.com'));
             $this->assertTrue($mail->hasSubject('Spring launch'));
             $this->assertStringContainsString('Hello Ada', $mail->htmlBody);
@@ -71,7 +71,7 @@ class CampaignDeliveryTest extends TestCase
             $this->assertStringNotContainsString('<p>', $mail->textBody);
             $this->assertSame('<'.$recipient->getOneClickUnsubscribeUrl().'>', $headers['List-Unsubscribe']);
             $this->assertSame('List-Unsubscribe=One-Click', $headers['List-Unsubscribe-Post']);
-            $this->assertSame($recipient->tracking_token, $headers['X-Focal-Tracking-Token']);
+            $this->assertSame($recipient->tracking_token, $headers['X-Odden-Tracking-Token']);
 
             return true;
         });
@@ -241,7 +241,7 @@ class CampaignDeliveryTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'No list',
             'subject' => 'Hello',
-            'sender_name' => 'Focal',
+            'sender_name' => 'Odden',
             'sender_email' => 'news@example.com',
             'status' => CampaignStatus::Draft,
         ]);
@@ -266,7 +266,7 @@ class CampaignDeliveryTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Listless',
             'subject' => 'Hello',
-            'sender_name' => 'Focal',
+            'sender_name' => 'Odden',
             'sender_email' => 'news@example.com',
             'status' => CampaignStatus::Scheduled,
             'scheduled_at' => now()->subMinute(),
@@ -298,7 +298,7 @@ class CampaignDeliveryTest extends TestCase
      */
     public function test_unique_index_migration_keeps_the_most_engaged_duplicate_and_detaches_sent_ones(): void
     {
-        $migration = require __DIR__.'/../database/migrations/2026_01_04_000018_add_unique_campaign_contact_to_focal_marketing_campaign_recipients.php';
+        $migration = require __DIR__.'/../database/migrations/2026_01_04_000018_add_unique_campaign_contact_to_odden_marketing_campaign_recipients.php';
         $migration->down();
 
         [$campaign, , $contacts] = $this->campaignWithList(['ada@example.com']);
@@ -315,7 +315,7 @@ class CampaignDeliveryTest extends TestCase
         $sent = $recipient(['sent_at' => now()]);
 
         foreach ([$unsent, $sent] as $row) {
-            DB::table('focal_marketing_esp_events')->insert([
+            DB::table('odden_marketing_esp_events')->insert([
                 'provider' => 'generic',
                 'event_type' => 'delivered',
                 'email' => 'ada@example.com',
@@ -332,8 +332,8 @@ class CampaignDeliveryTest extends TestCase
         $this->assertNull($sent->fresh()?->contact_id);
         $this->assertNotNull($sent->fresh());
         $this->assertNull(CampaignRecipient::find($unsent->id));
-        $this->assertEqualsCanonicalizing([$opened->id, $sent->id], DB::table('focal_marketing_esp_events')->pluck('recipient_id')->all());
-        $this->post(route('focal.marketing.unsubscribe.process', $sent->unsubscribe_token))->assertOk();
+        $this->assertEqualsCanonicalizing([$opened->id, $sent->id], DB::table('odden_marketing_esp_events')->pluck('recipient_id')->all());
+        $this->post(route('odden.marketing.unsubscribe.process', $sent->unsubscribe_token))->assertOk();
 
         $this->expectException(UniqueConstraintViolationException::class);
         $recipient([]);
@@ -359,7 +359,7 @@ class CampaignDeliveryTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Spring launch',
             'subject' => 'Spring launch',
-            'sender_name' => 'Focal News',
+            'sender_name' => 'Odden News',
             'sender_email' => 'news@example.com',
             'reply_to_email' => 'replies@example.com',
             'template_id' => $template->id,

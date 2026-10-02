@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -113,7 +113,7 @@ SVG;
     
     <!-- Footer / Barcode decoration -->
     <line x1="32" y1="175" x2="448" y2="175" stroke="#334155" stroke-width="1" stroke-dasharray="4 4" />
-    <text x="32" y="205" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#64748B" letter-spacing="0.5">OFFICIAL FOCAL SUMMIT ACCESS PASS</text>
+    <text x="32" y="205" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600" fill="#64748B" letter-spacing="0.5">OFFICIAL ODDEN SUMMIT ACCESS PASS</text>
 </svg>
 SVG;
 

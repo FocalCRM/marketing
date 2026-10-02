@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Enums\SubscriptionStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\EspEvent;
-use Focal\Marketing\Models\MarketingSubscription;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Enums\SubscriptionStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\EspEvent;
+use Odden\Marketing\Models\MarketingSubscription;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class EspDeliverabilityWebhooksTest extends TestCase
@@ -30,8 +30,8 @@ class EspDeliverabilityWebhooksTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Product Newsletter',
             'subject' => 'Newsletter',
-            'sender_name' => 'Focal',
-            'sender_email' => 'newsletter@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'newsletter@odden.test',
             'status' => CampaignStatus::Sent,
         ]);
 
@@ -52,7 +52,7 @@ class EspDeliverabilityWebhooksTest extends TestCase
                     'message' => '5.1.1 User unknown',
                 ],
                 'user-variables' => [
-                    'focal_token' => 'token_mailgun_bounce_123',
+                    'odden_token' => 'token_mailgun_bounce_123',
                 ],
             ],
         ];
@@ -63,7 +63,7 @@ class EspDeliverabilityWebhooksTest extends TestCase
         $response->assertJson(['status' => 'received', 'event_type' => 'bounce']);
 
         // Assert EspEvent logged
-        $this->assertDatabaseHas('focal_marketing_esp_events', [
+        $this->assertDatabaseHas('odden_marketing_esp_events', [
             'provider' => 'mailgun',
             'event_type' => 'bounce',
             'email' => 'nonexistent@invalid-domain.test',
@@ -93,8 +93,8 @@ class EspDeliverabilityWebhooksTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Promotional Blast',
             'subject' => 'Special Promo',
-            'sender_name' => 'Focal',
-            'sender_email' => 'promo@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'promo@odden.test',
         ]);
 
         /** @var CampaignRecipient $recipient */

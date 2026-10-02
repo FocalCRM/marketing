@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\AnalyzeConversionFunnelAction;
-use Focal\Marketing\Models\CustomBehavioralEvent;
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Models\PageView;
-use Focal\Marketing\Models\VisitorSession;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
-use Focal\Sales\Models\PipelineStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\AnalyzeConversionFunnelAction;
+use Odden\Marketing\Models\CustomBehavioralEvent;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Models\PageView;
+use Odden\Marketing\Models\VisitorSession;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
+use Odden\Sales\Models\PipelineStage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ConversionFunnelAnalysisTest extends TestCase
@@ -32,7 +32,7 @@ class ConversionFunnelAnalysisTest extends TestCase
 
             PageView::create([
                 'session_id' => $session->id,
-                'url' => 'https://focal.test/pricing',
+                'url' => 'https://odden.test/pricing',
                 'path' => '/pricing',
                 'title' => 'Pricing Plans',
                 'created_at' => now(),

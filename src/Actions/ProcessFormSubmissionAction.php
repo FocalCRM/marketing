@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Core\Enums\LeadStatus;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\LeadScoringEventType;
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Support\VisitorToken;
+use Odden\Core\Enums\LeadStatus;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Support\VisitorToken;
 
 class ProcessFormSubmissionAction
 {

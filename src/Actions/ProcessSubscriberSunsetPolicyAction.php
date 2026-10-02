@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingSubscription;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingSubscription;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 

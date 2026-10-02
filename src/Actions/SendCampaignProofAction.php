@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use DoPHP\MailBuilder\MailBuilder;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Mail\CampaignProofMailable;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Support\MarketingMailer;
+use Odden\MailBuilder\MailBuilder;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Mail\CampaignProofMailable;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Support\MarketingMailer;
 use Throwable;
 
 class SendCampaignProofAction
@@ -62,7 +62,7 @@ class SendCampaignProofAction
             '{{contact.last_name}}' => $contact->last_name ?? 'Marketer',
             '{{contact.email}}' => $contact->email ?? $cleanEmails[0],
             '{{company.name}}' => $company->name ?? 'Acme Corp',
-            '{{unsubscribe_url}}' => route('focal.marketing.unsubscribe.show', 'sample-proof-token'),
+            '{{unsubscribe_url}}' => route('odden.marketing.unsubscribe.show', 'sample-proof-token'),
             '{{campaign.subject}}' => $campaign->subject,
             '{{campaign.name}}' => $campaign->name,
         ];
@@ -74,9 +74,9 @@ class SendCampaignProofAction
         $html = app(EvaluateSmartContentBlocksAction::class)->execute($html, $contact);
 
         $subject = '[TEST] '.($campaign->subject ?: $campaign->name);
-        $fromName = $campaign->sender_name ?: (string) config('focal-marketing.defaults.sender_name', 'Focal Marketing');
-        $fromEmail = $campaign->sender_email ?: (string) config('focal-marketing.defaults.sender_email', 'newsletter@focal.test');
-        $replyTo = $campaign->reply_to_email ?: (string) config('focal-marketing.defaults.reply_to', 'support@focal.test');
+        $fromName = $campaign->sender_name ?: (string) config('odden-marketing.defaults.sender_name', 'Odden Marketing');
+        $fromEmail = $campaign->sender_email ?: (string) config('odden-marketing.defaults.sender_email', 'newsletter@odden.test');
+        $replyTo = $campaign->reply_to_email ?: (string) config('odden-marketing.defaults.reply_to', 'support@odden.test');
 
         try {
             foreach ($cleanEmails as $recipientEmail) {

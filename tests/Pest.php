@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Focal\Marketing\Tests\TestCase;
+use Odden\Marketing\Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 pest()->extend(TestCase::class)

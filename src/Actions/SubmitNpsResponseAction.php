@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\LeadScoringEventType;
-use Focal\Marketing\Models\NpsResponse;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Models\NpsResponse;
 use Illuminate\Support\Facades\DB;
 
 class SubmitNpsResponseAction

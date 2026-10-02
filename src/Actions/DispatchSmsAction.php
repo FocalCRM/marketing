@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\MarketingSmsMessage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\MarketingSmsMessage;
 use Illuminate\Support\Str;
 
 class DispatchSmsAction

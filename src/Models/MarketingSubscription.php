@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\SubscriptionStatus;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\SubscriptionStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -39,7 +39,7 @@ class MarketingSubscription extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.subscriptions', 'focal_marketing_subscriptions');
+        return config('odden-marketing.tables.subscriptions', 'odden_marketing_subscriptions');
     }
 
     /**

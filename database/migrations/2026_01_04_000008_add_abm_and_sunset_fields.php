@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // ABM & intent scoring columns on companies are owned by focalcrm/core.
+        // ABM & intent scoring columns on companies are owned by getodden/crm-core.
 
         // Sunset Policy & List Hygiene on Contacts
-        Schema::table('focal_contacts', function (Blueprint $table): void {
+        Schema::table('odden_contacts', function (Blueprint $table): void {
             $table->boolean('is_unengaged')->default(false)->after('last_marketing_email_sent_at');
             $table->timestamp('unengaged_since')->nullable()->after('is_unengaged');
             $table->string('sunset_stage', 30)->nullable()->after('unengaged_since'); // active, flagged, reengagement_sent, suppressed
@@ -30,7 +30,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('focal_contacts', function (Blueprint $table): void {
+        Schema::table('odden_contacts', function (Blueprint $table): void {
             $table->dropIndex(['is_unengaged', 'sunset_stage']);
             $table->dropColumn(['is_unengaged', 'unengaged_since', 'sunset_stage']);
         });

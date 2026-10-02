@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Services;
+namespace Odden\Marketing\Services;
 
 class AbTestSignificanceCalculator
 {

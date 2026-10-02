@@ -17,7 +17,7 @@
     <header class="bg-white border-b border-slate-200 py-4">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 flex justify-between items-center">
             <div class="text-xl font-bold tracking-tight text-slate-900">
-                {{ config('app.name', 'Focal') }}
+                {{ config('app.name', 'Odden') }}
             </div>
         </div>
     </header>
@@ -59,7 +59,7 @@
             <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 max-w-xl mx-auto">
                 <h3 class="text-xl font-semibold mb-6 text-slate-800">{{ $page->form->title }}</h3>
 
-                <form method="POST" action="{{ route('focal.marketing.landing-pages.submit', $page->slug) }}" class="space-y-4">
+                <form method="POST" action="{{ route('odden.marketing.landing-pages.submit', $page->slug) }}" class="space-y-4">
                     @csrf
                     @foreach($page->form->fields_schema as $field)
                         <div>
@@ -93,10 +93,10 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        &copy; {{ date('Y') }} {{ config('app.name', 'Focal') }}. All rights reserved.
+        &copy; {{ date('Y') }} {{ config('app.name', 'Odden') }}. All rights reserved.
     </footer>
 
     <!-- First-Party Web Inbound Tracking -->
-    <script src="{{ route('focal.marketing.track.script') }}"></script>
+    <script src="{{ route('odden.marketing.track.script') }}"></script>
 </body>
 </html>

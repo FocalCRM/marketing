@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Support;
+namespace Odden\Marketing\Support;
 
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 
 /**
  * Signed contact identity for public, unauthenticated links (hosted forms, schema lookups).
@@ -47,6 +47,6 @@ final class ContactToken
 
     private static function signature(string $contactId, string $scope): string
     {
-        return hash_hmac('sha256', "focal-contact|{$scope}|{$contactId}", (string) config('app.key'));
+        return hash_hmac('sha256', "odden-contact|{$scope}|{$contactId}", (string) config('app.key'));
     }
 }

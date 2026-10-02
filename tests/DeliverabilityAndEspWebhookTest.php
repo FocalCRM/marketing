@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Enums\SubscriptionStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingSubscription;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Enums\SubscriptionStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingSubscription;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class DeliverabilityAndEspWebhookTest extends TestCase
@@ -28,8 +28,8 @@ class DeliverabilityAndEspWebhookTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Fall Product Launch',
             'subject' => 'New Release Announcement',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'status' => CampaignStatus::Sending,
             'bounces_count' => 0,
         ]);
@@ -48,7 +48,7 @@ class DeliverabilityAndEspWebhookTest extends TestCase
             'event' => 'bounce',
             'status' => '5.1.1',
             'reason' => '550 5.1.1 Mailbox does not exist',
-            'focal_token' => 'sg_tok_123',
+            'odden_token' => 'sg_tok_123',
         ]);
 
         $response->assertOk();
@@ -80,8 +80,8 @@ class DeliverabilityAndEspWebhookTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Newsletter Week 42',
             'subject' => 'Weekly Digest',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'unsubscribes_count' => 0,
         ]);
 
@@ -99,7 +99,7 @@ class DeliverabilityAndEspWebhookTest extends TestCase
             'data' => [
                 'to' => ['unhappy@example.com'],
                 'tags' => [
-                    'focal_token' => 'resend_tok_456',
+                    'odden_token' => 'resend_tok_456',
                 ],
             ],
         ]);

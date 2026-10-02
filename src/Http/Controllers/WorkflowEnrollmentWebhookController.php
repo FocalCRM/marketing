@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
-use Focal\Core\Enums\LeadStatus;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\EnrollContactInWorkflowAction;
-use Focal\Marketing\Models\MarketingWorkflow;
+use Odden\Core\Enums\LeadStatus;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\EnrollContactInWorkflowAction;
+use Odden\Marketing\Models\MarketingWorkflow;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;

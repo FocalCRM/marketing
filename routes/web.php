@@ -2,141 +2,141 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Http\Middleware\RequireApiToken;
-use Focal\Core\Support\CsrfExemption;
-use Focal\Core\Support\RouteGroup;
-use Focal\Marketing\Http\Controllers\AmpFormController;
-use Focal\Marketing\Http\Controllers\CustomBehavioralEventController;
-use Focal\Marketing\Http\Controllers\DynamicEmailImageController;
-use Focal\Marketing\Http\Controllers\EspWebhookController;
-use Focal\Marketing\Http\Controllers\ExternalLeadWebhookController;
-use Focal\Marketing\Http\Controllers\LandingPageController;
-use Focal\Marketing\Http\Controllers\MarketingAssetController;
-use Focal\Marketing\Http\Controllers\MarketingEventController;
-use Focal\Marketing\Http\Controllers\MarketingFormController;
-use Focal\Marketing\Http\Controllers\MarketingPreferencesController;
-use Focal\Marketing\Http\Controllers\MarketingTrackingController;
-use Focal\Marketing\Http\Controllers\NpsSurveyController;
-use Focal\Marketing\Http\Controllers\TransactionalTemplateController;
-use Focal\Marketing\Http\Controllers\WebTrackingController;
-use Focal\Marketing\Http\Controllers\WorkflowEnrollmentWebhookController;
+use Odden\Core\Http\Middleware\RequireApiToken;
+use Odden\Core\Support\CsrfExemption;
+use Odden\Core\Support\RouteGroup;
+use Odden\Marketing\Http\Controllers\AmpFormController;
+use Odden\Marketing\Http\Controllers\CustomBehavioralEventController;
+use Odden\Marketing\Http\Controllers\DynamicEmailImageController;
+use Odden\Marketing\Http\Controllers\EspWebhookController;
+use Odden\Marketing\Http\Controllers\ExternalLeadWebhookController;
+use Odden\Marketing\Http\Controllers\LandingPageController;
+use Odden\Marketing\Http\Controllers\MarketingAssetController;
+use Odden\Marketing\Http\Controllers\MarketingEventController;
+use Odden\Marketing\Http\Controllers\MarketingFormController;
+use Odden\Marketing\Http\Controllers\MarketingPreferencesController;
+use Odden\Marketing\Http\Controllers\MarketingTrackingController;
+use Odden\Marketing\Http\Controllers\NpsSurveyController;
+use Odden\Marketing\Http\Controllers\TransactionalTemplateController;
+use Odden\Marketing\Http\Controllers\WebTrackingController;
+use Odden\Marketing\Http\Controllers\WorkflowEnrollmentWebhookController;
 use Illuminate\Support\Facades\Route;
 
 // Server-to-server endpoints require the marketing API token; browser-facing
-// submissions are rate limited per IP (see focal-core.rate_limits).
-$apiToken = RequireApiToken::class.':focal-marketing.api.token';
+// submissions are rate limited per IP (see odden-core.rate_limits).
+$apiToken = RequireApiToken::class.':odden-marketing.api.token';
 
-Route::group(RouteGroup::attributes('focal-marketing.routes.web'), function () use ($apiToken): void {
+Route::group(RouteGroup::attributes('odden-marketing.routes.web'), function () use ($apiToken): void {
     // Hosted lead capture forms
-    Route::get('/forms/{slug}', [MarketingFormController::class, 'show'])->name('focal.marketing.forms.show');
+    Route::get('/forms/{slug}', [MarketingFormController::class, 'show'])->name('odden.marketing.forms.show');
     Route::post('/forms/{slug}', [MarketingFormController::class, 'submit'])
-        ->middleware('throttle:focal-public')
-        ->name('focal.marketing.forms.submit');
+        ->middleware('throttle:odden-public')
+        ->name('odden.marketing.forms.submit');
 
     // Embeddable Form JavaScript Loader & Headless JSON Schema
-    Route::get('/marketing/forms/embed.js', [MarketingFormController::class, 'embedScript'])->name('focal.marketing.forms.embed-script');
-    Route::get('/marketing/forms/{slug}/embed.js', [MarketingFormController::class, 'embedScript'])->name('focal.marketing.forms.slug-embed-script');
-    Route::get('/marketing/forms/{slug}/schema.json', [MarketingFormController::class, 'schema'])->name('focal.marketing.forms.schema');
+    Route::get('/marketing/forms/embed.js', [MarketingFormController::class, 'embedScript'])->name('odden.marketing.forms.embed-script');
+    Route::get('/marketing/forms/{slug}/embed.js', [MarketingFormController::class, 'embedScript'])->name('odden.marketing.forms.slug-embed-script');
+    Route::get('/marketing/forms/{slug}/schema.json', [MarketingFormController::class, 'schema'])->name('odden.marketing.forms.schema');
 
     // Email Marketing Open & Click Tracking
-    Route::get('/marketing/track/open/{token}', [MarketingTrackingController::class, 'trackOpen'])->name('focal.marketing.track.open');
-    Route::get('/marketing/track/click/{token}', [MarketingTrackingController::class, 'trackClick'])->name('focal.marketing.track.click');
+    Route::get('/marketing/track/open/{token}', [MarketingTrackingController::class, 'trackOpen'])->name('odden.marketing.track.open');
+    Route::get('/marketing/track/click/{token}', [MarketingTrackingController::class, 'trackClick'])->name('odden.marketing.track.click');
 
     // Unsubscribe & Compliance Center
-    Route::get('/marketing/unsubscribe/{token}', [MarketingTrackingController::class, 'showUnsubscribe'])->name('focal.marketing.unsubscribe.show');
+    Route::get('/marketing/unsubscribe/{token}', [MarketingTrackingController::class, 'showUnsubscribe'])->name('odden.marketing.unsubscribe.show');
     // Also the RFC 8058 one-click endpoint (List-Unsubscribe-Post): mailbox providers POST
     // without a session, so it is CSRF-exempt; the unsubscribe token is the credential.
     // Those POSTs come from a few provider IPs, so it uses the server-to-server limit.
     Route::post('/marketing/unsubscribe/{token}', [MarketingTrackingController::class, 'processUnsubscribe'])
         ->withoutMiddleware(CsrfExemption::middleware())
-        ->middleware('throttle:focal-api')
-        ->name('focal.marketing.unsubscribe.process');
+        ->middleware('throttle:odden-api')
+        ->name('odden.marketing.unsubscribe.process');
 
     // Inbound Web Tracking & Client Script
-    Route::get('/marketing/focal.js', [WebTrackingController::class, 'clientScript'])->name('focal.marketing.track.script');
+    Route::get('/marketing/odden.js', [WebTrackingController::class, 'clientScript'])->name('odden.marketing.track.script');
     Route::post('/marketing/track/pageview', [WebTrackingController::class, 'pageview'])
         ->withoutMiddleware(CsrfExemption::middleware())
-        ->middleware('throttle:focal-public')
-        ->name('focal.marketing.track.pageview');
+        ->middleware('throttle:odden-public')
+        ->name('odden.marketing.track.pageview');
 
     // External Form Auto-Capture Endpoint
     Route::post('/marketing/forms/auto-capture', [WebTrackingController::class, 'autoCapture'])
         ->withoutMiddleware(CsrfExemption::middleware())
-        ->middleware('throttle:focal-public')
-        ->name('focal.marketing.forms.auto-capture');
+        ->middleware('throttle:odden-public')
+        ->name('odden.marketing.forms.auto-capture');
 
     // Inbound ESP Deliverability Webhooks (bounces, complaints)
     Route::post('/marketing/webhooks/esp/{provider}', [EspWebhookController::class, 'handle'])
         ->withoutMiddleware(CsrfExemption::middleware())
-        ->middleware([$apiToken, 'throttle:focal-api'])
-        ->name('focal.marketing.webhooks.esp');
+        ->middleware([$apiToken, 'throttle:odden-api'])
+        ->name('odden.marketing.webhooks.esp');
 
     // Hosted Public Landing Pages
-    Route::get('/p/{slug}', [LandingPageController::class, 'show'])->name('focal.marketing.landing-pages.show');
+    Route::get('/p/{slug}', [LandingPageController::class, 'show'])->name('odden.marketing.landing-pages.show');
     Route::post('/p/{slug}/submit', [LandingPageController::class, 'submit'])
-        ->middleware('throttle:focal-public')
-        ->name('focal.marketing.landing-pages.submit');
+        ->middleware('throttle:odden-public')
+        ->name('odden.marketing.landing-pages.submit');
 
     // Self-Service Preference Center & Topic Subscriptions
-    Route::get('/marketing/preferences/{token}', [MarketingPreferencesController::class, 'showPreferences'])->name('focal.marketing.preferences.show');
+    Route::get('/marketing/preferences/{token}', [MarketingPreferencesController::class, 'showPreferences'])->name('odden.marketing.preferences.show');
     Route::post('/marketing/preferences/{token}', [MarketingPreferencesController::class, 'updatePreferences'])
-        ->middleware('throttle:focal-public')
-        ->name('focal.marketing.preferences.update');
+        ->middleware('throttle:odden-public')
+        ->name('odden.marketing.preferences.update');
 
     // Double Opt-In Email Verification
-    Route::get('/marketing/confirm/{token}', [MarketingPreferencesController::class, 'confirmEmail'])->name('focal.marketing.confirm');
+    Route::get('/marketing/confirm/{token}', [MarketingPreferencesController::class, 'confirmEmail'])->name('odden.marketing.confirm');
 
     // Net Promoter Score (NPS) 1-Click Rating & Feedback
-    Route::get('/marketing/nps/{token}/{score}', [NpsSurveyController::class, 'recordScore'])->name('focal.marketing.nps.rate');
+    Route::get('/marketing/nps/{token}/{score}', [NpsSurveyController::class, 'recordScore'])->name('odden.marketing.nps.rate');
     Route::post('/marketing/nps/{token}/feedback', [NpsSurveyController::class, 'submitFeedback'])
-        ->middleware('throttle:focal-public')
-        ->name('focal.marketing.nps.feedback');
+        ->middleware('throttle:odden-public')
+        ->name('odden.marketing.nps.feedback');
 
     // Gated Marketing Assets / Lead Magnet Downloads
-    Route::get('/marketing/assets/{slug}/download', [MarketingAssetController::class, 'download'])->name('focal.marketing.assets.download');
+    Route::get('/marketing/assets/{slug}/download', [MarketingAssetController::class, 'download'])->name('odden.marketing.assets.download');
 
     // Real-Time Dynamic Email Images (Countdown Timers & Personalized Badges)
     Route::get('/marketing/images/countdown-timer.svg', [DynamicEmailImageController::class, 'countdownTimer'])
-        ->name('focal.marketing.images.countdown-timer');
+        ->name('odden.marketing.images.countdown-timer');
     Route::get('/marketing/images/badge.svg', [DynamicEmailImageController::class, 'personalizedBadge'])
-        ->name('focal.marketing.images.badge');
+        ->name('odden.marketing.images.badge');
 });
 
-Route::group(RouteGroup::attributes('focal-marketing.routes.api'), function () use ($apiToken): void {
+Route::group(RouteGroup::attributes('odden-marketing.routes.api'), function () use ($apiToken): void {
     Route::withoutMiddleware(CsrfExemption::middleware())->group(function () use ($apiToken): void {
         // Public, browser-facing endpoints (embedded forms, event sign-ups, in-email AMP forms).
-        Route::middleware('throttle:focal-public')->group(function (): void {
+        Route::middleware('throttle:odden-public')->group(function (): void {
             // External / Embed form submission endpoint (CSRF-exempt for cross-site landing pages)
-            Route::post('/forms/{slug}', [MarketingFormController::class, 'submit'])->name('focal.marketing.forms.api-submit');
+            Route::post('/forms/{slug}', [MarketingFormController::class, 'submit'])->name('odden.marketing.forms.api-submit');
 
             // Marketing Events & Webinar Registrations
-            Route::post('/events/{slug}/register', [MarketingEventController::class, 'register'])->name('focal.marketing.events.register');
+            Route::post('/events/{slug}/register', [MarketingEventController::class, 'register'])->name('odden.marketing.events.register');
 
             // Interactive In-Email AMP Form Handlers (NPS feedback & event RSVPs)
-            Route::post('/amp/feedback', [AmpFormController::class, 'feedback'])->name('focal.marketing.amp.feedback');
-            Route::post('/amp/rsvp', [AmpFormController::class, 'rsvp'])->name('focal.marketing.amp.rsvp');
+            Route::post('/amp/feedback', [AmpFormController::class, 'feedback'])->name('odden.marketing.amp.feedback');
+            Route::post('/amp/rsvp', [AmpFormController::class, 'rsvp'])->name('odden.marketing.amp.rsvp');
         });
 
         // Server-to-server endpoints: require the marketing API token.
-        Route::middleware([$apiToken, 'throttle:focal-api'])->group(function (): void {
+        Route::middleware([$apiToken, 'throttle:odden-api'])->group(function (): void {
             // Inbound External Webhook Lead Ingestion (Zapier, LinkedIn Lead Gen, Zoom Webinars)
-            Route::post('/leads/webhook/{source?}', [ExternalLeadWebhookController::class, 'handle'])->name('focal.marketing.leads.webhook');
+            Route::post('/leads/webhook/{source?}', [ExternalLeadWebhookController::class, 'handle'])->name('odden.marketing.leads.webhook');
 
             // Inbound ESP Deliverability Webhooks
-            Route::post('/webhooks/deliverability', [EspWebhookController::class, 'deliverability'])->name('focal.marketing.webhooks.deliverability');
+            Route::post('/webhooks/deliverability', [EspWebhookController::class, 'deliverability'])->name('odden.marketing.webhooks.deliverability');
 
             // Webinar attendance webhooks
-            Route::post('/events/{slug}/attendance-webhook', [MarketingEventController::class, 'attendanceWebhook'])->name('focal.marketing.events.attendance-webhook');
+            Route::post('/events/{slug}/attendance-webhook', [MarketingEventController::class, 'attendanceWebhook'])->name('odden.marketing.events.attendance-webhook');
 
             // In-App Custom Behavioral Events (Product-Led Growth / Custom Tracking API)
-            Route::post('/events/track', [CustomBehavioralEventController::class, 'track'])->name('focal.marketing.events.track');
+            Route::post('/events/track', [CustomBehavioralEventController::class, 'track'])->name('odden.marketing.events.track');
 
             // Inbound Webhook Workflow Enrollment (Zapier, Segment, Stripe, telemetry)
-            Route::post('/workflows/{workflow}/enroll', [WorkflowEnrollmentWebhookController::class, 'enroll'])->name('focal.marketing.workflows.enroll-webhook');
+            Route::post('/workflows/{workflow}/enroll', [WorkflowEnrollmentWebhookController::class, 'enroll'])->name('odden.marketing.workflows.enroll-webhook');
 
             // Headless Transactional Email API (trigger template send programmatically via API)
-            Route::post('/templates/{template}/send', [TransactionalTemplateController::class, 'send'])->name('focal.marketing.templates.send');
-            Route::post('/templates/{template}/send-batch', [TransactionalTemplateController::class, 'sendBatch'])->name('focal.marketing.templates.send-batch');
+            Route::post('/templates/{template}/send', [TransactionalTemplateController::class, 'send'])->name('odden.marketing.templates.send');
+            Route::post('/templates/{template}/send-batch', [TransactionalTemplateController::class, 'sendBatch'])->name('odden.marketing.templates.send-batch');
         });
     });
 });

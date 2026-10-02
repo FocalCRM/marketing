@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use DoPHP\MailBuilder\MailBuilder;
+use Odden\MailBuilder\MailBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -186,7 +186,7 @@ class MarketingTemplate extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.templates', 'focal_marketing_templates');
+        return config('odden-marketing.tables.templates', 'odden_marketing_templates');
     }
 
     /**

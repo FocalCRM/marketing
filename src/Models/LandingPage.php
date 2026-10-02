@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Support\UserModel;
+use Odden\Core\Support\UserModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -71,7 +71,7 @@ class LandingPage extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.landing_pages', 'focal_marketing_landing_pages');
+        return config('odden-marketing.tables.landing_pages', 'odden_marketing_landing_pages');
     }
 
     /**
@@ -128,7 +128,7 @@ class LandingPage extends Model
      */
     public function getPublicUrl(): string
     {
-        return route('focal.marketing.landing-pages.show', $this->slug);
+        return route('odden.marketing.landing-pages.show', $this->slug);
     }
 
     /**

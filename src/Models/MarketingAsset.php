@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -58,7 +58,7 @@ class MarketingAsset extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.assets', 'focal_marketing_assets');
+        return config('odden-marketing.tables.assets', 'odden_marketing_assets');
     }
 
     /**
@@ -109,7 +109,7 @@ class MarketingAsset extends Model
     {
         return $this->belongsToMany(
             Contact::class,
-            config('focal-marketing.tables.asset_downloads', 'focal_marketing_asset_downloads'),
+            config('odden-marketing.tables.asset_downloads', 'odden_marketing_asset_downloads'),
             'asset_id',
             'contact_id'
         )->withTimestamps()->withPivot(['downloaded_at', 'ip_address']);
@@ -126,7 +126,7 @@ class MarketingAsset extends Model
             $params['signature'] = $this->downloadSignature($contact->id);
         }
 
-        return route('focal.marketing.assets.download', array_merge(['slug' => $this->slug], $params));
+        return route('odden.marketing.assets.download', array_merge(['slug' => $this->slug], $params));
     }
 
     /**

@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\CompileCampaignMessageAction;
-use Focal\Marketing\Actions\DispatchCampaignAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\CompileCampaignMessageAction;
+use Odden\Marketing\Actions\DispatchCampaignAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -26,14 +26,14 @@ class CampaignDispatchAndTrackingTest extends TestCase
         $template = MarketingTemplate::create([
             'name' => 'Newsletter Edition #1',
             'subject' => 'Product Updates',
-            'body_html' => '<html><body><p>Hello {{contact.first_name}}, welcome to {{company.name}}!</p><a href="https://focal.test/pricing">Check Pricing</a></body></html>',
+            'body_html' => '<html><body><p>Hello {{contact.first_name}}, welcome to {{company.name}}!</p><a href="https://odden.test/pricing">Check Pricing</a></body></html>',
         ]);
 
         $campaign = Campaign::create([
             'name' => 'Q1 Product Launch',
             'subject' => 'Major updates are here',
-            'sender_name' => 'Focal Team',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden Team',
+            'sender_email' => 'news@odden.test',
             'template_id' => $template->id,
             'status' => CampaignStatus::Draft,
         ]);
@@ -73,8 +73,8 @@ class CampaignDispatchAndTrackingTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'March Newsletter',
             'subject' => 'Our new features',
-            'sender_name' => 'Focal Team',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden Team',
+            'sender_email' => 'news@odden.test',
             'template_id' => $template->id,
             'status' => CampaignStatus::Draft,
         ]);
@@ -105,12 +105,12 @@ class CampaignDispatchAndTrackingTest extends TestCase
         $this->assertNotNull($campaign->sent_at);
         $this->assertSame(1, $campaign->delivered_count);
 
-        $this->assertDatabaseHas('focal_marketing_campaign_recipients', [
+        $this->assertDatabaseHas('odden_marketing_campaign_recipients', [
             'campaign_id' => $campaign->id,
             'email' => 'barney@blackmesa.test',
         ]);
 
-        $this->assertDatabaseMissing('focal_marketing_campaign_recipients', [
+        $this->assertDatabaseMissing('odden_marketing_campaign_recipients', [
             'campaign_id' => $campaign->id,
             'email' => 'breen@citadel.test',
         ]);
@@ -121,8 +121,8 @@ class CampaignDispatchAndTrackingTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Open Test',
             'subject' => 'Testing opens',
-            'sender_name' => 'Focal',
-            'sender_email' => 'focal@test.com',
+            'sender_name' => 'Odden',
+            'sender_email' => 'odden@test.com',
             'status' => CampaignStatus::Sent,
             'delivered_count' => 10,
         ]);
@@ -153,8 +153,8 @@ class CampaignDispatchAndTrackingTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Click Test',
             'subject' => 'Testing clicks',
-            'sender_name' => 'Focal',
-            'sender_email' => 'focal@test.com',
+            'sender_name' => 'Odden',
+            'sender_email' => 'odden@test.com',
             'status' => CampaignStatus::Sent,
             'delivered_count' => 10,
         ]);
@@ -165,7 +165,7 @@ class CampaignDispatchAndTrackingTest extends TestCase
             'status' => RecipientStatus::Sent,
         ]);
 
-        $targetUrl = 'https://focal.test/special-offer';
+        $targetUrl = 'https://odden.test/special-offer';
         $response = $this->get($recipient->getClickRedirectUrl($targetUrl));
 
         $response->assertRedirect($targetUrl);
@@ -185,8 +185,8 @@ class CampaignDispatchAndTrackingTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Unsub Test',
             'subject' => 'Unsubscribe Test',
-            'sender_name' => 'Focal',
-            'sender_email' => 'focal@test.com',
+            'sender_name' => 'Odden',
+            'sender_email' => 'odden@test.com',
             'status' => CampaignStatus::Sent,
         ]);
 

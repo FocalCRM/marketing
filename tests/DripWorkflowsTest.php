@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\EnrollContactInWorkflowAction;
-use Focal\Marketing\Actions\ProcessFormSubmissionAction;
-use Focal\Marketing\Enums\WorkflowEnrollmentStatus;
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Models\MarketingWorkflow;
-use Focal\Marketing\Models\WorkflowEnrollment;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\EnrollContactInWorkflowAction;
+use Odden\Marketing\Actions\ProcessFormSubmissionAction;
+use Odden\Marketing\Enums\WorkflowEnrollmentStatus;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Models\MarketingWorkflow;
+use Odden\Marketing\Models\WorkflowEnrollment;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class DripWorkflowsTest extends TestCase
@@ -41,7 +41,7 @@ class DripWorkflowsTest extends TestCase
             'name' => 'Send Welcome Email',
             'type' => WorkflowStepType::SendEmail,
             'config' => [
-                'subject' => 'Welcome to Focal CRM, {{ first_name }}!',
+                'subject' => 'Welcome to Odden CRM, {{ first_name }}!',
                 'body' => '<p>Hello {{ first_name }}, thanks for joining!</p>',
             ],
         ]);
@@ -247,7 +247,7 @@ class DripWorkflowsTest extends TestCase
         $contact = $submission->contact;
         $this->assertNotNull($contact);
 
-        $this->assertDatabaseHas('focal_marketing_workflow_enrollments', [
+        $this->assertDatabaseHas('odden_marketing_workflow_enrollments', [
             'workflow_id' => $workflow->id,
             'contact_id' => $contact->id,
             'status' => WorkflowEnrollmentStatus::Completed->value,

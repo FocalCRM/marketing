@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Marketing\Models\MarketingTemplate;
-use Focal\Marketing\Services\MarketingWebhookDispatcher;
+use Odden\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Services\MarketingWebhookDispatcher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
@@ -21,8 +21,8 @@ class WebhookSecretSecurityTest extends TestCase
 
     public function test_webhook_config_keys_default_to_null(): void
     {
-        $this->assertNull(config('focal-marketing.webhooks.outbound_url'));
-        $this->assertNull(config('focal-marketing.webhooks.secret'));
+        $this->assertNull(config('odden-marketing.webhooks.outbound_url'));
+        $this->assertNull(config('odden-marketing.webhooks.secret'));
     }
 
     public function test_webhook_is_not_sent_without_a_secret(): void
@@ -43,7 +43,7 @@ class WebhookSecretSecurityTest extends TestCase
         Mail::fake();
         MarketingTemplate::create(['name' => 'Receipt', 'slug' => 'receipt', 'subject' => 'Receipt', 'body_html' => '<p>Hi</p>']);
 
-        $this->postJson(route('focal.marketing.templates.send', ['template' => 'receipt']), [
+        $this->postJson(route('odden.marketing.templates.send', ['template' => 'receipt']), [
             'to' => 'sam@example.com',
             'webhook_url' => 'https://hooks.example.test/in',
         ])->assertOk();
@@ -55,15 +55,15 @@ class WebhookSecretSecurityTest extends TestCase
     {
         Http::fake();
         config([
-            'focal-marketing.webhooks.outbound_url' => 'https://hooks.example.test/in',
-            'focal-marketing.webhooks.secret' => 'whsec_configured',
+            'odden-marketing.webhooks.outbound_url' => 'https://hooks.example.test/in',
+            'odden-marketing.webhooks.secret' => 'whsec_configured',
         ]);
 
         $this->assertTrue(MarketingWebhookDispatcher::dispatch('template.email.sent', ['id' => 1]));
 
         Http::assertSent(fn (Request $request): bool => MarketingWebhookDispatcher::verifySignature(
             $request->body(),
-            $request->header('X-Focal-Signature')[0],
+            $request->header('X-Odden-Signature')[0],
             'whsec_configured',
         ));
     }
@@ -84,7 +84,7 @@ class WebhookSecretSecurityTest extends TestCase
             && $request->header('Content-Type')[0] === 'application/json'
             && MarketingWebhookDispatcher::verifySignature(
                 $request->body(),
-                $request->header('X-Focal-Signature')[0],
+                $request->header('X-Odden-Signature')[0],
                 'whsec_raw_body',
             ));
     }

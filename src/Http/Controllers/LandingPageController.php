@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
-use Focal\Marketing\Actions\ProcessFormSubmissionAction;
-use Focal\Marketing\Actions\RecordWebVisitAction;
-use Focal\Marketing\Models\LandingPage;
+use Odden\Marketing\Actions\ProcessFormSubmissionAction;
+use Odden\Marketing\Actions\RecordWebVisitAction;
+use Odden\Marketing\Models\LandingPage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -28,7 +28,7 @@ class LandingPageController extends Controller
         $page->increment('views_count');
 
         // Record inbound web visit
-        $rawVid = $request->cookie('focal_vid');
+        $rawVid = $request->cookie('odden_vid');
         $visitorToken = is_string($rawVid) ? $rawVid : null;
         $referer = is_string($r = $request->header('referer')) ? $r : null;
         $utmSource = is_string($s = $request->query('utm_source')) ? $s : null;
@@ -38,7 +38,7 @@ class LandingPageController extends Controller
         $visitAction->execute([
             'visitor_token' => $visitorToken,
             'url' => $request->fullUrl(),
-            'path' => route('focal.marketing.landing-pages.show', $slug, false),
+            'path' => route('odden.marketing.landing-pages.show', $slug, false),
             'title' => $page->title,
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
@@ -48,7 +48,7 @@ class LandingPageController extends Controller
             'utm_campaign' => $utmCampaign,
         ]);
 
-        return view('focal-marketing::landing-page', compact('page'));
+        return view('odden-marketing::landing-page', compact('page'));
     }
 
     /**
@@ -68,7 +68,7 @@ class LandingPageController extends Controller
         }
 
         $inputData = $request->except(['_token']);
-        $rawVid = $request->cookie('focal_vid');
+        $rawVid = $request->cookie('odden_vid');
         if (is_string($rawVid)) {
             $inputData['visitor_token'] = $rawVid;
         }

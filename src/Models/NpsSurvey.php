@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Collection;
@@ -37,7 +37,7 @@ class NpsSurvey extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.nps_surveys', 'focal_marketing_nps_surveys');
+        return config('odden-marketing.tables.nps_surveys', 'odden_marketing_nps_surveys');
     }
 
     /**

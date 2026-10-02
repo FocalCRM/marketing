@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
 use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
 use BladeUI\Icons\BladeIconsServiceProvider;
-use DoPHP\MailBuilder\MailBuilderServiceProvider;
+use Odden\MailBuilder\MailBuilderServiceProvider;
 use Filament\Actions\ActionsServiceProvider;
 use Filament\Forms\FormsServiceProvider;
 use Filament\Infolists\InfolistsServiceProvider;
 use Filament\Notifications\NotificationsServiceProvider;
 use Filament\Schemas\SchemasServiceProvider;
 use Filament\Support\SupportServiceProvider;
-use Focal\Core\CoreServiceProvider;
-use Focal\Marketing\MarketingServiceProvider;
-use Focal\Marketing\Tests\Fixtures\User;
-use Focal\Sales\SalesServiceProvider;
+use Odden\Core\CoreServiceProvider;
+use Odden\Marketing\MarketingServiceProvider;
+use Odden\Marketing\Tests\Fixtures\User;
+use Odden\Sales\SalesServiceProvider;
 use Kirschbaum\PowerJoins\PowerJoinsServiceProvider;
 use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
@@ -64,7 +64,7 @@ abstract class TestCase extends Orchestra
     {
         $app['config']->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
         $app['config']->set('auth.providers.users.model', User::class);
-        $app['config']->set('focal-marketing.api.token', self::API_TOKEN);
+        $app['config']->set('odden-marketing.api.token', self::API_TOKEN);
     }
 
     /**
@@ -75,7 +75,7 @@ abstract class TestCase extends Orchestra
     {
         parent::setUp();
 
-        $this->withHeader('X-Focal-Token', self::API_TOKEN);
+        $this->withHeader('X-Odden-Token', self::API_TOKEN);
     }
 
     /**

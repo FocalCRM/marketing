@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
-use Focal\Core\Enums\ActivityType;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\RecordWebVisitAction;
-use Focal\Marketing\Actions\StitchVisitorToContactAction;
-use Focal\Marketing\Support\VisitorToken;
+use Odden\Core\Enums\ActivityType;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\RecordWebVisitAction;
+use Odden\Marketing\Actions\StitchVisitorToContactAction;
+use Odden\Marketing\Support\VisitorToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -56,7 +56,7 @@ class WebTrackingController extends Controller
 
     /**
      * Ingestion endpoint for external website form auto-capture.
-     * Automatically ingests HTML forms submitted on host websites into Focal Leads.
+     * Automatically ingests HTML forms submitted on host websites into Odden Leads.
      */
     public function autoCapture(Request $request, StitchVisitorToContactAction $stitch): JsonResponse
     {
@@ -129,10 +129,10 @@ class WebTrackingController extends Controller
     {
         $script = <<<'JS'
 (function() {
-    var FOCAL_PAGEVIEW_URL = __FOCAL_PAGEVIEW_URL__;
-    var FOCAL_AUTO_CAPTURE_URL = __FOCAL_AUTO_CAPTURE_URL__;
+    var ODDEN_PAGEVIEW_URL = __ODDEN_PAGEVIEW_URL__;
+    var ODDEN_AUTO_CAPTURE_URL = __ODDEN_AUTO_CAPTURE_URL__;
 
-__FOCAL_VISITOR_ID_JS__
+__ODDEN_VISITOR_ID_JS__
     // JSON sent as text/plain is a CORS-safelisted request: no preflight, so it works from
     // any domain. fetch() only sends cookies same-origin (hosted landing pages); the visitor
     // id travels in the body. The endpoints parse the raw body as JSON.
@@ -152,7 +152,7 @@ __FOCAL_VISITOR_ID_JS__
     }
 
     function sendPageView() {
-        var vid = focalVisitorId();
+        var vid = oddenVisitorId();
         var params = new URLSearchParams(window.location.search);
         var payload = {
             visitor_token: vid,
@@ -164,14 +164,14 @@ __FOCAL_VISITOR_ID_JS__
             utm_medium: params.get('utm_medium'),
             utm_campaign: params.get('utm_campaign')
         };
-        post(FOCAL_PAGEVIEW_URL, payload, false);
+        post(ODDEN_PAGEVIEW_URL, payload, false);
     }
 
     function interceptForms() {
         var forms = document.querySelectorAll('form');
         forms.forEach(function(form) {
-            if (form.getAttribute('data-focal-tracked')) return;
-            form.setAttribute('data-focal-tracked', 'true');
+            if (form.getAttribute('data-odden-tracked')) return;
+            form.setAttribute('data-odden-tracked', 'true');
             form.addEventListener('submit', function() {
                 var emailInput = form.querySelector('input[type="email"], input[name*="email"]');
                 if (!emailInput || !emailInput.value) return;
@@ -182,7 +182,7 @@ __FOCAL_VISITOR_ID_JS__
                 var params = new URLSearchParams(window.location.search);
 
                 var payload = {
-                    visitor_token: focalVisitorId(),
+                    visitor_token: oddenVisitorId(),
                     email: emailInput.value,
                     name: nameInput ? nameInput.value : null,
                     first_name: firstInput ? firstInput.value : null,
@@ -194,7 +194,7 @@ __FOCAL_VISITOR_ID_JS__
                     utm_campaign: params.get('utm_campaign')
                 };
 
-                post(FOCAL_AUTO_CAPTURE_URL, payload, true);
+                post(ODDEN_AUTO_CAPTURE_URL, payload, true);
             });
         });
     }
@@ -213,9 +213,9 @@ JS;
 
         // Absolute URLs so the script works when embedded on other domains and honors route prefixes.
         $script = strtr($script, [
-            '__FOCAL_PAGEVIEW_URL__' => json_encode(route('focal.marketing.track.pageview'), JSON_UNESCAPED_SLASHES),
-            '__FOCAL_AUTO_CAPTURE_URL__' => json_encode(route('focal.marketing.forms.auto-capture'), JSON_UNESCAPED_SLASHES),
-            "__FOCAL_VISITOR_ID_JS__\n" => VisitorToken::javascript(),
+            '__ODDEN_PAGEVIEW_URL__' => json_encode(route('odden.marketing.track.pageview'), JSON_UNESCAPED_SLASHES),
+            '__ODDEN_AUTO_CAPTURE_URL__' => json_encode(route('odden.marketing.forms.auto-capture'), JSON_UNESCAPED_SLASHES),
+            "__ODDEN_VISITOR_ID_JS__\n" => VisitorToken::javascript(),
         ]);
 
         return response($script, 200, [

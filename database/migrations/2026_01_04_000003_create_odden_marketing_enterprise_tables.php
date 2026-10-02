@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Support\UserModel;
+use Odden\Core\Support\UserModel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,15 +14,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $contactsTable = config('focal-core.tables.contacts', 'focal_contacts');
-        $formsTable = config('focal-marketing.tables.forms', 'focal_marketing_forms');
-        $campaignsTable = config('focal-marketing.tables.campaigns', 'focal_marketing_campaigns');
-        $recipientsTable = config('focal-marketing.tables.recipients', 'focal_marketing_campaign_recipients');
+        $contactsTable = config('odden-core.tables.contacts', 'odden_contacts');
+        $formsTable = config('odden-marketing.tables.forms', 'odden_marketing_forms');
+        $campaignsTable = config('odden-marketing.tables.campaigns', 'odden_marketing_campaigns');
+        $recipientsTable = config('odden-marketing.tables.recipients', 'odden_marketing_campaign_recipients');
 
-        $sessionsTable = config('focal-marketing.tables.visitor_sessions', 'focal_marketing_visitor_sessions');
-        $pageViewsTable = config('focal-marketing.tables.page_views', 'focal_marketing_page_views');
-        $landingPagesTable = config('focal-marketing.tables.landing_pages', 'focal_marketing_landing_pages');
-        $espEventsTable = config('focal-marketing.tables.esp_events', 'focal_marketing_esp_events');
+        $sessionsTable = config('odden-marketing.tables.visitor_sessions', 'odden_marketing_visitor_sessions');
+        $pageViewsTable = config('odden-marketing.tables.page_views', 'odden_marketing_page_views');
+        $landingPagesTable = config('odden-marketing.tables.landing_pages', 'odden_marketing_landing_pages');
+        $espEventsTable = config('odden-marketing.tables.esp_events', 'odden_marketing_esp_events');
 
         // 1. Add SMS Consent to Contacts
         Schema::table($contactsTable, function (Blueprint $table): void {
@@ -98,11 +98,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $contactsTable = config('focal-core.tables.contacts', 'focal_contacts');
-        $sessionsTable = config('focal-marketing.tables.visitor_sessions', 'focal_marketing_visitor_sessions');
-        $pageViewsTable = config('focal-marketing.tables.page_views', 'focal_marketing_page_views');
-        $landingPagesTable = config('focal-marketing.tables.landing_pages', 'focal_marketing_landing_pages');
-        $espEventsTable = config('focal-marketing.tables.esp_events', 'focal_marketing_esp_events');
+        $contactsTable = config('odden-core.tables.contacts', 'odden_contacts');
+        $sessionsTable = config('odden-marketing.tables.visitor_sessions', 'odden_marketing_visitor_sessions');
+        $pageViewsTable = config('odden-marketing.tables.page_views', 'odden_marketing_page_views');
+        $landingPagesTable = config('odden-marketing.tables.landing_pages', 'odden_marketing_landing_pages');
+        $espEventsTable = config('odden-marketing.tables.esp_events', 'odden_marketing_esp_events');
 
         Schema::dropIfExists($espEventsTable);
         Schema::dropIfExists($landingPagesTable);

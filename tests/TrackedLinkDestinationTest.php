@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\CompileCampaignMessageAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\CompileCampaignMessageAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\TestResponse;
 
@@ -27,7 +27,7 @@ class TrackedLinkDestinationTest extends TestCase
         $recipient = $this->recipientFor('<p><a href="https://shop.example.com/sale?ref=news&amp;id=5#top">Shop</a></p>', utmAutoTag: true);
 
         $this->followTrackedLink($recipient)->assertRedirect(
-            'https://shop.example.com/sale?ref=news&id=5&utm_source=focal&utm_medium=email&utm_campaign=spring-sale#top'
+            'https://shop.example.com/sale?ref=news&id=5&utm_source=odden&utm_medium=email&utm_campaign=spring-sale#top'
         );
     }
 
@@ -36,7 +36,7 @@ class TrackedLinkDestinationTest extends TestCase
         $recipient = $this->recipientFor('<p><a href="https://shop.example.com/sale?a=1&b=two%20words">Shop</a></p>', utmAutoTag: true);
 
         $this->followTrackedLink($recipient)->assertRedirect(
-            'https://shop.example.com/sale?a=1&b=two%20words&utm_source=focal&utm_medium=email&utm_campaign=spring-sale'
+            'https://shop.example.com/sale?a=1&b=two%20words&utm_source=odden&utm_medium=email&utm_campaign=spring-sale'
         );
     }
 
@@ -68,7 +68,7 @@ class TrackedLinkDestinationTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Spring Sale',
             'subject' => 'Sale',
-            'sender_name' => 'Focal',
+            'sender_name' => 'Odden',
             'sender_email' => 'news@example.com',
             'template_id' => $template->id,
             'status' => CampaignStatus::Draft,

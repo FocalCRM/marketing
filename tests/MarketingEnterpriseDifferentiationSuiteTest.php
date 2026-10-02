@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Enums\LeadStatus;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\ApplyLeadScoringEventAction;
-use Focal\Marketing\Actions\CalculateClosedLoopMetricsAction;
-use Focal\Marketing\Actions\DispatchCampaignAction;
-use Focal\Marketing\Actions\EvaluateSmartContentBlocksAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\LeadScoringEventType;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\MarketingTemplate;
-use Focal\Marketing\Models\MarketingWorkflow;
-use Focal\Marketing\Tests\Fixtures\User;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
-use Focal\Sales\Models\PipelineStage;
+use Odden\Core\Enums\LeadStatus;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\ApplyLeadScoringEventAction;
+use Odden\Marketing\Actions\CalculateClosedLoopMetricsAction;
+use Odden\Marketing\Actions\DispatchCampaignAction;
+use Odden\Marketing\Actions\EvaluateSmartContentBlocksAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Models\MarketingWorkflow;
+use Odden\Marketing\Tests\Fixtures\User;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
+use Odden\Sales\Models\PipelineStage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 
@@ -34,9 +34,9 @@ class MarketingEnterpriseDifferentiationSuiteTest extends TestCase
 
     public function test_send_frequency_capping_suppresses_fatigued_contacts(): void
     {
-        config(['focal-marketing.fatigue_protection.enabled' => true]);
-        config(['focal-marketing.fatigue_protection.min_hours_between_sends' => 24]);
-        config(['focal-marketing.fatigue_protection.max_emails_per_7_days' => 2]);
+        config(['odden-marketing.fatigue_protection.enabled' => true]);
+        config(['odden-marketing.fatigue_protection.min_hours_between_sends' => 24]);
+        config(['odden-marketing.fatigue_protection.max_emails_per_7_days' => 2]);
 
         $freshContact = Contact::factory()->create([
             'email' => 'fresh@enterprise.test',
@@ -57,8 +57,8 @@ class MarketingEnterpriseDifferentiationSuiteTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Q4 Announcement',
             'subject' => 'Important Q4 Announcement',
-            'sender_name' => 'Focal Team',
-            'sender_email' => 'marketing@focal.test',
+            'sender_name' => 'Odden Team',
+            'sender_email' => 'marketing@odden.test',
             'template_id' => $template->id,
             'status' => CampaignStatus::Draft,
         ]);
@@ -73,11 +73,11 @@ class MarketingEnterpriseDifferentiationSuiteTest extends TestCase
         $this->assertEquals(1, $results['suppressed_count']);
 
         // Fresh contact was delivered, fatigued contact was protected
-        $this->assertDatabaseHas('focal_marketing_campaign_recipients', [
+        $this->assertDatabaseHas('odden_marketing_campaign_recipients', [
             'campaign_id' => $campaign->id,
             'contact_id' => $freshContact->id,
         ]);
-        $this->assertDatabaseMissing('focal_marketing_campaign_recipients', [
+        $this->assertDatabaseMissing('odden_marketing_campaign_recipients', [
             'campaign_id' => $campaign->id,
             'contact_id' => $fatiguedContact->id,
         ]);
@@ -110,9 +110,9 @@ class MarketingEnterpriseDifferentiationSuiteTest extends TestCase
         $contact->associateWith($company);
 
         // Apply scoring event that pushes lead score over 100 points
-        config(['focal-marketing.sales_handoff.auto_handoff_on_sql' => true]);
-        config(['focal-marketing.sales_handoff.sql_score_threshold' => 100]);
-        config(['focal-marketing.sales_handoff.default_deal_amount' => 25000.00]);
+        config(['odden-marketing.sales_handoff.auto_handoff_on_sql' => true]);
+        config(['odden-marketing.sales_handoff.sql_score_threshold' => 100]);
+        config(['odden-marketing.sales_handoff.default_deal_amount' => 25000.00]);
 
         app(ApplyLeadScoringEventAction::class)->execute(
             contact: $contact,
@@ -128,7 +128,7 @@ class MarketingEnterpriseDifferentiationSuiteTest extends TestCase
         $this->assertEquals($salesRep->id, $contact->owner_id);
 
         // Verify Deal was automatically generated and associated
-        $this->assertDatabaseHas('focal_deals', [
+        $this->assertDatabaseHas('odden_deals', [
             'pipeline_id' => $pipeline->id,
             'stage_id' => $stage->id,
             'amount' => 25000.00,
@@ -136,7 +136,7 @@ class MarketingEnterpriseDifferentiationSuiteTest extends TestCase
         ]);
 
         // Verify urgent task logged on contact
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_type' => (new Contact)->getMorphClass(),
             'subject_id' => $contact->id,
             'type' => 'task',
@@ -209,8 +209,8 @@ class MarketingEnterpriseDifferentiationSuiteTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Growth Webinar',
             'subject' => 'Webinar Invite',
-            'sender_name' => 'Focal Marketing',
-            'sender_email' => 'marketing@focal.test',
+            'sender_name' => 'Odden Marketing',
+            'sender_email' => 'marketing@odden.test',
             'status' => CampaignStatus::Sent,
             'delivered_count' => 1,
         ]);
@@ -276,16 +276,16 @@ class MarketingEnterpriseDifferentiationSuiteTest extends TestCase
         ]);
         $this->assertNotNull($response->json('enrollment_id'));
 
-        $this->assertDatabaseHas('focal_contacts', [
+        $this->assertDatabaseHas('odden_contacts', [
             'email' => 'developer@startup.io',
             'first_name' => 'Dev',
         ]);
 
-        $this->assertDatabaseHas('focal_companies', [
+        $this->assertDatabaseHas('odden_companies', [
             'name' => 'CloudStack Inc',
         ]);
 
-        $this->assertDatabaseHas('focal_marketing_workflow_enrollments', [
+        $this->assertDatabaseHas('odden_marketing_workflow_enrollments', [
             'workflow_id' => $workflow->id,
             'contact_id' => (int) $response->json('contact_id'),
         ]);

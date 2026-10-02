@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
-use Focal\Marketing\Actions\SubmitNpsResponseAction;
-use Focal\Marketing\Models\NpsResponse;
+use Odden\Marketing\Actions\SubmitNpsResponseAction;
+use Odden\Marketing\Models\NpsResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -27,7 +27,7 @@ class NpsSurveyController extends Controller
         $action->execute($response, $score);
         $survey = $response->survey;
 
-        return view('focal-marketing::nps-feedback', [
+        return view('odden-marketing::nps-feedback', [
             'response' => $response,
             'survey' => $survey,
         ]);

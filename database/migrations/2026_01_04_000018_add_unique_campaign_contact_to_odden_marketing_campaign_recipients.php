@@ -13,11 +13,11 @@ use Illuminate\Support\Facades\Schema;
  */
 return new class extends Migration
 {
-    private const INDEX = 'focal_mkt_recipients_campaign_contact_unique';
+    private const INDEX = 'odden_mkt_recipients_campaign_contact_unique';
 
     public function up(): void
     {
-        $table = config('focal-marketing.tables.recipients', 'focal_marketing_campaign_recipients');
+        $table = config('odden-marketing.tables.recipients', 'odden_marketing_campaign_recipients');
 
         if (! Schema::hasTable($table) || Schema::hasIndex($table, self::INDEX)) {
             return;
@@ -26,7 +26,7 @@ return new class extends Migration
         // Earlier versions created a new row on every dispatch. Some installs delivered
         // campaign mail through a custom compiler, so a duplicate may hold the real
         // engagement: keep the most engaged row for each campaign and contact attached to it.
-        $espEventsTable = config('focal-marketing.tables.esp_events', 'focal_marketing_esp_events');
+        $espEventsTable = config('odden-marketing.tables.esp_events', 'odden_marketing_esp_events');
 
         $groups = DB::table($table)
             ->whereNotNull('contact_id')
@@ -69,7 +69,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        $table = config('focal-marketing.tables.recipients', 'focal_marketing_campaign_recipients');
+        $table = config('odden-marketing.tables.recipients', 'odden_marketing_campaign_recipients');
 
         if (Schema::hasTable($table) && Schema::hasIndex($table, self::INDEX)) {
             Schema::table($table, function (Blueprint $blueprint): void {

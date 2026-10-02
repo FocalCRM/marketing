@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\DispatchCampaignAction;
-use Focal\Marketing\Actions\EvaluateAbTestWinnerAction;
-use Focal\Marketing\Actions\GetCampaignAttributionAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
-use Focal\Sales\Models\PipelineStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\DispatchCampaignAction;
+use Odden\Marketing\Actions\EvaluateAbTestWinnerAction;
+use Odden\Marketing\Actions\GetCampaignAttributionAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
+use Odden\Sales\Models\PipelineStage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Collection;
 
@@ -39,8 +39,8 @@ class AbTestingAndAttributionTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'SaaS Re-engagement Blast',
             'subject' => 'Variant A: We miss you!',
-            'sender_name' => 'Focal Marketing',
-            'sender_email' => 'blast@focal.test',
+            'sender_name' => 'Odden Marketing',
+            'sender_email' => 'blast@odden.test',
             'is_ab_test' => true,
             'variant_b_subject' => 'Variant B: See what is new this month',
             'ab_test_sample_percentage' => 40, // 40% of 10 = 4 contacts test sample
@@ -88,8 +88,8 @@ class AbTestingAndAttributionTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Quarterly Feature Announcement',
             'subject' => 'Variant A Subject',
-            'sender_name' => 'Focal',
-            'sender_email' => 'hello@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'hello@odden.test',
             'is_ab_test' => true,
             'variant_b_subject' => 'Variant B Subject',
             'ab_test_sample_percentage' => 40,
@@ -102,11 +102,11 @@ class AbTestingAndAttributionTest extends TestCase
         // Simulate Variant B getting 2 clicks and Variant A getting 0 clicks
         /** @var CampaignRecipient $recB1 */
         $recB1 = $campaign->recipients()->where('variant', 'B')->first();
-        $recB1->recordClick('https://focal.test/pricing');
+        $recB1->recordClick('https://odden.test/pricing');
 
         /** @var CampaignRecipient $recB2 */
         $recB2 = $campaign->recipients()->where('variant', 'B')->skip(1)->first();
-        $recB2->recordClick('https://focal.test/demo');
+        $recB2->recordClick('https://odden.test/demo');
 
         // Evaluate A/B test winner
         $evalAction = new EvaluateAbTestWinnerAction;
@@ -144,8 +144,8 @@ class AbTestingAndAttributionTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Automated Timer Campaign',
             'subject' => 'Variant A',
-            'sender_name' => 'Focal',
-            'sender_email' => 'focal@test.com',
+            'sender_name' => 'Odden',
+            'sender_email' => 'odden@test.com',
             'is_ab_test' => true,
             'variant_b_subject' => 'Variant B',
             'ab_test_sample_percentage' => 50,

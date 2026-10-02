@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
 use Illuminate\Contracts\Http\Kernel;
 
@@ -23,21 +23,21 @@ class CsrfExemptRoutesTest extends TestCase
         $this->assertNotEmpty($csrf, 'The web middleware group should contain CSRF protection.');
 
         foreach ([
-            'focal.marketing.track.pageview',
-            'focal.marketing.unsubscribe.process',
-            'focal.marketing.forms.auto-capture',
-            'focal.marketing.webhooks.esp',
-            'focal.marketing.forms.api-submit',
-            'focal.marketing.events.register',
-            'focal.marketing.amp.feedback',
-            'focal.marketing.amp.rsvp',
-            'focal.marketing.leads.webhook',
-            'focal.marketing.webhooks.deliverability',
-            'focal.marketing.events.attendance-webhook',
-            'focal.marketing.events.track',
-            'focal.marketing.workflows.enroll-webhook',
-            'focal.marketing.templates.send',
-            'focal.marketing.templates.send-batch',
+            'odden.marketing.track.pageview',
+            'odden.marketing.unsubscribe.process',
+            'odden.marketing.forms.auto-capture',
+            'odden.marketing.webhooks.esp',
+            'odden.marketing.forms.api-submit',
+            'odden.marketing.events.register',
+            'odden.marketing.amp.feedback',
+            'odden.marketing.amp.rsvp',
+            'odden.marketing.leads.webhook',
+            'odden.marketing.webhooks.deliverability',
+            'odden.marketing.events.attendance-webhook',
+            'odden.marketing.events.track',
+            'odden.marketing.workflows.enroll-webhook',
+            'odden.marketing.templates.send',
+            'odden.marketing.templates.send-batch',
         ] as $name) {
             $route = app('router')->getRoutes()->getByName($name);
 

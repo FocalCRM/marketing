@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Marketing\Models\MarketingForm;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Marketing\Models\MarketingForm;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MarketingFormEmbedTest extends TestCase
@@ -47,10 +47,10 @@ class MarketingFormEmbedTest extends TestCase
 
         $response->assertOk();
         $this->assertStringContainsString('application/javascript', (string) $response->headers->get('Content-Type'));
-        $this->assertStringContainsString('focal-embedded-form', $response->getContent());
+        $this->assertStringContainsString('odden-embedded-form', $response->getContent());
         $this->assertStringContainsString('renderForm', $response->getContent());
-        $this->assertStringContainsString('focal-modal-overlay', $response->getContent());
-        $this->assertStringContainsString('focal-slide-in', $response->getContent());
+        $this->assertStringContainsString('odden-modal-overlay', $response->getContent());
+        $this->assertStringContainsString('odden-slide-in', $response->getContent());
         $this->assertStringContainsString('exit-intent', $response->getContent());
     }
 
@@ -69,7 +69,7 @@ class MarketingFormEmbedTest extends TestCase
 
         $payload = [
             'email' => 'prospect@acme.com',
-            'message' => 'We want to buy Focal Enterprise.',
+            'message' => 'We want to buy Odden Enterprise.',
             'visitor_token' => 'vid_test_123',
         ];
 

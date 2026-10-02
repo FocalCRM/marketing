@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -35,7 +35,7 @@ class EmailSuppression extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.suppressions', 'focal_marketing_suppressions');
+        return config('odden-marketing.tables.suppressions', 'odden_marketing_suppressions');
     }
 
     /**

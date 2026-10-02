@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
-use Focal\Marketing\Actions\ProcessEspWebhookAction;
+use Odden\Marketing\Actions\ProcessEspWebhookAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;

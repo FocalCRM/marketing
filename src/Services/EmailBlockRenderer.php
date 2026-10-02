@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Services;
+namespace Odden\Marketing\Services;
 
 class EmailBlockRenderer
 {
@@ -240,7 +240,7 @@ HTML;
      */
     public function renderFooter(array $block): string
     {
-        $companyName = htmlspecialchars((string) ($block['company_name'] ?? 'Focal'));
+        $companyName = htmlspecialchars((string) ($block['company_name'] ?? 'Odden'));
         $address = htmlspecialchars((string) ($block['address'] ?? '123 Market St, San Francisco, CA'));
         $unsubscribeUrl = (string) ($block['unsubscribe_url'] ?? '{{unsubscribe_url}}');
 
@@ -270,10 +270,10 @@ HTML;
             'product_launch' => [
                 [
                     'type' => 'hero',
-                    'title' => 'Introducing Focal 2.0 🚀',
+                    'title' => 'Introducing Odden 2.0 🚀',
                     'subtitle' => 'The fastest, modern, open CRM and Marketing engine built for high-growth teams.',
                     'button_text' => 'Explore the Release',
-                    'button_url' => 'https://focal.test/features',
+                    'button_url' => 'https://odden.test/features',
                     'bg_color' => '#0f172a',
                 ],
                 [
@@ -286,7 +286,7 @@ HTML;
                 ],
                 [
                     'type' => 'testimonial',
-                    'quote' => 'Focal replaced our entire HubSpot stack in less than two weeks, cutting our SaaS spend by 80%.',
+                    'quote' => 'Odden replaced our entire HubSpot stack in less than two weeks, cutting our SaaS spend by 80%.',
                     'author' => 'Sarah Connor',
                     'role' => 'VP of Growth',
                     'company' => 'Cyberdyne Systems',
@@ -294,13 +294,13 @@ HTML;
                 [
                     'type' => 'cta',
                     'heading' => 'Ready to upgrade your revenue engine?',
-                    'text' => 'Join thousands of companies scaling with Focal.',
+                    'text' => 'Join thousands of companies scaling with Odden.',
                     'button_text' => 'Book a Live Demo',
-                    'button_url' => 'https://focal.test/demo',
+                    'button_url' => 'https://odden.test/demo',
                 ],
                 [
                     'type' => 'footer',
-                    'company_name' => 'Focal Marketing',
+                    'company_name' => 'Odden Marketing',
                     'address' => '548 Market St, San Francisco, CA 94104',
                 ],
             ],
@@ -310,7 +310,7 @@ HTML;
                     'title' => '{{campaign.subject}}',
                     'subtitle' => 'Latest news and updates from {{company.name}}.',
                     'button_text' => 'Read Full Story',
-                    'button_url' => 'https://focal.test',
+                    'button_url' => 'https://odden.test',
                 ],
                 [
                     'type' => 'text',
@@ -318,7 +318,7 @@ HTML;
                 ],
                 [
                     'type' => 'footer',
-                    'company_name' => 'Focal',
+                    'company_name' => 'Odden',
                     'address' => 'San Francisco, CA',
                 ],
             ],

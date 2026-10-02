@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Exceptions;
+namespace Odden\Marketing\Exceptions;
 
-use Focal\Marketing\Models\Campaign;
+use Odden\Marketing\Models\Campaign;
 use RuntimeException;
 
 /**

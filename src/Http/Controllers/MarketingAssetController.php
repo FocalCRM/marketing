@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
-use Focal\Marketing\Actions\TrackAssetDownloadAction;
-use Focal\Marketing\Models\MarketingAsset;
+use Odden\Marketing\Actions\TrackAssetDownloadAction;
+use Odden\Marketing\Models\MarketingAsset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;

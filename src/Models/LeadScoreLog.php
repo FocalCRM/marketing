@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -50,7 +50,7 @@ class LeadScoreLog extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.score_logs', 'focal_marketing_lead_score_logs');
+        return config('odden-marketing.tables.score_logs', 'odden_marketing_lead_score_logs');
     }
 
     /**

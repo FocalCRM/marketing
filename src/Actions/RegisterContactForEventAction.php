@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\LeadScoringEventType;
-use Focal\Marketing\Models\MarketingEvent;
-use Focal\Marketing\Models\MarketingEventRegistration;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Models\MarketingEvent;
+use Odden\Marketing\Models\MarketingEventRegistration;
 use Illuminate\Support\Facades\DB;
 
 class RegisterContactForEventAction

@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Core\Enums\LeadStatus;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Support\UserModel;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
+use Odden\Core\Enums\LeadStatus;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Support\UserModel;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
 use Illuminate\Database\Eloquent\Model;
 
 class HandoffLeadToSalesAction
@@ -66,7 +66,7 @@ class HandoffLeadToSalesAction
 
             if ($pipeline !== null && $stageId !== null) {
                 $finalDealName = $dealName ?? "MQL Deal: {$contact->full_name}";
-                $finalAmount = $amount ?? (float) config('focal-marketing.sales_handoff.default_deal_amount', 10000.00);
+                $finalAmount = $amount ?? (float) config('odden-marketing.sales_handoff.default_deal_amount', 10000.00);
 
                 /** @var Deal $deal */
                 $deal = Deal::create([

@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -42,7 +42,7 @@ class CustomBehavioralEvent extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.custom_behavioral_events', 'focal_custom_behavioral_events');
+        return config('odden-marketing.tables.custom_behavioral_events', 'odden_custom_behavioral_events');
     }
 
     /**

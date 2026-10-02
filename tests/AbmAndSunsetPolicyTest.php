@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\CalculateCompanyIntentScoreAction;
-use Focal\Marketing\Actions\CheckFatiguePolicyAction;
-use Focal\Marketing\Actions\DetectUnengagedContactsAction;
-use Focal\Marketing\Actions\ExecuteSunsetPolicyAction;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\CalculateCompanyIntentScoreAction;
+use Odden\Marketing\Actions\CheckFatiguePolicyAction;
+use Odden\Marketing\Actions\DetectUnengagedContactsAction;
+use Odden\Marketing\Actions\ExecuteSunsetPolicyAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AbmAndSunsetPolicyTest extends TestCase
@@ -55,7 +55,7 @@ class AbmAndSunsetPolicyTest extends TestCase
         $this->assertTrue($updated->isSurging());
 
         // Verify automated task logged for account owner
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_id' => $company->id,
             'title' => 'ABM Intent Surge: Stripe Inc',
         ]);
@@ -100,7 +100,7 @@ class AbmAndSunsetPolicyTest extends TestCase
 
         $dormantContact->refresh();
         $this->assertSame('reengagement_sent', $dormantContact->sunset_stage);
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_id' => $dormantContact->id,
             'title' => 'Sunset Policy: Re-engagement Step Triggered',
         ]);
@@ -110,7 +110,7 @@ class AbmAndSunsetPolicyTest extends TestCase
 
         $dormantContact->refresh();
         $this->assertSame('suppressed', $dormantContact->sunset_stage);
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_id' => $dormantContact->id,
             'title' => 'Sunset Policy: Contact Suppressed',
         ]);

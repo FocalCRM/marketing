@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\CalculateRecipientOptimalSendTimeAction;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\CalculateRecipientOptimalSendTimeAction;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 
@@ -64,8 +64,8 @@ class CalculateRecipientOptimalSendTimeActionTest extends TestCase
         $campaignPast = Campaign::create([
             'name' => 'Past 1',
             'subject' => 'Old',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
         ]);
 
         // Create past opened recipients at 14:00 (2 PM) EDT (18:00 UTC)
@@ -82,8 +82,8 @@ class CalculateRecipientOptimalSendTimeActionTest extends TestCase
         $campaignPast2 = Campaign::create([
             'name' => 'Past 2',
             'subject' => 'Old',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
         ]);
 
         CampaignRecipient::create([

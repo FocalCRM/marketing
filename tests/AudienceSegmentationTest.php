@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Enums\ListType;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Marketing\Actions\DispatchCampaignAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\MarketingSubscription;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Enums\ListType;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Marketing\Actions\DispatchCampaignAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\MarketingSubscription;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AudienceSegmentationTest extends TestCase
@@ -64,8 +64,8 @@ class AudienceSegmentationTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Enterprise VIP Invitation',
             'subject' => 'Exclusive VIP Roundtable Invitation',
-            'sender_name' => 'Focal Sales',
-            'sender_email' => 'vip@focal.test',
+            'sender_name' => 'Odden Sales',
+            'sender_email' => 'vip@odden.test',
             'crm_list_id' => $smartList->id,
             'status' => CampaignStatus::Draft,
         ]);
@@ -79,19 +79,19 @@ class AudienceSegmentationTest extends TestCase
         $this->assertSame(0, $result['suppressed_count']);
 
         // Check recipients
-        $this->assertDatabaseHas('focal_marketing_campaign_recipients', [
+        $this->assertDatabaseHas('odden_marketing_campaign_recipients', [
             'campaign_id' => $campaign->id,
             'contact_id' => $lead1->id,
             'status' => RecipientStatus::Sent->value,
         ]);
 
-        $this->assertDatabaseHas('focal_marketing_campaign_recipients', [
+        $this->assertDatabaseHas('odden_marketing_campaign_recipients', [
             'campaign_id' => $campaign->id,
             'contact_id' => $lead2->id,
             'status' => RecipientStatus::Sent->value,
         ]);
 
-        $this->assertDatabaseMissing('focal_marketing_campaign_recipients', [
+        $this->assertDatabaseMissing('odden_marketing_campaign_recipients', [
             'campaign_id' => $campaign->id,
             'contact_id' => $lead3->id,
         ]);
@@ -102,19 +102,19 @@ class AudienceSegmentationTest extends TestCase
         $contactActive = Contact::create([
             'first_name' => 'Active',
             'last_name' => 'Subscriber',
-            'email' => 'active@focal.test',
+            'email' => 'active@odden.test',
             'lead_score' => 70,
         ]);
 
         $contactOptedOut = Contact::create([
             'first_name' => 'Opted',
             'last_name' => 'Out',
-            'email' => 'optout@focal.test',
+            'email' => 'optout@odden.test',
             'lead_score' => 90,
         ]);
 
         // Explicitly suppress opted out contact
-        MarketingSubscription::unsubscribe('optout@focal.test', $contactOptedOut->id);
+        MarketingSubscription::unsubscribe('optout@odden.test', $contactOptedOut->id);
 
         $smartList = CrmList::create([
             'name' => 'All Qualified Leads',
@@ -128,8 +128,8 @@ class AudienceSegmentationTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Product Feature Webinar',
             'subject' => 'See New Features Live',
-            'sender_name' => 'Focal Product',
-            'sender_email' => 'product@focal.test',
+            'sender_name' => 'Odden Product',
+            'sender_email' => 'product@odden.test',
             'crm_list_id' => $smartList->id,
         ]);
 
@@ -141,14 +141,14 @@ class AudienceSegmentationTest extends TestCase
         $this->assertSame(1, $result['suppressed_count']);
 
         // Check delivery to active subscriber
-        $this->assertDatabaseHas('focal_marketing_campaign_recipients', [
+        $this->assertDatabaseHas('odden_marketing_campaign_recipients', [
             'campaign_id' => $campaign->id,
             'contact_id' => $contactActive->id,
             'status' => RecipientStatus::Sent->value,
         ]);
 
         // Check that opted out contact was NOT sent
-        $this->assertDatabaseMissing('focal_marketing_campaign_recipients', [
+        $this->assertDatabaseMissing('odden_marketing_campaign_recipients', [
             'campaign_id' => $campaign->id,
             'contact_id' => $contactOptedOut->id,
             'status' => RecipientStatus::Sent->value,

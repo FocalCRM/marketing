@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -47,7 +47,7 @@ class MarketingEventRegistration extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.event_registrations', 'focal_marketing_event_registrations');
+        return config('odden-marketing.tables.event_registrations', 'odden_marketing_event_registrations');
     }
 
     /**

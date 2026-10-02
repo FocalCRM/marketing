@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Support\UserModel;
-use Focal\Marketing\Enums\WorkflowEnrollmentStatus;
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Mail\MarketingMessageMailable;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Models\MarketingTemplate;
-use Focal\Marketing\Models\WorkflowEnrollment;
-use Focal\Marketing\Models\WorkflowLog;
-use Focal\Marketing\Models\WorkflowStep;
-use Focal\Marketing\Support\MarketingMailer;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Support\UserModel;
+use Odden\Marketing\Enums\WorkflowEnrollmentStatus;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Mail\MarketingMessageMailable;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Models\WorkflowEnrollment;
+use Odden\Marketing\Models\WorkflowLog;
+use Odden\Marketing\Models\WorkflowStep;
+use Odden\Marketing\Support\MarketingMailer;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
 use Illuminate\Support\Facades\Http;
 
 class ExecuteWorkflowStepAction
@@ -57,7 +57,7 @@ class ExecuteWorkflowStepAction
 
                 /** @var MarketingTemplate|null $template */
                 $template = MarketingTemplate::query()->find($templateId);
-                $body = $template->body_html ?? ($step->config['body'] ?? 'Hello from Focal Marketing!');
+                $body = $template->body_html ?? ($step->config['body'] ?? 'Hello from Odden Marketing!');
 
                 $compiler = app(CompileCampaignMessageAction::class);
                 $subject = $compiler->compileForContact(
@@ -90,9 +90,9 @@ class ExecuteWorkflowStepAction
                         subjectLine: $subject,
                         htmlBody: $rendered,
                         textBody: $compiler->plainText($rendered),
-                        fromEmail: (string) ($step->config['from_email'] ?? config('focal-marketing.defaults.sender_email')),
-                        fromName: (string) ($step->config['from_name'] ?? config('focal-marketing.defaults.sender_name')),
-                        replyToEmail: ($step->config['reply_to'] ?? config('focal-marketing.defaults.reply_to')) ?: null,
+                        fromEmail: (string) ($step->config['from_email'] ?? config('odden-marketing.defaults.sender_email')),
+                        fromName: (string) ($step->config['from_name'] ?? config('odden-marketing.defaults.sender_name')),
+                        replyToEmail: ($step->config['reply_to'] ?? config('odden-marketing.defaults.reply_to')) ?: null,
                         listUnsubscribeUrl: $contact->getPreferenceCenterUrl(),
                     ), $email);
 
@@ -283,7 +283,7 @@ class ExecuteWorkflowStepAction
                 $pipelineId = $step->config['pipeline_id'] ?? null;
                 $stageId = $step->config['stage_id'] ?? null;
 
-                if ($pipelineId === null && class_exists('Focal\\Sales\\Models\\Pipeline')) {
+                if ($pipelineId === null && class_exists('Odden\\Sales\\Models\\Pipeline')) {
                     /** @var Pipeline|null $defaultPipeline */
                     $defaultPipeline = Pipeline::query()->first();
                     $pipelineId = $defaultPipeline?->id;
@@ -291,7 +291,7 @@ class ExecuteWorkflowStepAction
                 }
 
                 $deal = null;
-                if ($pipelineId !== null && $stageId !== null && class_exists('Focal\\Sales\\Models\\Deal')) {
+                if ($pipelineId !== null && $stageId !== null && class_exists('Odden\\Sales\\Models\\Deal')) {
                     /** @var Deal $deal */
                     $deal = Deal::create([
                         'pipeline_id' => (int) $pipelineId,
@@ -398,7 +398,7 @@ class ExecuteWorkflowStepAction
                             'timestamp' => now()->toIso8601String(),
                         ];
 
-                        $secret = (string) ($step->config['secret'] ?? config('app.key', 'focal-secret'));
+                        $secret = (string) ($step->config['secret'] ?? config('app.key', 'odden-secret'));
                         $jsonPayload = (string) json_encode($payload);
                         $signature = hash_hmac('sha256', $jsonPayload, $secret);
 
@@ -407,9 +407,9 @@ class ExecuteWorkflowStepAction
                             : [];
 
                         $headers = array_merge([
-                            'X-Focal-Signature' => $signature,
-                            'X-Focal-Workflow-ID' => (string) $workflow->id,
-                            'User-Agent' => 'Focal-RevOps-Webhook/1.0',
+                            'X-Odden-Signature' => $signature,
+                            'X-Odden-Workflow-ID' => (string) $workflow->id,
+                            'User-Agent' => 'Odden-RevOps-Webhook/1.0',
                         ], $customHeaders);
 
                         $response = Http::withHeaders($headers)

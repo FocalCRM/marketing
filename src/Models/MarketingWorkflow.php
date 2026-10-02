@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Support\UserModel;
-use Focal\Marketing\Enums\WorkflowTriggerType;
+use Odden\Core\Support\UserModel;
+use Odden\Marketing\Enums\WorkflowTriggerType;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -62,7 +62,7 @@ class MarketingWorkflow extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.workflows', 'focal_marketing_workflows');
+        return config('odden-marketing.tables.workflows', 'odden_marketing_workflows');
     }
 
     /**

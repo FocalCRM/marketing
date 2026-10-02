@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Support\ContactToken;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Support\ContactToken;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -55,7 +55,7 @@ class MarketingForm extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.forms', 'focal_marketing_forms');
+        return config('odden-marketing.tables.forms', 'odden_marketing_forms');
     }
 
     /**
@@ -107,7 +107,7 @@ class MarketingForm extends Model
             $parameters['contact'] = ContactToken::make($contact, ContactToken::forForm($this->id));
         }
 
-        return route('focal.marketing.forms.show', $parameters);
+        return route('odden.marketing.forms.show', $parameters);
     }
 
     /**
@@ -115,7 +115,7 @@ class MarketingForm extends Model
      */
     public function getApiEndpoint(): string
     {
-        return route('focal.marketing.forms.api-submit', $this->slug);
+        return route('odden.marketing.forms.api-submit', $this->slug);
     }
 
     /**

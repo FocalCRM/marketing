@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\CalculateClosedLoopMetricsAction;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
-use Focal\Sales\Models\PipelineStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\CalculateClosedLoopMetricsAction;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
+use Odden\Sales\Models\PipelineStage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
@@ -30,8 +30,8 @@ class CampaignBudgetAndRoiTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Q4 Enterprise Webinar',
             'subject' => 'Live Demo',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'budget' => 5000.00,
             'actual_spend' => 2000.00,
             'delivered_count' => 100,
@@ -57,7 +57,7 @@ class CampaignBudgetAndRoiTest extends TestCase
         ]);
 
         // Associate contact with deal
-        $associationsTable = config('focal-core.tables.associations', 'focal_associations');
+        $associationsTable = config('odden-core.tables.associations', 'odden_associations');
         DB::table($associationsTable)->insert([
             'parent_type' => (new Contact)->getMorphClass(),
             'parent_id' => $contact->id,

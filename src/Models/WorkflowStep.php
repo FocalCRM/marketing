@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Enums\WorkflowStepType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -42,7 +42,7 @@ class WorkflowStep extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.workflow_steps', 'focal_marketing_workflow_steps');
+        return config('odden-marketing.tables.workflow_steps', 'odden_marketing_workflow_steps');
     }
 
     /**

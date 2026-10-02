@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $templatesTable = config('focal-marketing.tables.templates', 'focal_marketing_templates');
+        $templatesTable = config('odden-marketing.tables.templates', 'odden_marketing_templates');
 
         if (Schema::hasTable($templatesTable) && ! Schema::hasColumn($templatesTable, 'slots')) {
             Schema::table($templatesTable, function (Blueprint $table): void {
@@ -27,7 +27,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $templatesTable = config('focal-marketing.tables.templates', 'focal_marketing_templates');
+        $templatesTable = config('odden-marketing.tables.templates', 'odden_marketing_templates');
 
         if (Schema::hasTable($templatesTable) && Schema::hasColumn($templatesTable, 'slots')) {
             Schema::table($templatesTable, function (Blueprint $table): void {

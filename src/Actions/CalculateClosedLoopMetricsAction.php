@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\AttributionModel;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\AttributionModel;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -99,7 +99,7 @@ class CalculateClosedLoopMetricsAction
         }
 
         // 2. Query association table for deals connected to these contacts
-        $associationsTable = config('focal-core.tables.associations', 'focal_associations');
+        $associationsTable = config('odden-core.tables.associations', 'odden_associations');
         $contactMorph = (new Contact)->getMorphClass();
         $dealMorph = (new Deal)->getMorphClass();
 

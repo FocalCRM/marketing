@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Support\UserModel;
+use Odden\Core\Support\UserModel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,8 +14,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $templatesTable = config('focal-marketing.tables.templates', 'focal_marketing_templates');
-        $revisionsTable = 'focal_marketing_template_revisions';
+        $templatesTable = config('odden-marketing.tables.templates', 'odden_marketing_templates');
+        $revisionsTable = 'odden_marketing_template_revisions';
 
         if (Schema::hasTable($templatesTable)) {
             Schema::table($templatesTable, function (Blueprint $table) use ($templatesTable): void {
@@ -50,7 +50,7 @@ return new class extends Migration
                 $table->foreignIdFor(UserModel::className(), 'created_by')->nullable()->constrained()->nullOnDelete();
                 $table->timestamps();
 
-                $table->index(['template_id', 'version_number'], 'focal_mkt_template_revisions_version_idx');
+                $table->index(['template_id', 'version_number'], 'odden_mkt_template_revisions_version_idx');
             });
         }
     }
@@ -60,9 +60,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('focal_marketing_template_revisions');
+        Schema::dropIfExists('odden_marketing_template_revisions');
 
-        $templatesTable = config('focal-marketing.tables.templates', 'focal_marketing_templates');
+        $templatesTable = config('odden-marketing.tables.templates', 'odden_marketing_templates');
         if (Schema::hasTable($templatesTable)) {
             Schema::table($templatesTable, function (Blueprint $table) use ($templatesTable): void {
                 $columns = ['slug', 'ab_winner_variant', 'ab_completed_at'];

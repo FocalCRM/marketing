@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\CustomBehavioralEvent;
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Marketing\Models\PageView;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\CustomBehavioralEvent;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Marketing\Models\PageView;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
 use Illuminate\Support\Carbon;
 
 class AnalyzeConversionFunnelAction

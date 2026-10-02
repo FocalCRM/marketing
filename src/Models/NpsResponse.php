@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
@@ -46,7 +46,7 @@ class NpsResponse extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.nps_responses', 'focal_marketing_nps_responses');
+        return config('odden-marketing.tables.nps_responses', 'odden_marketing_nps_responses');
     }
 
     /**
@@ -113,6 +113,6 @@ class NpsResponse extends Model
      */
     public function getRatingUrl(int $score): string
     {
-        return route('focal.marketing.nps.rate', ['token' => $this->token, 'score' => $score]);
+        return route('odden.marketing.nps.rate', ['token' => $this->token, 'score' => $score]);
     }
 }

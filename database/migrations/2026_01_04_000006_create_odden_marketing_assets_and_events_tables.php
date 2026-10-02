@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         // 1. Marketing Digital Assets / Lead Magnets Table
-        Schema::create('focal_marketing_assets', function (Blueprint $table): void {
+        Schema::create('odden_marketing_assets', function (Blueprint $table): void {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
@@ -35,10 +35,10 @@ return new class extends Migration
         });
 
         // 2. Marketing Asset Downloads Table
-        Schema::create('focal_marketing_asset_downloads', function (Blueprint $table): void {
+        Schema::create('odden_marketing_asset_downloads', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('asset_id')->constrained('focal_marketing_assets')->cascadeOnDelete();
-            $table->foreignId('contact_id')->nullable()->constrained('focal_contacts')->nullOnDelete();
+            $table->foreignId('asset_id')->constrained('odden_marketing_assets')->cascadeOnDelete();
+            $table->foreignId('contact_id')->nullable()->constrained('odden_contacts')->nullOnDelete();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
             $table->string('download_token', 64)->nullable();
@@ -50,7 +50,7 @@ return new class extends Migration
         });
 
         // 3. Marketing Events & Webinars Table
-        Schema::create('focal_marketing_events', function (Blueprint $table): void {
+        Schema::create('odden_marketing_events', function (Blueprint $table): void {
             $table->id();
             $table->string('title');
             $table->string('slug')->unique();
@@ -73,10 +73,10 @@ return new class extends Migration
         });
 
         // 4. Marketing Event Registrations Table
-        Schema::create('focal_marketing_event_registrations', function (Blueprint $table): void {
+        Schema::create('odden_marketing_event_registrations', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('event_id')->constrained('focal_marketing_events')->cascadeOnDelete();
-            $table->foreignId('contact_id')->constrained('focal_contacts')->cascadeOnDelete();
+            $table->foreignId('event_id')->constrained('odden_marketing_events')->cascadeOnDelete();
+            $table->foreignId('contact_id')->constrained('odden_contacts')->cascadeOnDelete();
             $table->string('status')->default('registered'); // registered, attended, no_show, cancelled
             $table->timestamp('registered_at');
             $table->timestamp('attended_at')->nullable();
@@ -96,9 +96,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('focal_marketing_event_registrations');
-        Schema::dropIfExists('focal_marketing_events');
-        Schema::dropIfExists('focal_marketing_asset_downloads');
-        Schema::dropIfExists('focal_marketing_assets');
+        Schema::dropIfExists('odden_marketing_event_registrations');
+        Schema::dropIfExists('odden_marketing_events');
+        Schema::dropIfExists('odden_marketing_asset_downloads');
+        Schema::dropIfExists('odden_marketing_assets');
     }
 };

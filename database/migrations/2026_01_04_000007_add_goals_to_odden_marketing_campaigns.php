@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('focal_marketing_campaigns', function (Blueprint $table): void {
+        Schema::table('odden_marketing_campaigns', function (Blueprint $table): void {
             $table->unsignedInteger('target_leads')->nullable()->after('actual_cost');
             $table->decimal('target_pipeline', 12, 2)->nullable()->after('target_leads');
             $table->decimal('target_revenue', 12, 2)->nullable()->after('target_pipeline');
@@ -25,7 +25,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('focal_marketing_campaigns', function (Blueprint $table): void {
+        Schema::table('odden_marketing_campaigns', function (Blueprint $table): void {
             $table->dropColumn(['target_leads', 'target_pipeline', 'target_revenue']);
         });
     }

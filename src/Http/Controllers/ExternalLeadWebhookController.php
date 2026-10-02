@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
-use Focal\Marketing\Actions\IngestExternalLeadAction;
+use Odden\Marketing\Actions\IngestExternalLeadAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -52,7 +52,7 @@ class ExternalLeadWebhookController extends Controller
             'is_new' => $result['is_new'],
             'lead_score' => $result['lead_score'],
             'enrolled_workflows' => $result['enrolled_workflows_count'],
-            'message' => 'Lead successfully ingested into Focal CRM.',
+            'message' => 'Lead successfully ingested into Odden CRM.',
         ], 200);
     }
 }

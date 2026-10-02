@@ -2,25 +2,25 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing;
+namespace Odden\Marketing;
 
-use DoPHP\MailBuilder\MergeTags\MergeTagRegistry;
-use Focal\Core\Events\CompaniesMerged;
-use Focal\Core\Events\ContactsMerged;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Console\Commands\DecayLeadScoresCommand;
-use Focal\Marketing\Console\Commands\DispatchScheduledCampaignsCommand;
-use Focal\Marketing\Console\Commands\EvaluateAbTestsCommand;
-use Focal\Marketing\Console\Commands\ProcessWorkflowsCommand;
-use Focal\Marketing\Console\Commands\SunsetInactiveSubscribersCommand;
-use Focal\Marketing\Listeners\MoveMergedRecords;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\CustomBehavioralEvent;
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Marketing\Models\LeadDecayLog;
-use Focal\Marketing\Models\LeadScoreLog;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Models\WorkflowEnrollment;
+use Odden\MailBuilder\MergeTags\MergeTagRegistry;
+use Odden\Core\Events\CompaniesMerged;
+use Odden\Core\Events\ContactsMerged;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Console\Commands\DecayLeadScoresCommand;
+use Odden\Marketing\Console\Commands\DispatchScheduledCampaignsCommand;
+use Odden\Marketing\Console\Commands\EvaluateAbTestsCommand;
+use Odden\Marketing\Console\Commands\ProcessWorkflowsCommand;
+use Odden\Marketing\Console\Commands\SunsetInactiveSubscribersCommand;
+use Odden\Marketing\Listeners\MoveMergedRecords;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\CustomBehavioralEvent;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Marketing\Models\LeadDecayLog;
+use Odden\Marketing\Models\LeadScoreLog;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\WorkflowEnrollment;
 use Illuminate\Http\Middleware\HandleCors;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
@@ -37,8 +37,8 @@ class MarketingServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../config/focal-marketing.php',
-            'focal-marketing'
+            __DIR__.'/../config/odden-marketing.php',
+            'odden-marketing'
         );
 
         $this->callAfterResolving(MergeTagRegistry::class, function (MergeTagRegistry $registry): void {
@@ -93,8 +93,8 @@ class MarketingServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'focal-marketing');
-        if (config('focal-marketing.routes.enabled', true)) {
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'odden-marketing');
+        if (config('odden-marketing.routes.enabled', true)) {
             $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
             $this->skipGlobalCorsForAmpRoutes();
         }
@@ -144,18 +144,18 @@ class MarketingServiceProvider extends ServiceProvider
             ]);
 
             $this->publishes([
-                __DIR__.'/../config/focal-marketing.php' => config_path('focal-marketing.php'),
-            ], 'focal-marketing-config');
+                __DIR__.'/../config/odden-marketing.php' => config_path('odden-marketing.php'),
+            ], 'odden-marketing-config');
 
             $this->publishes([
                 __DIR__.'/../database/migrations' => database_path('migrations'),
-            ], 'focal-marketing-migrations');
+            ], 'odden-marketing-migrations');
         }
     }
 
     /**
      * The in-email AMP endpoints set their own CORS headers from an origin
-     * allow-list (focal-marketing.amp.allowed_origins). Keep the app's global
+     * allow-list (odden-marketing.amp.allowed_origins). Keep the app's global
      * CORS middleware (config/cors.php, which matches "api/*" by default) from
      * replacing them with its own, usually wildcard, headers.
      */
@@ -172,7 +172,7 @@ class MarketingServiceProvider extends ServiceProvider
                 return false;
             }
 
-            foreach (['focal.marketing.amp.feedback', 'focal.marketing.amp.rsvp'] as $name) {
+            foreach (['odden.marketing.amp.feedback', 'odden.marketing.amp.rsvp'] as $name) {
                 $route = app('router')->getRoutes()->getByName($name);
 
                 if ($route instanceof Route && trim($route->uri(), '/') === trim($request->path(), '/')) {

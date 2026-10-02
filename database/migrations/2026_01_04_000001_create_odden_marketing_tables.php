@@ -13,12 +13,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $templatesTable = config('focal-marketing.tables.templates', 'focal_marketing_templates');
-        $formsTable = config('focal-marketing.tables.forms', 'focal_marketing_forms');
-        $submissionsTable = config('focal-marketing.tables.form_submissions', 'focal_marketing_form_submissions');
-        $campaignsTable = config('focal-marketing.tables.campaigns', 'focal_marketing_campaigns');
-        $recipientsTable = config('focal-marketing.tables.recipients', 'focal_marketing_campaign_recipients');
-        $subscriptionsTable = config('focal-marketing.tables.subscriptions', 'focal_marketing_subscriptions');
+        $templatesTable = config('odden-marketing.tables.templates', 'odden_marketing_templates');
+        $formsTable = config('odden-marketing.tables.forms', 'odden_marketing_forms');
+        $submissionsTable = config('odden-marketing.tables.form_submissions', 'odden_marketing_form_submissions');
+        $campaignsTable = config('odden-marketing.tables.campaigns', 'odden_marketing_campaigns');
+        $recipientsTable = config('odden-marketing.tables.recipients', 'odden_marketing_campaign_recipients');
+        $subscriptionsTable = config('odden-marketing.tables.subscriptions', 'odden_marketing_subscriptions');
 
         if (! Schema::hasTable($templatesTable)) {
             Schema::create($templatesTable, function (Blueprint $table): void {
@@ -53,7 +53,7 @@ return new class extends Migration
             Schema::create($submissionsTable, function (Blueprint $table) use ($formsTable): void {
                 $table->id();
                 $table->foreignId('form_id')->constrained($formsTable)->cascadeOnDelete();
-                $table->foreignId('contact_id')->nullable()->constrained('focal_contacts')->nullOnDelete();
+                $table->foreignId('contact_id')->nullable()->constrained('odden_contacts')->nullOnDelete();
                 $table->json('form_data');
                 $table->string('ip_address', 45)->nullable();
                 $table->text('user_agent')->nullable();
@@ -71,7 +71,7 @@ return new class extends Migration
                 $table->string('sender_email');
                 $table->string('reply_to_email')->nullable();
                 $table->foreignId('template_id')->nullable()->constrained($templatesTable)->nullOnDelete();
-                $table->foreignId('list_id')->nullable()->constrained('focal_lists')->nullOnDelete();
+                $table->foreignId('list_id')->nullable()->constrained('odden_lists')->nullOnDelete();
                 $table->string('status')->default('draft');
                 $table->string('type')->default('regular');
                 $table->timestamp('scheduled_at')->nullable();
@@ -93,7 +93,7 @@ return new class extends Migration
             Schema::create($recipientsTable, function (Blueprint $table) use ($campaignsTable): void {
                 $table->id();
                 $table->foreignId('campaign_id')->constrained($campaignsTable)->cascadeOnDelete();
-                $table->foreignId('contact_id')->nullable()->constrained('focal_contacts')->nullOnDelete();
+                $table->foreignId('contact_id')->nullable()->constrained('odden_contacts')->nullOnDelete();
                 $table->string('email');
                 $table->string('status')->default('pending');
                 $table->string('tracking_token', 64)->unique();
@@ -110,7 +110,7 @@ return new class extends Migration
         if (! Schema::hasTable($subscriptionsTable)) {
             Schema::create($subscriptionsTable, function (Blueprint $table): void {
                 $table->id();
-                $table->foreignId('contact_id')->nullable()->constrained('focal_contacts')->nullOnDelete();
+                $table->foreignId('contact_id')->nullable()->constrained('odden_contacts')->nullOnDelete();
                 $table->string('email')->unique();
                 $table->string('status')->default('subscribed');
                 $table->timestamp('unsubscribed_at')->nullable();
@@ -124,12 +124,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $subscriptionsTable = config('focal-marketing.tables.subscriptions', 'focal_marketing_subscriptions');
-        $recipientsTable = config('focal-marketing.tables.recipients', 'focal_marketing_campaign_recipients');
-        $campaignsTable = config('focal-marketing.tables.campaigns', 'focal_marketing_campaigns');
-        $submissionsTable = config('focal-marketing.tables.form_submissions', 'focal_marketing_form_submissions');
-        $formsTable = config('focal-marketing.tables.forms', 'focal_marketing_forms');
-        $templatesTable = config('focal-marketing.tables.templates', 'focal_marketing_templates');
+        $subscriptionsTable = config('odden-marketing.tables.subscriptions', 'odden_marketing_subscriptions');
+        $recipientsTable = config('odden-marketing.tables.recipients', 'odden_marketing_campaign_recipients');
+        $campaignsTable = config('odden-marketing.tables.campaigns', 'odden_marketing_campaigns');
+        $submissionsTable = config('odden-marketing.tables.form_submissions', 'odden_marketing_form_submissions');
+        $formsTable = config('odden-marketing.tables.forms', 'odden_marketing_forms');
+        $templatesTable = config('odden-marketing.tables.templates', 'odden_marketing_templates');
 
         Schema::dropIfExists($subscriptionsTable);
         Schema::dropIfExists($recipientsTable);

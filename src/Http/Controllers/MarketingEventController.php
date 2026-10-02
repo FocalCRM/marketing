@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\RegisterContactForEventAction;
-use Focal\Marketing\Actions\UpdateAttendanceStatusAction;
-use Focal\Marketing\Models\MarketingEvent;
-use Focal\Marketing\Models\MarketingEventRegistration;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\RegisterContactForEventAction;
+use Odden\Marketing\Actions\UpdateAttendanceStatusAction;
+use Odden\Marketing\Models\MarketingEvent;
+use Odden\Marketing\Models\MarketingEventRegistration;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;

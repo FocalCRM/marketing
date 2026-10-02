@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Mail\MarketingMessageMailable;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Support\MarketingMailer;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Mail\MarketingMessageMailable;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Support\MarketingMailer;
 use Throwable;
 
 /**
@@ -58,7 +58,7 @@ class DeliverCampaignMessageAction
             return false;
         }
 
-        if ($applyFatigue && $contact !== null && config('focal-marketing.fatigue_protection.enabled', false)) {
+        if ($applyFatigue && $contact !== null && config('odden-marketing.fatigue_protection.enabled', false)) {
             return app(CheckFatiguePolicyAction::class)->execute($contact)['can_send'];
         }
 
@@ -128,8 +128,8 @@ class DeliverCampaignMessageAction
                 subjectLine: $subject,
                 htmlBody: $html,
                 textBody: $this->compiler->plainText($html),
-                fromEmail: $campaign->sender_email ?: (string) config('focal-marketing.defaults.sender_email'),
-                fromName: $campaign->sender_name ?: (string) config('focal-marketing.defaults.sender_name'),
+                fromEmail: $campaign->sender_email ?: (string) config('odden-marketing.defaults.sender_email'),
+                fromName: $campaign->sender_name ?: (string) config('odden-marketing.defaults.sender_name'),
                 replyToEmail: $campaign->reply_to_email ?: null,
                 listUnsubscribeUrl: $recipient->getOneClickUnsubscribeUrl(),
                 oneClickUnsubscribe: true,

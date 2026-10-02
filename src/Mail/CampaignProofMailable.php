@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Mail;
+namespace Odden\Marketing\Mail;
 
-use Focal\Marketing\Mail\Concerns\UsesMarketingMailQueue;
+use Odden\Marketing\Mail\Concerns\UsesMarketingMailQueue;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -13,7 +13,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 
 /**
- * A campaign proof for internal reviewers, queued on the queue set in focal-marketing.mail.
+ * A campaign proof for internal reviewers, queued on the queue set in odden-marketing.mail.
  */
 class CampaignProofMailable extends Mailable implements ShouldQueue
 {

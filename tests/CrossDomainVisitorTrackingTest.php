@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\RecordWebVisitAction;
-use Focal\Marketing\Actions\StitchVisitorToContactAction;
-use Focal\Marketing\Models\LandingPage;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Models\PageView;
-use Focal\Marketing\Models\VisitorSession;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\RecordWebVisitAction;
+use Odden\Marketing\Actions\StitchVisitorToContactAction;
+use Odden\Marketing\Models\LandingPage;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Models\PageView;
+use Odden\Marketing\Models\VisitorSession;
 use Illuminate\Testing\TestResponse;
 
 const CROSS_DOMAIN_VID = '3f9a1c0e8b7d4a6f9e2c1b0a5d4e3f21';
@@ -27,7 +27,7 @@ function postRawBody(mixed $test, string $uri, array $payload, string $contentTy
 test('auto-capture accepts a JSON body sent as text/plain by sendBeacon', function () {
     VisitorSession::create(['visitor_token' => CROSS_DOMAIN_VID]);
 
-    postRawBody($this, route('focal.marketing.forms.auto-capture'), [
+    postRawBody($this, route('odden.marketing.forms.auto-capture'), [
         'email' => 'beacon@example.com',
         'name' => 'Bea Con',
         'page_url' => 'https://www.example.com/contact',
@@ -40,13 +40,13 @@ test('auto-capture accepts a JSON body sent as text/plain by sendBeacon', functi
 });
 
 test('auto-capture still rejects a text/plain body that is not a JSON object', function () {
-    $this->call('POST', route('focal.marketing.forms.auto-capture'), [], [], [], [
+    $this->call('POST', route('odden.marketing.forms.auto-capture'), [], [], [], [
         'CONTENT_TYPE' => 'text/plain',
     ], 'email=someone@example.com')->assertStatus(422);
 });
 
 test('pageview accepts a JSON body sent as text/plain', function () {
-    postRawBody($this, route('focal.marketing.track.pageview'), [
+    postRawBody($this, route('odden.marketing.track.pageview'), [
         'url' => 'https://www.example.com/features',
         'path' => '/features',
         'visitor_token' => CROSS_DOMAIN_VID,
@@ -55,40 +55,40 @@ test('pageview accepts a JSON body sent as text/plain', function () {
     expect(PageView::query()->value('path'))->toBe('/features');
 });
 
-test('focal.js sends a client-generated visitor id as CORS-safelisted text/plain requests', function () {
-    $script = (string) $this->get(route('focal.marketing.track.script'))->assertOk()->getContent();
+test('odden.js sends a client-generated visitor id as CORS-safelisted text/plain requests', function () {
+    $script = (string) $this->get(route('odden.marketing.track.script'))->assertOk()->getContent();
 
     expect($script)
-        ->toContain('focalVisitorId')
-        ->toContain('_focal_vid')
+        ->toContain('oddenVisitorId')
+        ->toContain('_odden_vid')
         ->toContain('localStorage')
         ->toContain("new Blob([body], { type: 'text/plain;charset=UTF-8' })")
-        ->not->toContain("getCookie('focal_vid')")
-        ->not->toContain('navigator.sendBeacon(FOCAL_AUTO_CAPTURE_URL, JSON.stringify(payload))');
+        ->not->toContain("getCookie('odden_vid')")
+        ->not->toContain('navigator.sendBeacon(ODDEN_AUTO_CAPTURE_URL, JSON.stringify(payload))');
 });
 
-test('embed.js reads the same visitor id as focal.js', function () {
-    $embed = (string) $this->get(route('focal.marketing.forms.embed-script'))->assertOk()->getContent();
-    $tracker = (string) $this->get(route('focal.marketing.track.script'))->assertOk()->getContent();
+test('embed.js reads the same visitor id as odden.js', function () {
+    $embed = (string) $this->get(route('odden.marketing.forms.embed-script'))->assertOk()->getContent();
+    $tracker = (string) $this->get(route('odden.marketing.track.script'))->assertOk()->getContent();
 
-    expect($embed)->toContain('focalVisitorId')
-        ->toContain("payload['visitor_token'] = focalVisitorId()")
-        ->not->toContain('_focal_visitor_token');
+    expect($embed)->toContain('oddenVisitorId')
+        ->toContain("payload['visitor_token'] = oddenVisitorId()")
+        ->not->toContain('_odden_visitor_token');
 
     // Both scripts embed the identical helper, so they always agree on the storage key and format.
-    preg_match('/function focalVisitorId\(\) \{.*?\n    \}\n/s', $embed, $embedHelper);
-    preg_match('/function focalVisitorId\(\) \{.*?\n    \}\n/s', $tracker, $trackerHelper);
+    preg_match('/function oddenVisitorId\(\) \{.*?\n    \}\n/s', $embed, $embedHelper);
+    preg_match('/function oddenVisitorId\(\) \{.*?\n    \}\n/s', $tracker, $trackerHelper);
     expect($embedHelper[0] ?? null)->not->toBeNull()->toBe($trackerHelper[0] ?? 'missing');
 });
 
 test('pageviews with an explicit visitor token create and then reuse one session without cookies', function () {
-    $first = $this->postJson(route('focal.marketing.track.pageview'), [
+    $first = $this->postJson(route('odden.marketing.track.pageview'), [
         'url' => 'https://www.example.com/',
         'visitor_token' => CROSS_DOMAIN_VID,
     ])->assertOk()->assertJsonPath('visitor_token', CROSS_DOMAIN_VID);
 
     // A second request with no cookies (a cross-domain fetch without credentials) carrying the same id.
-    $this->postJson(route('focal.marketing.track.pageview'), [
+    $this->postJson(route('odden.marketing.track.pageview'), [
         'url' => 'https://www.example.com/pricing',
         'visitor_token' => CROSS_DOMAIN_VID,
     ])->assertOk()->assertJsonPath('session_id', $first->json('session_id'));
@@ -97,18 +97,18 @@ test('pageviews with an explicit visitor token create and then reuse one session
         ->and(PageView::query()->where('session_id', $first->json('session_id'))->count())->toBe(2);
 });
 
-test('an explicit visitor token takes precedence over the focal_vid cookie', function () {
-    $this->withCookie('focal_vid', 'legacyServerIssuedToken0123456789abcdef')
-        ->postJson(route('focal.marketing.track.pageview'), [
+test('an explicit visitor token takes precedence over the odden_vid cookie', function () {
+    $this->withCookie('odden_vid', 'legacyServerIssuedToken0123456789abcdef')
+        ->postJson(route('odden.marketing.track.pageview'), [
             'url' => 'https://www.example.com/',
             'visitor_token' => CROSS_DOMAIN_VID,
         ])->assertOk()
         ->assertJsonPath('visitor_token', CROSS_DOMAIN_VID)
-        ->assertCookie('focal_vid', CROSS_DOMAIN_VID);
+        ->assertCookie('odden_vid', CROSS_DOMAIN_VID);
 });
 
 test('malformed visitor tokens are ignored and replaced with a fresh one', function (mixed $token) {
-    $response = $this->postJson(route('focal.marketing.track.pageview'), [
+    $response = $this->postJson(route('odden.marketing.track.pageview'), [
         'url' => 'https://www.example.com/',
         'visitor_token' => $token,
     ])->assertOk();
@@ -124,7 +124,7 @@ test('malformed visitor tokens are ignored and replaced with a fresh one', funct
 ]);
 
 test('embedded form submission with the visitor token stitches earlier sessions to the created contact', function () {
-    $this->postJson(route('focal.marketing.track.pageview'), [
+    $this->postJson(route('odden.marketing.track.pageview'), [
         'url' => 'https://www.example.com/blog/post',
         'visitor_token' => CROSS_DOMAIN_VID,
     ])->assertOk();
@@ -136,8 +136,8 @@ test('embedded form submission with the visitor token stitches earlier sessions 
         'is_active' => true,
     ]);
 
-    // embed.js posts JSON to the API endpoint with the visitor id from focal.js.
-    $this->postJson(route('focal.marketing.forms.api-submit', $form->slug), [
+    // embed.js posts JSON to the API endpoint with the visitor id from odden.js.
+    $this->postJson(route('odden.marketing.forms.api-submit', $form->slug), [
         'email' => 'reader@example.com',
         'visitor_token' => CROSS_DOMAIN_VID,
     ])->assertOk();
@@ -149,7 +149,7 @@ test('embedded form submission with the visitor token stitches earlier sessions 
         ->and(PageView::query()->where('session_id', $session->id)->pluck('contact_id')->all())->toBe([$contact->id]);
 });
 
-test('hosted landing pages still stitch through the focal_vid cookie', function () {
+test('hosted landing pages still stitch through the odden_vid cookie', function () {
     $token = 'legacyServerIssuedToken0123456789abcdef';
 
     $form = MarketingForm::create([
@@ -164,9 +164,9 @@ test('hosted landing pages still stitch through the focal_vid cookie', function 
         'is_published' => true,
     ]);
 
-    $this->withCookie('focal_vid', $token)->get('/p/early-access')->assertOk();
+    $this->withCookie('odden_vid', $token)->get('/p/early-access')->assertOk();
 
-    $this->withCookie('focal_vid', $token)
+    $this->withCookie('odden_vid', $token)
         ->post('/p/early-access/submit', ['email' => 'lander@example.com'])
         ->assertRedirect();
 
@@ -190,7 +190,7 @@ test('stitching ignores malformed tokens and never moves sessions owned by anoth
 });
 
 test('form submissions with a non-string visitor token are accepted and skip stitching', function (string $route) {
-    $this->postJson(route('focal.marketing.track.pageview'), [
+    $this->postJson(route('odden.marketing.track.pageview'), [
         'url' => 'https://www.example.com/',
         'visitor_token' => CROSS_DOMAIN_VID,
     ])->assertOk();
@@ -210,8 +210,8 @@ test('form submissions with a non-string visitor token are accepted and skip sti
     expect(Contact::query()->where('email', 'array-token@example.com')->exists())->toBeTrue()
         ->and(VisitorSession::query()->where('visitor_token', CROSS_DOMAIN_VID)->value('contact_id'))->toBeNull();
 })->with([
-    'api endpoint' => ['focal.marketing.forms.api-submit'],
-    'hosted endpoint' => ['focal.marketing.forms.submit'],
+    'api endpoint' => ['odden.marketing.forms.api-submit'],
+    'hosted endpoint' => ['odden.marketing.forms.submit'],
 ]);
 
 test('landing page submissions with a non-string visitor token are accepted', function () {

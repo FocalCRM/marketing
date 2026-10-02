@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unsubscribe Preferences | Focal CRM</title>
+    <title>Unsubscribe Preferences | Odden CRM</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex items-center justify-center p-4">
@@ -13,7 +13,7 @@
             Are you sure you want to unsubscribe <strong class="text-slate-900">{{ $recipient->email }}</strong> from future marketing broadcasts?
         </p>
 
-        <form action="{{ route('focal.marketing.unsubscribe.process', $recipient->unsubscribe_token) }}" method="POST">
+        <form action="{{ route('odden.marketing.unsubscribe.process', $recipient->unsubscribe_token) }}" method="POST">
             @csrf
             <button
                 type="submit"

@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\LeadScoringEventType;
-use Focal\Marketing\Models\LeadScoreLog;
-use Focal\Marketing\Models\LeadScoringRule;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Models\LeadScoreLog;
+use Odden\Marketing\Models\LeadScoringRule;
 use Illuminate\Support\Facades\DB;
 
 class ApplyLeadScoringEventAction
@@ -67,7 +67,7 @@ class ApplyLeadScoringEventAction
             // Lifecycle Stage Qualification
             $previousStage = $contact->lifecycle_stage ?? LifecycleStage::Lead;
             $lifecycleStage = $previousStage;
-            $sqlThreshold = (int) config('focal-marketing.sales_handoff.sql_score_threshold', 100);
+            $sqlThreshold = (int) config('odden-marketing.sales_handoff.sql_score_threshold', 100);
 
             if ($newScore >= $sqlThreshold && $lifecycleStage !== LifecycleStage::Customer) {
                 $lifecycleStage = LifecycleStage::SalesQualifiedLead;
@@ -85,7 +85,7 @@ class ApplyLeadScoringEventAction
             if (
                 $lifecycleStage === LifecycleStage::SalesQualifiedLead
                 && $previousStage !== LifecycleStage::SalesQualifiedLead
-                && (bool) config('focal-marketing.sales_handoff.auto_handoff_on_sql', true)
+                && (bool) config('odden-marketing.sales_handoff.auto_handoff_on_sql', true)
             ) {
                 app(HandoffLeadToSalesAction::class)->execute($contact);
             }

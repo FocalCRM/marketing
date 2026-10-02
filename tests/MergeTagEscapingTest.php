@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\CompileCampaignMessageAction;
-use Focal\Marketing\Actions\DispatchSmsAction;
-use Focal\Marketing\Actions\SendCampaignProofAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Mail\CampaignProofMailable;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\CompileCampaignMessageAction;
+use Odden\Marketing\Actions\DispatchSmsAction;
+use Odden\Marketing\Actions\SendCampaignProofAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Mail\CampaignProofMailable;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 
@@ -49,8 +49,8 @@ class MergeTagEscapingTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Launch',
             'subject' => 'Launch',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'template_id' => $template->id,
             'status' => CampaignStatus::Draft,
         ]);
@@ -105,13 +105,13 @@ class MergeTagEscapingTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Launch',
             'subject' => 'Launch',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'template_id' => $template->id,
             'status' => CampaignStatus::Draft,
         ]);
 
-        app(SendCampaignProofAction::class)->execute($campaign, 'staff@focal.test', $this->contact);
+        app(SendCampaignProofAction::class)->execute($campaign, 'staff@odden.test', $this->contact);
 
         Mail::assertQueued(CampaignProofMailable::class, fn (CampaignProofMailable $mail): bool => str_contains($mail->htmlBody, '&lt;script&gt;alert(1)&lt;/script&gt;')
             && str_contains($mail->htmlBody, '&lt;a href=&quot;https://evil.test&quot;&gt;Win&lt;/a&gt;')

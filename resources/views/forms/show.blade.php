@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $form->title }} | Focal CRM</title>
+    <title>{{ $form->title }} | Odden CRM</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex items-center justify-center p-4">
@@ -15,14 +15,14 @@
             @endif
         </div>
 
-        <form action="{{ route('focal.marketing.forms.submit', $form->slug) }}" method="POST" class="p-6 space-y-4">
+        <form action="{{ route('odden.marketing.forms.submit', $form->slug) }}" method="POST" class="p-6 space-y-4">
             @csrf
 
             @if (isset($contact) && $contact !== null)
                 <input type="hidden" name="contact" value="{{ $contactToken }}" />
                 <div class="p-3 bg-sky-50 border border-sky-200 text-sky-900 rounded-lg text-xs flex justify-between items-center">
                     <span>Welcome back, <strong>{{ $contact->first_name ?: $contact->email }}</strong>!</span>
-                    <a href="{{ route('focal.marketing.forms.show', $form->slug) }}" class="underline text-sky-700 hover:text-sky-900">Not you?</a>
+                    <a href="{{ route('odden.marketing.forms.show', $form->slug) }}" class="underline text-sky-700 hover:text-sky-900">Not you?</a>
                 </div>
             @endif
 

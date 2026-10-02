@@ -2,23 +2,23 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\EnrollContactInWorkflowAction;
-use Focal\Marketing\Actions\ExecuteWorkflowStepAction;
-use Focal\Marketing\Actions\ProcessDueWorkflowsAction;
-use Focal\Marketing\Enums\WorkflowEnrollmentStatus;
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Mail\MarketingMessageMailable;
-use Focal\Marketing\Models\EmailSuppression;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Models\MarketingTemplate;
-use Focal\Marketing\Models\MarketingWorkflow;
-use Focal\Marketing\Models\WorkflowEnrollment;
-use Focal\Marketing\Models\WorkflowLog;
-use Focal\Marketing\Tests\Fixtures\User;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\EnrollContactInWorkflowAction;
+use Odden\Marketing\Actions\ExecuteWorkflowStepAction;
+use Odden\Marketing\Actions\ProcessDueWorkflowsAction;
+use Odden\Marketing\Enums\WorkflowEnrollmentStatus;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Mail\MarketingMessageMailable;
+use Odden\Marketing\Models\EmailSuppression;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Models\MarketingWorkflow;
+use Odden\Marketing\Models\WorkflowEnrollment;
+use Odden\Marketing\Models\WorkflowLog;
+use Odden\Marketing\Tests\Fixtures\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 
@@ -33,7 +33,7 @@ class WorkflowMessagingStepsTest extends TestCase
     public function test_send_email_step_queues_the_rendered_message_to_the_contact(): void
     {
         Mail::fake();
-        config(['focal-marketing.mail.queue' => 'marketing-mail']);
+        config(['odden-marketing.mail.queue' => 'marketing-mail']);
 
         $contact = Contact::create(['first_name' => 'Linus', 'email' => 'linus@example.com']);
         $template = MarketingTemplate::create([
@@ -53,7 +53,7 @@ class WorkflowMessagingStepsTest extends TestCase
 
             $this->assertSame('marketing-mail', $mail->queue);
             $this->assertTrue($mail->hasSubject('Welcome, Linus'));
-            $this->assertTrue($mail->hasFrom('newsletter@focal.test'));
+            $this->assertTrue($mail->hasFrom('newsletter@odden.test'));
             $this->assertStringContainsString('Hello Linus', $mail->htmlBody);
             $this->assertStringContainsString('Hello Linus', $mail->textBody);
             $this->assertSame('<'.$contact->fresh()?->getPreferenceCenterUrl().'>', $headers['List-Unsubscribe']);
@@ -140,7 +140,7 @@ class WorkflowMessagingStepsTest extends TestCase
             $log = $enrollment->logs()->firstOrFail();
             $this->assertSame('skipped', $log->status);
             $this->assertStringContainsString('Skipped email', $log->action_taken);
-            $this->assertDatabaseMissing('focal_activities', ['subject_id' => $contact->id, 'title' => 'Workflow Email: Hi']);
+            $this->assertDatabaseMissing('odden_activities', ['subject_id' => $contact->id, 'title' => 'Workflow Email: Hi']);
         }
 
         Mail::assertNothingQueued();

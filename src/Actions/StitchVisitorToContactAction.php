@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\PageView;
-use Focal\Marketing\Models\VisitorSession;
-use Focal\Marketing\Support\VisitorToken;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\PageView;
+use Odden\Marketing\Models\VisitorSession;
+use Odden\Marketing\Support\VisitorToken;
 
 class StitchVisitorToContactAction
 {

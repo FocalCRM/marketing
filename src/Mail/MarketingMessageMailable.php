@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Mail;
+namespace Odden\Marketing\Mail;
 
-use Focal\Marketing\Mail\Concerns\UsesMarketingMailQueue;
+use Odden\Marketing\Mail\Concerns\UsesMarketingMailQueue;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -16,13 +16,13 @@ use Illuminate\Mail\Mailables\Headers;
 /**
  * A compiled campaign or workflow email for one recipient: HTML plus a plain-text
  * alternative, List-Unsubscribe headers and the recipient's tracking token.
- * Always queued, on the queue set in focal-marketing.mail.
+ * Always queued, on the queue set in odden-marketing.mail.
  */
 class MarketingMessageMailable extends Mailable implements ShouldQueue
 {
     use Queueable, UsesMarketingMailQueue;
 
-    public const TRACKING_TOKEN_HEADER = 'X-Focal-Tracking-Token';
+    public const TRACKING_TOKEN_HEADER = 'X-Odden-Tracking-Token';
 
     /**
      * @param  string|null  $listUnsubscribeUrl  URL for the List-Unsubscribe header.
@@ -74,7 +74,7 @@ class MarketingMessageMailable extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            text: 'focal-marketing::mail.text',
+            text: 'odden-marketing::mail.text',
             htmlString: $this->htmlBody,
         );
     }

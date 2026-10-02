@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\MarketingWorkflow;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\MarketingWorkflow;
 
 test('lead webhook works without a source segment and falls back to the payload source', function () {
     $this->postJson('/api/marketing/leads/webhook', [

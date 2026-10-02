@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\WorkflowEnrollmentStatus;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Models\MarketingWorkflow;
-use Focal\Marketing\Models\WorkflowEnrollment;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\WorkflowEnrollmentStatus;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Models\MarketingWorkflow;
+use Odden\Marketing\Models\WorkflowEnrollment;
 
 class EnrollContactInWorkflowAction
 {

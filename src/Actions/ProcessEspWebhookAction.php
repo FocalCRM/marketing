@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Marketing\Enums\LeadScoringEventType;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Enums\SubscriptionStatus;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\EmailSuppression;
-use Focal\Marketing\Models\EspEvent;
-use Focal\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Enums\SubscriptionStatus;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\EmailSuppression;
+use Odden\Marketing\Models\EspEvent;
+use Odden\Marketing\Models\MarketingSubscription;
 
 class ProcessEspWebhookAction
 {
@@ -126,21 +126,21 @@ class ProcessEspWebhookAction
                 'event_type' => (string) ($payload['event-data']['event'] ?? ($payload['event'] ?? 'unknown')),
                 'error_code' => (string) ($payload['event-data']['delivery-status']['code'] ?? null),
                 'error_message' => (string) ($payload['event-data']['delivery-status']['message'] ?? null),
-                'tracking_token' => (string) ($payload['event-data']['user-variables']['focal_token'] ?? null),
+                'tracking_token' => (string) ($payload['event-data']['user-variables']['odden_token'] ?? null),
             ],
             'ses' => [
                 'email' => (string) ($payload['mail']['destination'][0] ?? ($payload['email'] ?? '')),
                 'event_type' => strtolower((string) ($payload['eventType'] ?? ($payload['event_type'] ?? 'bounce'))),
                 'error_code' => (string) ($payload['bounce']['bounceSubType'] ?? null),
                 'error_message' => (string) ($payload['bounce']['bouncedRecipients'][0]['diagnosticCode'] ?? null),
-                'tracking_token' => (string) ($payload['mail']['headersTruncated']['X-Focal-Token'] ?? null),
+                'tracking_token' => (string) ($payload['mail']['headersTruncated']['X-Odden-Token'] ?? null),
             ],
             'postmark' => [
                 'email' => (string) ($payload['Recipient'] ?? ($payload['Email'] ?? '')),
                 'event_type' => strtolower((string) ($payload['RecordType'] ?? 'bounce')),
                 'error_code' => (string) ($payload['TypeCode'] ?? null),
                 'error_message' => (string) ($payload['Details'] ?? null),
-                'tracking_token' => (string) ($payload['Metadata']['focal_token'] ?? null),
+                'tracking_token' => (string) ($payload['Metadata']['odden_token'] ?? null),
             ],
             'sendgrid' => [
                 'email' => (string) ($payload['email'] ?? ''),
@@ -152,7 +152,7 @@ class ProcessEspWebhookAction
                 },
                 'error_code' => (string) ($payload['status'] ?? null),
                 'error_message' => (string) ($payload['reason'] ?? null),
-                'tracking_token' => (string) ($payload['focal_token'] ?? null),
+                'tracking_token' => (string) ($payload['odden_token'] ?? null),
             ],
             'resend' => [
                 'email' => (string) (($payload['data']['to'][0] ?? null) ?? ($payload['email'] ?? '')),
@@ -164,7 +164,7 @@ class ProcessEspWebhookAction
                 },
                 'error_code' => (string) ($payload['data']['bounce_type'] ?? null),
                 'error_message' => (string) ($payload['data']['message'] ?? null),
-                'tracking_token' => (string) ($payload['data']['tags']['focal_token'] ?? null),
+                'tracking_token' => (string) ($payload['data']['tags']['odden_token'] ?? null),
             ],
             default => [
                 'email' => (string) ($payload['email'] ?? ($payload['recipient'] ?? '')),

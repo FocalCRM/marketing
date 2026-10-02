@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Marketing\Actions\AppendUtmParametersAction;
-use Focal\Marketing\Models\Campaign;
+use Odden\Marketing\Actions\AppendUtmParametersAction;
+use Odden\Marketing\Models\Campaign;
 
 class AppendUtmParametersActionTest extends TestCase
 {
@@ -21,7 +21,7 @@ class AppendUtmParametersActionTest extends TestCase
 
         $tagged = $action->execute($url, $campaign, 'A');
 
-        $this->assertStringContainsString('utm_source=focal', $tagged);
+        $this->assertStringContainsString('utm_source=odden', $tagged);
         $this->assertStringContainsString('utm_medium=email', $tagged);
         $this->assertStringContainsString('utm_campaign=q4-enterprise-launch', $tagged);
         $this->assertStringContainsString('utm_content=variant_a', $tagged);
@@ -58,7 +58,7 @@ class AppendUtmParametersActionTest extends TestCase
         $this->assertSame('mailto:sales@acme.com', $action->execute('mailto:sales@acme.com', $campaign));
         $this->assertSame('tel:+15551234567', $action->execute('tel:+15551234567', $campaign));
         $this->assertSame('#top', $action->execute('#top', $campaign));
-        $this->assertSame('https://focal.test/marketing/unsubscribe/tok123', $action->execute('https://focal.test/marketing/unsubscribe/tok123', $campaign));
+        $this->assertSame('https://odden.test/marketing/unsubscribe/tok123', $action->execute('https://odden.test/marketing/unsubscribe/tok123', $campaign));
     }
 
     public function test_appends_utms_across_full_html_email_body(): void
@@ -73,9 +73,9 @@ class AppendUtmParametersActionTest extends TestCase
         $action = new AppendUtmParametersAction;
         $processed = $action->appendHtmlLinks($html, $campaign, 'B');
 
-        $this->assertStringContainsString('https://acme.com/features?utm_source=focal', $processed);
+        $this->assertStringContainsString('https://acme.com/features?utm_source=odden', $processed);
         $this->assertStringContainsString('utm_content=variant_b', $processed);
         $this->assertStringContainsString('class="btn"', $processed);
-        $this->assertStringContainsString('https://acme.com/blog?utm_source=focal', $processed);
+        $this->assertStringContainsString('https://acme.com/blog?utm_source=odden', $processed);
     }
 }

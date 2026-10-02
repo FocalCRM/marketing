@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingSubscription;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingSubscription;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
@@ -58,7 +58,7 @@ class OneClickUnsubscribeTest extends TestCase
     {
         $this->recipient();
 
-        $this->post(route('focal.marketing.unsubscribe.process', 'not-a-real-token'), ['List-Unsubscribe' => 'One-Click'])
+        $this->post(route('odden.marketing.unsubscribe.process', 'not-a-real-token'), ['List-Unsubscribe' => 'One-Click'])
             ->assertNotFound();
 
         $this->assertFalse(MarketingSubscription::isSuppressed('ada@example.com'));
@@ -69,7 +69,7 @@ class OneClickUnsubscribeTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Newsletter',
             'subject' => 'News',
-            'sender_name' => 'Focal',
+            'sender_name' => 'Odden',
             'sender_email' => 'news@example.com',
             'status' => CampaignStatus::Sent,
         ]);

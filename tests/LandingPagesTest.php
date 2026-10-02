@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\LandingPage;
-use Focal\Marketing\Models\MarketingForm;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\LandingPage;
+use Odden\Marketing\Models\MarketingForm;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class LandingPagesTest extends TestCase
@@ -32,7 +32,7 @@ class LandingPagesTest extends TestCase
             'subheadline' => 'The complete platform for high-velocity teams',
             'body_content' => '<p>Experience blazing-fast pipeline velocity and customer satisfaction.</p>',
             'form_id' => $form->id,
-            'meta_title' => 'Unified CRM Launch | Focal',
+            'meta_title' => 'Unified CRM Launch | Odden',
             'is_published' => true,
         ]);
 
@@ -40,14 +40,14 @@ class LandingPagesTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Scale Faster With Unified RevOps');
-        $response->assertSee('Unified CRM Launch | Focal');
+        $response->assertSee('Unified CRM Launch | Odden');
         $response->assertSee('Get Started');
 
         $landingPage->refresh();
         $this->assertSame(1, $landingPage->views_count);
 
         // Verify web inbound visit tracking captured
-        $this->assertDatabaseHas('focal_marketing_page_views', [
+        $this->assertDatabaseHas('odden_marketing_page_views', [
             'path' => '/p/unified-crm-launch',
         ]);
     }

@@ -10,12 +10,12 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $campaignsTable = config('focal-marketing.tables.campaigns', 'focal_marketing_campaigns');
-        $eventsTable = config('focal-marketing.tables.custom_behavioral_events', 'focal_custom_behavioral_events');
-        $adSyncsTable = config('focal-marketing.tables.ad_audience_syncs', 'focal_ad_audience_syncs');
-        $contactsTable = config('focal-core.tables.contacts', 'focal_contacts');
-        $companiesTable = config('focal-core.tables.companies', 'focal_companies');
-        $listsTable = config('focal-core.tables.lists', 'focal_lists');
+        $campaignsTable = config('odden-marketing.tables.campaigns', 'odden_marketing_campaigns');
+        $eventsTable = config('odden-marketing.tables.custom_behavioral_events', 'odden_custom_behavioral_events');
+        $adSyncsTable = config('odden-marketing.tables.ad_audience_syncs', 'odden_ad_audience_syncs');
+        $contactsTable = config('odden-core.tables.contacts', 'odden_contacts');
+        $companiesTable = config('odden-core.tables.companies', 'odden_companies');
+        $listsTable = config('odden-core.tables.lists', 'odden_lists');
 
         if (Schema::hasTable($campaignsTable)) {
             Schema::table($campaignsTable, function (Blueprint $table): void {
@@ -58,9 +58,9 @@ return new class extends Migration
 
     public function down(): void
     {
-        $campaignsTable = config('focal-marketing.tables.campaigns', 'focal_marketing_campaigns');
-        $eventsTable = config('focal-marketing.tables.custom_behavioral_events', 'focal_custom_behavioral_events');
-        $adSyncsTable = config('focal-marketing.tables.ad_audience_syncs', 'focal_ad_audience_syncs');
+        $campaignsTable = config('odden-marketing.tables.campaigns', 'odden_marketing_campaigns');
+        $eventsTable = config('odden-marketing.tables.custom_behavioral_events', 'odden_custom_behavioral_events');
+        $adSyncsTable = config('odden-marketing.tables.ad_audience_syncs', 'odden_ad_audience_syncs');
 
         Schema::dropIfExists($adSyncsTable);
         Schema::dropIfExists($eventsTable);

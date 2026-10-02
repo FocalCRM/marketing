@@ -2,21 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\CheckFatiguePolicyAction;
-use Focal\Marketing\Actions\DecayInactiveLeadScoresAction;
-use Focal\Marketing\Actions\DispatchCampaignAction;
-use Focal\Marketing\Actions\GetCampaignAttributionAction;
-use Focal\Marketing\Enums\AttributionModel;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\CampaignType;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\CheckFatiguePolicyAction;
+use Odden\Marketing\Actions\DecayInactiveLeadScoresAction;
+use Odden\Marketing\Actions\DispatchCampaignAction;
+use Odden\Marketing\Actions\GetCampaignAttributionAction;
+use Odden\Marketing\Enums\AttributionModel;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\CampaignType;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
@@ -80,13 +80,13 @@ class MarketingProFeaturesTest extends TestCase
         $this->assertSame(LifecycleStage::Subscriber, $staleLead->lifecycle_stage);
 
         // Verify audit logs were written
-        $this->assertDatabaseHas('focal_marketing_lead_decay_logs', [
+        $this->assertDatabaseHas('odden_marketing_lead_decay_logs', [
             'contact_id' => $dormantContact->id,
             'score_before' => 55,
             'score_after' => 45,
             'score_decayed' => 10,
         ]);
-        $this->assertDatabaseHas('focal_marketing_lead_score_logs', [
+        $this->assertDatabaseHas('odden_marketing_lead_score_logs', [
             'contact_id' => $dormantContact->id,
             'score_change' => -10,
         ]);
@@ -109,7 +109,7 @@ class MarketingProFeaturesTest extends TestCase
         ]);
 
         $this->assertSame(0, $exitCode);
-        $this->assertDatabaseHas('focal_marketing_lead_decay_logs', [
+        $this->assertDatabaseHas('odden_marketing_lead_decay_logs', [
             'score_before' => 25,
             'score_after' => 20,
             'score_decayed' => 5,
@@ -121,8 +121,8 @@ class MarketingProFeaturesTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Q3 Enterprise Search Campaign',
             'subject' => 'Find more deals faster',
-            'sender_name' => 'Focal',
-            'sender_email' => 'growth@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'growth@odden.test',
             'status' => CampaignStatus::Sent,
             'type' => CampaignType::Regular,
             'budget' => 5000.00,
@@ -164,8 +164,8 @@ class MarketingProFeaturesTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Previous Campaign',
             'subject' => 'Hello',
-            'sender_name' => 'Focal',
-            'sender_email' => 'test@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'test@odden.test',
             'status' => CampaignStatus::Sent,
             'type' => CampaignType::Regular,
         ]);
@@ -183,8 +183,8 @@ class MarketingProFeaturesTest extends TestCase
         $earlierCampaign = Campaign::create([
             'name' => 'Earlier Campaign',
             'subject' => 'Hello',
-            'sender_name' => 'Focal',
-            'sender_email' => 'test@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'test@odden.test',
             'status' => CampaignStatus::Sent,
             'type' => CampaignType::Regular,
         ]);
@@ -242,8 +242,8 @@ class MarketingProFeaturesTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Product Updates Release',
             'subject' => 'Major v2.0 update',
-            'sender_name' => 'Focal',
-            'sender_email' => 'news@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'news@odden.test',
             'template_id' => $template->id,
             'topic' => 'product_updates',
             'status' => CampaignStatus::Draft,

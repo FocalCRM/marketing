@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\ProcessFormSubmissionAction;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Support\ContactToken;
-use Focal\Marketing\Support\VisitorToken;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\ProcessFormSubmissionAction;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Support\ContactToken;
+use Odden\Marketing\Support\VisitorToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,7 +34,7 @@ class MarketingFormController extends Controller
 
         $fields = $form->resolveFieldsForContact($contact);
 
-        return response()->view('focal-marketing::forms.show', [
+        return response()->view('odden-marketing::forms.show', [
             'form' => $form,
             'contact' => $contact,
             'contactToken' => $contact !== null ? ContactToken::make($contact, ContactToken::forForm($form->id)) : null,
@@ -108,7 +108,7 @@ class MarketingFormController extends Controller
             return redirect()->away($form->redirect_url);
         }
 
-        return response()->view('focal-marketing::forms.success', [
+        return response()->view('odden-marketing::forms.success', [
             'form' => $form,
         ]);
     }
@@ -136,7 +136,7 @@ class MarketingFormController extends Controller
             'slug' => $form->slug,
             'description' => $form->description,
             'submit_button_text' => $form->submit_button_text ?: 'Submit',
-            'action_url' => route('focal.marketing.forms.api-submit', $form->slug),
+            'action_url' => route('odden.marketing.forms.api-submit', $form->slug),
             'fields' => $fields,
             'progressive_profiling' => (bool) $form->progressive_profiling_enabled,
         ]);
@@ -148,20 +148,20 @@ class MarketingFormController extends Controller
     public function embedScript(Request $request, ?string $slug = null): Response
     {
         // Absolute URL template so the script works when embedded on other domains and honors route prefixes.
-        $schemaUrlTemplate = json_encode(route('focal.marketing.forms.schema', '__SLUG__'), JSON_UNESCAPED_SLASHES);
+        $schemaUrlTemplate = json_encode(route('odden.marketing.forms.schema', '__SLUG__'), JSON_UNESCAPED_SLASHES);
         $targetSlug = $slug !== null ? json_encode($slug) : 'null';
-        // Same visitor id helper as focal.js, so embedded submissions stitch to tracked sessions.
+        // Same visitor id helper as odden.js, so embedded submissions stitch to tracked sessions.
         $visitorIdJs = VisitorToken::javascript();
 
         $js = <<<JAVASCRIPT
 (function() {
-    var FOCAL_SCHEMA_URL = {$schemaUrlTemplate};
+    var ODDEN_SCHEMA_URL = {$schemaUrlTemplate};
     var TARGET_SLUG = {$targetSlug};
 
 {$visitorIdJs}
     function renderForm(container, formSchema) {
         var form = document.createElement('form');
-        form.className = 'focal-embedded-form';
+        form.className = 'odden-embedded-form';
         form.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
         form.style.maxWidth = '480px';
         form.style.margin = '0 auto';
@@ -278,7 +278,7 @@ class MarketingFormController extends Controller
                 payload[key] = value;
             });
 
-            payload['visitor_token'] = focalVisitorId();
+            payload['visitor_token'] = oddenVisitorId();
 
             fetch(formSchema.action_url, {
                 method: 'POST',
@@ -314,9 +314,9 @@ class MarketingFormController extends Controller
             });
         });
 
-        var displayMode = container.getAttribute('data-focal-display') || 'inline';
-        var trigger = container.getAttribute('data-focal-trigger') || 'immediate';
-        var dismissedKey = '_focal_dismissed_' + (formSchema.slug || 'form');
+        var displayMode = container.getAttribute('data-odden-display') || 'inline';
+        var trigger = container.getAttribute('data-odden-trigger') || 'immediate';
+        var dismissedKey = '_odden_dismissed_' + (formSchema.slug || 'form');
 
         if (displayMode !== 'inline' && sessionStorage.getItem(dismissedKey)) {
             return;
@@ -342,7 +342,7 @@ class MarketingFormController extends Controller
 
         if (displayMode === 'modal') {
             wrapper = document.createElement('div');
-            wrapper.className = 'focal-modal-overlay';
+            wrapper.className = 'odden-modal-overlay';
             wrapper.style.position = 'fixed';
             wrapper.style.inset = '0';
             wrapper.style.backgroundColor = 'rgba(15, 23, 42, 0.65)';
@@ -380,7 +380,7 @@ class MarketingFormController extends Controller
             wrapper.appendChild(card);
         } else if (displayMode === 'slide-in') {
             wrapper = document.createElement('div');
-            wrapper.className = 'focal-slide-in';
+            wrapper.className = 'odden-slide-in';
             wrapper.style.position = 'fixed';
             wrapper.style.bottom = '24px';
             wrapper.style.right = '24px';
@@ -446,23 +446,23 @@ class MarketingFormController extends Controller
     function init() {
         var containers = [];
         if (TARGET_SLUG) {
-            var el = document.querySelector('[data-focal-form="' + TARGET_SLUG + '"]') || document.getElementById('focal-form-' + TARGET_SLUG);
+            var el = document.querySelector('[data-odden-form="' + TARGET_SLUG + '"]') || document.getElementById('odden-form-' + TARGET_SLUG);
             if (el) containers.push({ el: el, slug: TARGET_SLUG });
         } else {
-            document.querySelectorAll('[data-focal-form]').forEach(function(el) {
-                var s = el.getAttribute('data-focal-form');
+            document.querySelectorAll('[data-odden-form]').forEach(function(el) {
+                var s = el.getAttribute('data-odden-form');
                 if (s) containers.push({ el: el, slug: s });
             });
         }
 
         containers.forEach(function(item) {
-            fetch(FOCAL_SCHEMA_URL.replace('__SLUG__', encodeURIComponent(item.slug)))
+            fetch(ODDEN_SCHEMA_URL.replace('__SLUG__', encodeURIComponent(item.slug)))
                 .then(function(res) { return res.json(); })
                 .then(function(schema) {
                     renderForm(item.el, schema);
                 })
                 .catch(function(err) {
-                    console.error('[Focal Forms] Failed to load schema for', item.slug, err);
+                    console.error('[Odden Forms] Failed to load schema for', item.slug, err);
                 });
         });
     }

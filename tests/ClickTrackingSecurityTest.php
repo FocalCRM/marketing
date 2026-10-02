@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Marketing\Actions\CompileCampaignMessageAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Actions\CompileCampaignMessageAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
@@ -28,8 +28,8 @@ class ClickTrackingSecurityTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Launch',
             'subject' => 'Launch',
-            'sender_name' => 'Focal',
-            'sender_email' => 'focal@test.com',
+            'sender_name' => 'Odden',
+            'sender_email' => 'odden@test.com',
             'status' => CampaignStatus::Sent,
         ]);
 
@@ -42,7 +42,7 @@ class ClickTrackingSecurityTest extends TestCase
 
     public function test_signed_click_link_redirects_and_records_the_click(): void
     {
-        $url = 'https://focal.test/pricing?plan=pro&utm_source=email';
+        $url = 'https://odden.test/pricing?plan=pro&utm_source=email';
 
         $this->get($this->recipient->getClickRedirectUrl($url))->assertRedirect($url);
 
@@ -57,12 +57,12 @@ class ClickTrackingSecurityTest extends TestCase
         $this->get($base.'?url='.urlencode($evil))->assertNotFound();
         $this->get('/marketing/track/click/unknown-token?url='.urlencode($evil))->assertNotFound();
 
-        $signed = $this->recipient->getClickRedirectUrl('https://focal.test/pricing');
+        $signed = $this->recipient->getClickRedirectUrl('https://odden.test/pricing');
         parse_str((string) parse_url($signed, PHP_URL_QUERY), $query);
 
         $this->get($base.'?url='.urlencode($evil).'&sig='.$query['sig'])->assertNotFound();
-        $this->get('/marketing/track/click/other-token?url='.urlencode('https://focal.test/pricing').'&sig='.$query['sig'])->assertNotFound();
-        $this->get($base.'?url='.urlencode('https://focal.test/pricing').'&sig='.str_repeat('0', 64))->assertNotFound();
+        $this->get('/marketing/track/click/other-token?url='.urlencode('https://odden.test/pricing').'&sig='.$query['sig'])->assertNotFound();
+        $this->get($base.'?url='.urlencode('https://odden.test/pricing').'&sig='.str_repeat('0', 64))->assertNotFound();
 
         $this->assertNull($this->recipient->fresh()->clicked_at);
     }
@@ -70,7 +70,7 @@ class ClickTrackingSecurityTest extends TestCase
     public function test_signed_links_to_non_http_urls_do_not_redirect(): void
     {
         $this->get($this->recipient->getClickRedirectUrl('javascript:alert(1)'))->assertNotFound();
-        $this->get($this->recipient->getClickRedirectUrl('ftp://focal.test/file'))->assertNotFound();
+        $this->get($this->recipient->getClickRedirectUrl('ftp://odden.test/file'))->assertNotFound();
 
         $this->assertNull($this->recipient->fresh()->clicked_at);
     }
@@ -80,7 +80,7 @@ class ClickTrackingSecurityTest extends TestCase
         $template = MarketingTemplate::create([
             'name' => 'Newsletter',
             'subject' => 'News',
-            'body_html' => '<html><body><a href="https://focal.test/pricing">Pricing</a></body></html>',
+            'body_html' => '<html><body><a href="https://odden.test/pricing">Pricing</a></body></html>',
         ]);
         $this->recipient->campaign->update(['template_id' => $template->id]);
 
@@ -95,7 +95,7 @@ class ClickTrackingSecurityTest extends TestCase
 
     public function test_links_signed_with_a_previous_app_key_still_redirect(): void
     {
-        $url = 'https://focal.test/pricing';
+        $url = 'https://odden.test/pricing';
         $signedWithOldKey = $this->recipient->getClickRedirectUrl($url);
 
         config(['app.previous_keys' => [config('app.key')], 'app.key' => 'base64:'.base64_encode(random_bytes(32))]);

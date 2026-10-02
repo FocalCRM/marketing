@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Console\Commands;
+namespace Odden\Marketing\Console\Commands;
 
-use Focal\Marketing\Actions\ProcessSubscriberSunsetPolicyAction;
+use Odden\Marketing\Actions\ProcessSubscriberSunsetPolicyAction;
 use Illuminate\Console\Command;
 
 class SunsetInactiveSubscribersCommand extends Command

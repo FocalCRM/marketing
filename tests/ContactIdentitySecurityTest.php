@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\LandingPage;
-use Focal\Marketing\Models\MarketingAsset;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Support\ContactToken;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\LandingPage;
+use Odden\Marketing\Models\MarketingAsset;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Support\ContactToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
@@ -88,10 +88,10 @@ class ContactIdentitySecurityTest extends TestCase
     {
         $baseFields = ['first_name', 'email', 'company'];
 
-        $byId = $this->getJson(route('focal.marketing.forms.schema', 'demo-request').'?contact_id='.$this->victim->id);
+        $byId = $this->getJson(route('odden.marketing.forms.schema', 'demo-request').'?contact_id='.$this->victim->id);
         $this->assertSame($baseFields, array_column($byId->json('fields'), 'name'));
 
-        $byEmail = $this->getJson(route('focal.marketing.forms.schema', 'demo-request').'?email=victoria@example.com');
+        $byEmail = $this->getJson(route('odden.marketing.forms.schema', 'demo-request').'?email=victoria@example.com');
         $this->assertSame($baseFields, array_column($byEmail->json('fields'), 'name'));
     }
 
@@ -105,7 +105,7 @@ class ContactIdentitySecurityTest extends TestCase
         ];
 
         $this->post('/forms/demo-request', $payload)->assertOk();
-        $this->postJson(route('focal.marketing.forms.api-submit', 'demo-request'), $payload)->assertOk();
+        $this->postJson(route('odden.marketing.forms.api-submit', 'demo-request'), $payload)->assertOk();
 
         $this->victim->refresh();
         $this->assertSame('$50k', $this->victim->getProperty('budget'));
@@ -162,7 +162,7 @@ class ContactIdentitySecurityTest extends TestCase
         ];
 
         $this->post('/forms/demo-request', $payload)->assertOk();
-        $this->postJson(route('focal.marketing.forms.api-submit', 'demo-request'), $payload)->assertOk();
+        $this->postJson(route('odden.marketing.forms.api-submit', 'demo-request'), $payload)->assertOk();
 
         $this->victim->refresh();
         $this->assertSame('Victoria', $this->victim->first_name);
@@ -244,9 +244,9 @@ class ContactIdentitySecurityTest extends TestCase
             'external_url' => 'https://example.com/report.pdf',
         ]);
 
-        $this->get(route('focal.marketing.assets.download', ['slug' => 'pricing-report', 'contact_id' => $this->victim->id]))
+        $this->get(route('odden.marketing.assets.download', ['slug' => 'pricing-report', 'contact_id' => $this->victim->id]))
             ->assertRedirect('https://example.com/report.pdf');
-        $this->get(route('focal.marketing.assets.download', ['slug' => 'pricing-report', 'contact_id' => $this->victim->id, 'signature' => str_repeat('0', 64)]))
+        $this->get(route('odden.marketing.assets.download', ['slug' => 'pricing-report', 'contact_id' => $this->victim->id, 'signature' => str_repeat('0', 64)]))
             ->assertRedirect('https://example.com/report.pdf');
 
         $this->assertSame(0, $asset->fresh()->unique_leads_count);

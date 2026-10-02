@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use DoPHP\MailBuilder\Mail\TemplateMailable;
-use Focal\Marketing\Actions\SendCampaignProofAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Mail\CampaignProofMailable;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\MailBuilder\Mail\TemplateMailable;
+use Odden\Marketing\Actions\SendCampaignProofAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Mail\CampaignProofMailable;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
@@ -27,7 +27,7 @@ class QueuedMarketingMailTest extends TestCase
         parent::setUp();
 
         Mail::fake();
-        config(['focal-marketing.mail.queue' => 'marketing-mail', 'focal-marketing.mail.mailer' => 'array']);
+        config(['odden-marketing.mail.queue' => 'marketing-mail', 'odden-marketing.mail.mailer' => 'array']);
     }
 
     public function test_campaign_proofs_are_queued(): void
@@ -35,7 +35,7 @@ class QueuedMarketingMailTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Launch',
             'subject' => 'Launch',
-            'sender_name' => 'Focal',
+            'sender_name' => 'Odden',
             'sender_email' => 'news@example.com',
             'status' => CampaignStatus::Draft,
         ]);
@@ -59,7 +59,7 @@ class QueuedMarketingMailTest extends TestCase
             'body_html' => '<p>Order {{order_id}}</p>',
         ]);
 
-        $this->postJson(route('focal.marketing.templates.send', ['template' => 'receipt']), [
+        $this->postJson(route('odden.marketing.templates.send', ['template' => 'receipt']), [
             'to' => 'customer@example.com',
             'data' => ['order_id' => 'A-1'],
         ])->assertOk()->assertJson(['success' => true, 'queued' => true]);
@@ -81,7 +81,7 @@ class QueuedMarketingMailTest extends TestCase
             'body_html' => '<p>Notice</p>',
         ]);
 
-        $this->postJson(route('focal.marketing.templates.send-batch', ['template' => 'notice']), [
+        $this->postJson(route('odden.marketing.templates.send-batch', ['template' => 'notice']), [
             'recipients' => [['to' => 'one@example.com'], ['to' => 'two@example.com']],
         ])->assertOk()->assertJson(['success' => true, 'queued' => true, 'dispatched_count' => 2]);
 

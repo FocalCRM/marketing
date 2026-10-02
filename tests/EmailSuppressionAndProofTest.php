@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Marketing\Actions\DispatchCampaignAction;
-use Focal\Marketing\Actions\ProcessEspWebhookAction;
-use Focal\Marketing\Actions\SendCampaignProofAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\EmailSuppression;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Marketing\Actions\DispatchCampaignAction;
+use Odden\Marketing\Actions\ProcessEspWebhookAction;
+use Odden\Marketing\Actions\SendCampaignProofAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\EmailSuppression;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 
@@ -85,7 +85,7 @@ class EmailSuppressionAndProofTest extends TestCase
             'name' => 'Q3 Update',
             'subject' => 'Updates',
             'sender_name' => 'Marketing Team',
-            'sender_email' => 'news@focal.test',
+            'sender_email' => 'news@odden.test',
             'template_id' => $template->id,
             'list_id' => $list->id,
             'status' => CampaignStatus::Draft,
@@ -124,13 +124,13 @@ class EmailSuppressionAndProofTest extends TestCase
             'name' => 'Enterprise Launch',
             'subject' => 'Big News Inside',
             'sender_name' => 'Marketing Team',
-            'sender_email' => 'news@focal.test',
+            'sender_email' => 'news@odden.test',
             'template_id' => $template->id,
             'status' => CampaignStatus::Draft,
         ]);
 
         $action = new SendCampaignProofAction;
-        $result = $action->execute($campaign, 'reviewer1@focal.test, reviewer2@focal.test', $contact);
+        $result = $action->execute($campaign, 'reviewer1@odden.test, reviewer2@odden.test', $contact);
 
         $this->assertTrue($result['success']);
         $this->assertCount(2, $result['sent_to']);
@@ -153,7 +153,7 @@ class EmailSuppressionAndProofTest extends TestCase
             'preview_text' => 'Check our updates',
             'template_id' => $template->id,
             'sender_name' => 'Launch Team',
-            'sender_email' => 'launch@focal.test',
+            'sender_email' => 'launch@odden.test',
             'status' => CampaignStatus::Sent,
             'sent_at' => now(),
             'delivered_count' => 1500,

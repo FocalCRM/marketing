@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Marketing\Actions\LintCampaignDeliverabilityAction;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Actions\LintCampaignDeliverabilityAction;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CampaignDeliverabilityLinterTest extends TestCase
@@ -51,15 +51,15 @@ class CampaignDeliverabilityLinterTest extends TestCase
         $template = MarketingTemplate::create([
             'name' => 'Corporate Product Update',
             'subject' => 'Introducing New Security Features',
-            'body_html' => '<div><p>We are pleased to introduce enhanced encryption and audit capabilities across your workspace.</p><p><a href="https://focal.test/security">Learn more</a></p><footer><p><a href="{{unsubscribe_url}}">Unsubscribe from updates</a></p></footer></div>',
+            'body_html' => '<div><p>We are pleased to introduce enhanced encryption and audit capabilities across your workspace.</p><p><a href="https://odden.test/security">Learn more</a></p><footer><p><a href="{{unsubscribe_url}}">Unsubscribe from updates</a></p></footer></div>',
         ]);
 
         $campaign = Campaign::create([
             'name' => 'Security Release Announcement',
             'subject' => 'Introducing New Security Features',
             'preview_text' => 'Enhanced encryption and enterprise audit logging are now live.',
-            'sender_name' => 'Focal Security Team',
-            'sender_email' => 'security@focal.test',
+            'sender_name' => 'Odden Security Team',
+            'sender_email' => 'security@odden.test',
             'template_id' => $template->id,
         ]);
 

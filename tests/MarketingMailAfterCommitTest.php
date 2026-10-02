@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Marketing\Mail\CampaignProofMailable;
-use Focal\Marketing\Mail\MarketingMessageMailable;
-use Focal\Marketing\Mail\TransactionalTemplateMailable;
-use Focal\Marketing\Support\MarketingMailer;
+use Odden\Marketing\Mail\CampaignProofMailable;
+use Odden\Marketing\Mail\MarketingMessageMailable;
+use Odden\Marketing\Mail\TransactionalTemplateMailable;
+use Odden\Marketing\Support\MarketingMailer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -35,7 +35,7 @@ class MarketingMailAfterCommitTest extends TestCase
 
     public function test_mail_queued_in_a_rolled_back_transaction_is_never_sent(): void
     {
-        config(['queue.default' => 'sync', 'focal-marketing.mail.connection' => 'sync', 'focal-marketing.mail.mailer' => 'array']);
+        config(['queue.default' => 'sync', 'odden-marketing.mail.connection' => 'sync', 'odden-marketing.mail.mailer' => 'array']);
 
         try {
             DB::transaction(function (): void {

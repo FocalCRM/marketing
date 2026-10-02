@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Support\ContactToken;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Support\ContactToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ProgressiveProfilingTest extends TestCase
@@ -79,7 +79,7 @@ class ProgressiveProfilingTest extends TestCase
         $this->assertSame('Salesforce', $contact->getProperty('crm_replaced'));
 
         // Verify form submission recorded
-        $this->assertDatabaseHas('focal_marketing_form_submissions', [
+        $this->assertDatabaseHas('odden_marketing_form_submissions', [
             'form_id' => $form->id,
             'contact_id' => $contact->id,
         ]);

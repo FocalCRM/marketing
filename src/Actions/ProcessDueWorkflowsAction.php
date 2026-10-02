@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Marketing\Enums\WorkflowEnrollmentStatus;
-use Focal\Marketing\Models\WorkflowEnrollment;
+use Odden\Marketing\Enums\WorkflowEnrollmentStatus;
+use Odden\Marketing\Models\WorkflowEnrollment;
 
 class ProcessDueWorkflowsAction
 {

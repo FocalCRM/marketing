@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Models\MarketingSubscriptionTopic;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\MarketingSubscriptionTopic;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MarketingSubscriptionTopicTest extends TestCase

@@ -1,23 +1,23 @@
 <div x-data="{ mode: 'desktop', colorScheme: 'light' }" class="flex flex-col gap-4">
     <style>
-        .focal-dark-preview {
+        .odden-dark-preview {
             background-color: #0f172a !important;
             color: #f8fafc !important;
         }
-        .focal-dark-preview table {
+        .odden-dark-preview table {
             border-color: #334155 !important;
         }
-        .focal-dark-preview td[style*="background-color: #ffffff"],
-        .focal-dark-preview td[style*="background-color:#ffffff"],
-        .focal-dark-preview td[style*="background-color: #FFFFFF"] {
+        .odden-dark-preview td[style*="background-color: #ffffff"],
+        .odden-dark-preview td[style*="background-color:#ffffff"],
+        .odden-dark-preview td[style*="background-color: #FFFFFF"] {
             background-color: #1e293b !important;
             color: #f8fafc !important;
             border-color: #334155 !important;
         }
-        .focal-dark-preview p,
-        .focal-dark-preview h1,
-        .focal-dark-preview h2,
-        .focal-dark-preview h3 {
+        .odden-dark-preview p,
+        .odden-dark-preview h1,
+        .odden-dark-preview h2,
+        .odden-dark-preview h3 {
             color: #f8fafc !important;
         }
     </style>
@@ -92,7 +92,7 @@
                         </div>
                     @endif
                 </div>
-                <div :class="{ 'focal-dark-preview': colorScheme === 'dark' }" class="p-6 overflow-y-auto max-h-[550px] bg-white text-slate-900 transition-colors">
+                <div :class="{ 'odden-dark-preview': colorScheme === 'dark' }" class="p-6 overflow-y-auto max-h-[550px] bg-white text-slate-900 transition-colors">
                     {!! $renderedHtml !!}
                 </div>
             </div>
@@ -118,7 +118,7 @@
                     </div>
 
                     {{-- Scrollable Email Body --}}
-                    <div :class="{ 'focal-dark-preview': colorScheme === 'dark' }" class="p-4 overflow-y-auto max-h-[460px] text-xs text-slate-900 bg-white transition-colors">
+                    <div :class="{ 'odden-dark-preview': colorScheme === 'dark' }" class="p-4 overflow-y-auto max-h-[460px] text-xs text-slate-900 bg-white transition-colors">
                         {!! $renderedHtml !!}
                     </div>
                 </div>

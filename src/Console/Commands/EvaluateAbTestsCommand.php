@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Console\Commands;
+namespace Odden\Marketing\Console\Commands;
 
-use Focal\Marketing\Actions\EvaluateAbTestWinnerAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Models\Campaign;
+use Odden\Marketing\Actions\EvaluateAbTestWinnerAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Models\Campaign;
 use Illuminate\Console\Command;
 
 class EvaluateAbTestsCommand extends Command

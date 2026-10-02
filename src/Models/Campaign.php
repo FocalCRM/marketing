@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Marketing\Actions\CalculateRecipientOptimalSendTimeAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\CampaignType;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Marketing\Actions\CalculateRecipientOptimalSendTimeAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\CampaignType;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -130,7 +130,7 @@ class Campaign extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.campaigns', 'focal_marketing_campaigns');
+        return config('odden-marketing.tables.campaigns', 'odden_marketing_campaigns');
     }
 
     /**
@@ -202,7 +202,7 @@ class Campaign extends Model
     }
 
     /**
-     * Target audience list from focalcrm/core.
+     * Target audience list from getodden/crm-core.
      *
      * @return BelongsTo<CrmList, $this>
      */
@@ -212,7 +212,7 @@ class Campaign extends Model
     }
 
     /**
-     * Target audience list from focalcrm/core (via crm_list_id).
+     * Target audience list from getodden/crm-core (via crm_list_id).
      *
      * @return BelongsTo<CrmList, $this>
      */

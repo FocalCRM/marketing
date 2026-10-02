@@ -2,31 +2,31 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Listeners;
+namespace Odden\Marketing\Listeners;
 
-use Focal\Core\Events\CompaniesMerged;
-use Focal\Core\Events\ContactsMerged;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Enums\SubscriptionStatus;
-use Focal\Marketing\Enums\WorkflowEnrollmentStatus;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\CustomBehavioralEvent;
-use Focal\Marketing\Models\EspEvent;
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Marketing\Models\LeadDecayLog;
-use Focal\Marketing\Models\LeadScoreLog;
-use Focal\Marketing\Models\MarketingAssetDownload;
-use Focal\Marketing\Models\MarketingContactTopic;
-use Focal\Marketing\Models\MarketingEvent;
-use Focal\Marketing\Models\MarketingEventRegistration;
-use Focal\Marketing\Models\MarketingSmsMessage;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Models\NpsResponse;
-use Focal\Marketing\Models\PageView;
-use Focal\Marketing\Models\VisitorSession;
-use Focal\Marketing\Models\WorkflowEnrollment;
-use Focal\Marketing\Models\WorkflowLog;
+use Odden\Core\Events\CompaniesMerged;
+use Odden\Core\Events\ContactsMerged;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Enums\SubscriptionStatus;
+use Odden\Marketing\Enums\WorkflowEnrollmentStatus;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\CustomBehavioralEvent;
+use Odden\Marketing\Models\EspEvent;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Marketing\Models\LeadDecayLog;
+use Odden\Marketing\Models\LeadScoreLog;
+use Odden\Marketing\Models\MarketingAssetDownload;
+use Odden\Marketing\Models\MarketingContactTopic;
+use Odden\Marketing\Models\MarketingEvent;
+use Odden\Marketing\Models\MarketingEventRegistration;
+use Odden\Marketing\Models\MarketingSmsMessage;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\NpsResponse;
+use Odden\Marketing\Models\PageView;
+use Odden\Marketing\Models\VisitorSession;
+use Odden\Marketing\Models\WorkflowEnrollment;
+use Odden\Marketing\Models\WorkflowLog;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 

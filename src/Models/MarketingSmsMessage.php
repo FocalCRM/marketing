@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -49,7 +49,7 @@ class MarketingSmsMessage extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.sms_messages', 'focal_marketing_sms_messages');
+        return config('odden-marketing.tables.sms_messages', 'odden_marketing_sms_messages');
     }
 
     /**

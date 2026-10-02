@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -50,7 +50,7 @@ class PageView extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.page_views', 'focal_marketing_page_views');
+        return config('odden-marketing.tables.page_views', 'odden_marketing_page_views');
     }
 
     /**

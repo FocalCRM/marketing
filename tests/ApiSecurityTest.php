@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 
@@ -24,11 +24,11 @@ class ApiSecurityTest extends TestCase
         ]);
 
         $this->flushHeaders()
-            ->postJson(route('focal.marketing.templates.send', ['template' => $template->slug]), ['to' => 'victim@example.com'])
+            ->postJson(route('odden.marketing.templates.send', ['template' => $template->slug]), ['to' => 'victim@example.com'])
             ->assertUnauthorized();
 
         $this->withToken('wrong-token')
-            ->postJson(route('focal.marketing.templates.send-batch', ['template' => $template->slug]), ['recipients' => [['email' => 'victim@example.com']]])
+            ->postJson(route('odden.marketing.templates.send-batch', ['template' => $template->slug]), ['recipients' => [['email' => 'victim@example.com']]])
             ->assertUnauthorized();
 
         Mail::assertNothingOutgoing();
@@ -48,7 +48,7 @@ class ApiSecurityTest extends TestCase
 
     public function test_server_endpoints_are_disabled_until_a_token_is_configured(): void
     {
-        config(['focal-marketing.api.token' => null]);
+        config(['odden-marketing.api.token' => null]);
 
         $this->postJson('/api/marketing/leads/webhook/zapier', ['email' => 'lead@example.com'])->assertForbidden();
     }
@@ -65,14 +65,14 @@ class ApiSecurityTest extends TestCase
 
     public function test_public_browser_endpoints_are_rate_limited(): void
     {
-        config(['focal-core.rate_limits.public' => 2]);
+        config(['odden-core.rate_limits.public' => 2]);
         $this->flushHeaders();
 
-        $first = $this->postJson(route('focal.marketing.track.pageview'), ['url' => 'https://example.com', 'path' => '/']);
-        $second = $this->postJson(route('focal.marketing.track.pageview'), ['url' => 'https://example.com', 'path' => '/']);
+        $first = $this->postJson(route('odden.marketing.track.pageview'), ['url' => 'https://example.com', 'path' => '/']);
+        $second = $this->postJson(route('odden.marketing.track.pageview'), ['url' => 'https://example.com', 'path' => '/']);
 
         $this->assertNotSame(429, $first->status());
         $this->assertNotSame(429, $second->status());
-        $this->postJson(route('focal.marketing.track.pageview'), ['url' => 'https://example.com', 'path' => '/'])->assertTooManyRequests();
+        $this->postJson(route('odden.marketing.track.pageview'), ['url' => 'https://example.com', 'path' => '/'])->assertTooManyRequests();
     }
 }

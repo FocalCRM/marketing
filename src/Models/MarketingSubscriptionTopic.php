@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Collection;
@@ -51,7 +51,7 @@ class MarketingSubscriptionTopic extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.subscription_topics', 'focal_marketing_subscription_topics');
+        return config('odden-marketing.tables.subscription_topics', 'odden_marketing_subscription_topics');
     }
 
     /**

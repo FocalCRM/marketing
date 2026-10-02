@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Enums\LeadScoringEventType;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -53,7 +53,7 @@ class LeadScoringRule extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.scoring_rules', 'focal_marketing_lead_scoring_rules');
+        return config('odden-marketing.tables.scoring_rules', 'odden_marketing_lead_scoring_rules');
     }
 
     /**

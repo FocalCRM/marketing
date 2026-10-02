@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\ApplyLeadScoringEventAction;
-use Focal\Marketing\Actions\ProcessFormSubmissionAction;
-use Focal\Marketing\Enums\LeadScoringEventType;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\LeadScoringRule;
-use Focal\Marketing\Models\MarketingForm;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\ApplyLeadScoringEventAction;
+use Odden\Marketing\Actions\ProcessFormSubmissionAction;
+use Odden\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\LeadScoringRule;
+use Odden\Marketing\Models\MarketingForm;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class LeadScoringTest extends TestCase
@@ -96,7 +96,7 @@ class LeadScoringTest extends TestCase
         $this->assertNotNull($contact);
         $this->assertSame(15, $contact->lead_score);
         $this->assertNotNull($contact->lead_score_updated_at);
-        $this->assertDatabaseHas('focal_marketing_lead_score_logs', [
+        $this->assertDatabaseHas('odden_marketing_lead_score_logs', [
             'contact_id' => $contact->id,
             'event_type' => LeadScoringEventType::FormSubmission->value,
             'score_change' => 15,
@@ -115,8 +115,8 @@ class LeadScoringTest extends TestCase
         $campaign = Campaign::create([
             'name' => 'Q4 Security Update',
             'subject' => 'Security Patches',
-            'sender_name' => 'Focal',
-            'sender_email' => 'updates@focal.test',
+            'sender_name' => 'Odden',
+            'sender_email' => 'updates@odden.test',
         ]);
 
         /** @var CampaignRecipient $recipient */
@@ -132,7 +132,7 @@ class LeadScoringTest extends TestCase
         $this->assertSame(13, $contact->lead_score);
 
         // 2. Trigger click redirect -> +10 points
-        $this->get($recipient->getClickRedirectUrl('https://focal.test/security'));
+        $this->get($recipient->getClickRedirectUrl('https://odden.test/security'));
         $contact->refresh();
         $this->assertSame(23, $contact->lead_score);
 

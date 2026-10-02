@@ -5,16 +5,16 @@
     $previewText = $get('preview_text') ?? ($record?->preview_text ?? '');
     
     $html = '';
-    if (!empty($slots) && is_array($slots) && class_exists(\DoPHP\MailBuilder\MailBuilder::class)) {
-        $html = \DoPHP\MailBuilder\MailBuilder::compile($slots, [
+    if (!empty($slots) && is_array($slots) && class_exists(\Odden\MailBuilder\MailBuilder::class)) {
+        $html = \Odden\MailBuilder\MailBuilder::compile($slots, [
             'subject' => $subject,
             'preview_text' => $previewText,
             'interpolate' => true,
-            'context' => \DoPHP\MailBuilder\MailBuilder::mergeTags()->sampleContext(),
+            'context' => \Odden\MailBuilder\MailBuilder::mergeTags()->sampleContext(),
         ]);
     } elseif ($record?->body_html) {
-        $html = class_exists(\DoPHP\MailBuilder\MailBuilder::class)
-            ? \DoPHP\MailBuilder\MailBuilder::interpolate($record->body_html)
+        $html = class_exists(\Odden\MailBuilder\MailBuilder::class)
+            ? \Odden\MailBuilder\MailBuilder::interpolate($record->body_html)
             : $record->body_html;
     } else {
         $html = '<div style="padding: 40px; text-align: center; color: #64748b; font-family: sans-serif;"><p style="font-size: 16px; font-weight: bold;">No Slots Added Yet</p><p style="font-size: 13px;">Add blocks in the "Visual Slot Designer" tab or apply a layout preset to preview your email here.</p></div>';

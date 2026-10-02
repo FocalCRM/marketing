@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Enums\LeadStatus;
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\MarketingForm;
+use Odden\Core\Enums\LeadStatus;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\MarketingForm;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class LeadCaptureFormsTest extends TestCase
@@ -102,7 +102,7 @@ class LeadCaptureFormsTest extends TestCase
             'message' => 'Subscribed successfully!',
         ]);
 
-        $this->assertDatabaseHas('focal_contacts', [
+        $this->assertDatabaseHas('odden_contacts', [
             'email' => 'alyx@city17.org',
         ]);
     }

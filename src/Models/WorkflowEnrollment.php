@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\WorkflowEnrollmentStatus;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\WorkflowEnrollmentStatus;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -59,7 +59,7 @@ class WorkflowEnrollment extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.workflow_enrollments', 'focal_marketing_workflow_enrollments');
+        return config('odden-marketing.tables.workflow_enrollments', 'odden_marketing_workflow_enrollments');
     }
 
     /**

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Services;
+namespace Odden\Marketing\Services;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -21,14 +21,14 @@ class MarketingWebhookDispatcher
         ?string $endpointUrl = null,
         ?string $secret = null
     ): bool {
-        $url = $endpointUrl ?? config('focal-marketing.webhooks.outbound_url');
+        $url = $endpointUrl ?? config('odden-marketing.webhooks.outbound_url');
         if (empty($url) || ! is_string($url)) {
             return false;
         }
 
-        $signingSecret = $secret ?? config('focal-marketing.webhooks.secret');
+        $signingSecret = $secret ?? config('odden-marketing.webhooks.secret');
         if (! is_string($signingSecret) || $signingSecret === '') {
-            Log::warning('Outbound marketing webhook not sent: no signing secret. Pass webhook_secret or set FOCAL_MARKETING_WEBHOOK_SECRET.', [
+            Log::warning('Outbound marketing webhook not sent: no signing secret. Pass webhook_secret or set ODDEN_MARKETING_WEBHOOK_SECRET.', [
                 'event' => $event,
                 'url' => $url,
             ]);
@@ -58,11 +58,11 @@ class MarketingWebhookDispatcher
             $response = Http::timeout(5)
                 ->withBody($jsonPayload, 'application/json')
                 ->withHeaders([
-                    'User-Agent' => 'Focal-Marketing-Webhooks/1.0',
-                    'X-Focal-Event' => $event,
-                    'X-Focal-Delivery' => $eventId,
-                    'X-Focal-Timestamp' => (string) $timestamp,
-                    'X-Focal-Signature' => $signature,
+                    'User-Agent' => 'Odden-Marketing-Webhooks/1.0',
+                    'X-Odden-Event' => $event,
+                    'X-Odden-Delivery' => $eventId,
+                    'X-Odden-Timestamp' => (string) $timestamp,
+                    'X-Odden-Signature' => $signature,
                 ])
                 ->post($url);
 

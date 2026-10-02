@@ -1,5 +1,5 @@
 @php
-    /** @var \Focal\Marketing\Models\MarketingTemplate|null $record */
+    /** @var \Odden\Marketing\Models\MarketingTemplate|null $record */
     $record = $getRecord();
     
     $campaigns = $record ? $record->campaigns()->with('recipients')->get() : collect();

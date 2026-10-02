@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
-use Focal\Marketing\Actions\ApplyLeadScoringEventAction;
-use Focal\Marketing\Enums\LeadScoringEventType;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Actions\ApplyLeadScoringEventAction;
+use Odden\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingSubscription;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -92,7 +92,7 @@ class MarketingTrackingController extends Controller
             ->where('unsubscribe_token', $token)
             ->firstOrFail();
 
-        return response()->view('focal-marketing::unsubscribe.show', [
+        return response()->view('odden-marketing::unsubscribe.show', [
             'recipient' => $recipient,
         ]);
     }
@@ -122,7 +122,7 @@ class MarketingTrackingController extends Controller
             }
         }
 
-        return response()->view('focal-marketing::unsubscribe.confirmed', [
+        return response()->view('odden-marketing::unsubscribe.confirmed', [
             'email' => $recipient->email,
         ]);
     }

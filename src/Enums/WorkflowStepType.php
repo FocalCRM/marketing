@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Enums;
+namespace Odden\Marketing\Enums;
 
 enum WorkflowStepType: string
 {

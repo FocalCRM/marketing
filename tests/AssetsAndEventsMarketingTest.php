@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Actions\EvaluateActiveListAction;
-use Focal\Core\Enums\ListType;
-use Focal\Core\Models\Contact;
-use Focal\Core\Models\CrmList;
-use Focal\Marketing\Actions\RegisterContactForEventAction;
-use Focal\Marketing\Actions\TrackAssetDownloadAction;
-use Focal\Marketing\Actions\UpdateAttendanceStatusAction;
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\MarketingAsset;
-use Focal\Marketing\Models\MarketingEvent;
-use Focal\Marketing\Models\MarketingWorkflow;
+use Odden\Core\Actions\EvaluateActiveListAction;
+use Odden\Core\Enums\ListType;
+use Odden\Core\Models\Contact;
+use Odden\Core\Models\CrmList;
+use Odden\Marketing\Actions\RegisterContactForEventAction;
+use Odden\Marketing\Actions\TrackAssetDownloadAction;
+use Odden\Marketing\Actions\UpdateAttendanceStatusAction;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\MarketingAsset;
+use Odden\Marketing\Models\MarketingEvent;
+use Odden\Marketing\Models\MarketingWorkflow;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AssetsAndEventsMarketingTest extends TestCase
@@ -74,13 +74,13 @@ class AssetsAndEventsMarketingTest extends TestCase
         $this->assertSame(25, $contact->lead_score);
 
         // Verify task logged on contact timeline
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_id' => $contact->id,
             'title' => 'Downloaded Asset: 2026 Enterprise SaaS Pricing Report',
         ]);
 
         // Verify contact enrolled in nurture workflow
-        $this->assertDatabaseHas('focal_marketing_workflow_enrollments', [
+        $this->assertDatabaseHas('odden_marketing_workflow_enrollments', [
             'workflow_id' => $workflow->id,
             'contact_id' => $contact->id,
         ]);
@@ -144,7 +144,7 @@ class AssetsAndEventsMarketingTest extends TestCase
         $contact->refresh();
         // +10 points for registering
         $this->assertSame(30, $contact->lead_score);
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_id' => $contact->id,
             'title' => 'Registered for Event: Building Autonomous AI Agents at Scale',
         ]);
@@ -164,13 +164,13 @@ class AssetsAndEventsMarketingTest extends TestCase
         $contact->refresh();
         // +20 points for attending live (+30 + 20 = 50)
         $this->assertSame(50, $contact->lead_score);
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_id' => $contact->id,
             'title' => 'Attended Event: Building Autonomous AI Agents at Scale',
         ]);
 
         // Enrolled in attended workflow
-        $this->assertDatabaseHas('focal_marketing_workflow_enrollments', [
+        $this->assertDatabaseHas('odden_marketing_workflow_enrollments', [
             'workflow_id' => $workflow->id,
             'contact_id' => $contact->id,
         ]);
@@ -194,7 +194,7 @@ class AssetsAndEventsMarketingTest extends TestCase
             'utm_source' => 'google_ads',
         ];
 
-        $res = $this->postJson(route('focal.marketing.events.register', ['slug' => $event->slug]), $postData);
+        $res = $this->postJson(route('odden.marketing.events.register', ['slug' => $event->slug]), $postData);
         $res->assertStatus(200);
         $res->assertJsonPath('success', true);
         $res->assertJsonPath('event.title', 'Quarterly Product Briefing');
@@ -204,7 +204,7 @@ class AssetsAndEventsMarketingTest extends TestCase
         $this->assertSame('Jane', $newContact->first_name);
 
         // Test attendance webhook (e.g. from Zoom / Meet)
-        $webhookRes = $this->postJson(route('focal.marketing.events.attendance-webhook', ['slug' => $event->slug]), [
+        $webhookRes = $this->postJson(route('odden.marketing.events.attendance-webhook', ['slug' => $event->slug]), [
             'email' => 'newlead@enterprise.com',
             'status' => 'attended',
         ]);

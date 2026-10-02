@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Console\Commands;
+namespace Odden\Marketing\Console\Commands;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\DeliverCampaignMessageAction;
-use Focal\Marketing\Actions\DispatchCampaignAction;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Exceptions\CampaignHasNoAudienceException;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\DeliverCampaignMessageAction;
+use Odden\Marketing\Actions\DispatchCampaignAction;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Exceptions\CampaignHasNoAudienceException;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 

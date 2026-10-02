@@ -2,38 +2,38 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Actions\MergeCompaniesAction;
-use Focal\Core\Actions\MergeContactsAction;
-use Focal\Core\Models\Company;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\CampaignStatus;
-use Focal\Marketing\Enums\RecipientStatus;
-use Focal\Marketing\Enums\SubscriptionStatus;
-use Focal\Marketing\Enums\WorkflowEnrollmentStatus;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\CustomBehavioralEvent;
-use Focal\Marketing\Models\EspEvent;
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Marketing\Models\LeadDecayLog;
-use Focal\Marketing\Models\LeadScoreLog;
-use Focal\Marketing\Models\MarketingAsset;
-use Focal\Marketing\Models\MarketingAssetDownload;
-use Focal\Marketing\Models\MarketingContactTopic;
-use Focal\Marketing\Models\MarketingEvent;
-use Focal\Marketing\Models\MarketingEventRegistration;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Models\MarketingSmsMessage;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Models\MarketingSubscriptionTopic;
-use Focal\Marketing\Models\MarketingWorkflow;
-use Focal\Marketing\Models\NpsResponse;
-use Focal\Marketing\Models\NpsSurvey;
-use Focal\Marketing\Models\PageView;
-use Focal\Marketing\Models\VisitorSession;
-use Focal\Marketing\Models\WorkflowEnrollment;
-use Focal\Marketing\Models\WorkflowLog;
+use Odden\Core\Actions\MergeCompaniesAction;
+use Odden\Core\Actions\MergeContactsAction;
+use Odden\Core\Models\Company;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\CampaignStatus;
+use Odden\Marketing\Enums\RecipientStatus;
+use Odden\Marketing\Enums\SubscriptionStatus;
+use Odden\Marketing\Enums\WorkflowEnrollmentStatus;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\CustomBehavioralEvent;
+use Odden\Marketing\Models\EspEvent;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Marketing\Models\LeadDecayLog;
+use Odden\Marketing\Models\LeadScoreLog;
+use Odden\Marketing\Models\MarketingAsset;
+use Odden\Marketing\Models\MarketingAssetDownload;
+use Odden\Marketing\Models\MarketingContactTopic;
+use Odden\Marketing\Models\MarketingEvent;
+use Odden\Marketing\Models\MarketingEventRegistration;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Models\MarketingSmsMessage;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\MarketingSubscriptionTopic;
+use Odden\Marketing\Models\MarketingWorkflow;
+use Odden\Marketing\Models\NpsResponse;
+use Odden\Marketing\Models\NpsSurvey;
+use Odden\Marketing\Models\PageView;
+use Odden\Marketing\Models\VisitorSession;
+use Odden\Marketing\Models\WorkflowEnrollment;
+use Odden\Marketing\Models\WorkflowLog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -53,7 +53,7 @@ function mergeTestCampaign(string $name = 'Newsletter'): Campaign
     return Campaign::create([
         'name' => $name,
         'subject' => 'News',
-        'sender_name' => 'Focal',
+        'sender_name' => 'Odden',
         'sender_email' => 'news@example.com',
         'status' => CampaignStatus::Sent,
     ]);
@@ -141,7 +141,7 @@ test('the detached recipient\'s unsubscribe link still works after a merge', fun
 
     app(MergeContactsAction::class)->execute($primary, $secondary);
 
-    $this->post(route('focal.marketing.unsubscribe.process', $sentOnly->unsubscribe_token))->assertOk();
+    $this->post(route('odden.marketing.unsubscribe.process', $sentOnly->unsubscribe_token))->assertOk();
 
     expect(MarketingSubscription::isSuppressed($primary->email))->toBeTrue();
 });

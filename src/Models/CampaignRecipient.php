@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Enums\RecipientStatus;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Enums\RecipientStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
@@ -54,7 +54,7 @@ class CampaignRecipient extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.recipients', 'focal_marketing_campaign_recipients');
+        return config('odden-marketing.tables.recipients', 'odden_marketing_campaign_recipients');
     }
 
     /**
@@ -148,7 +148,7 @@ class CampaignRecipient extends Model
      */
     public function getTrackingPixelUrl(): string
     {
-        return route('focal.marketing.track.open', $this->tracking_token);
+        return route('odden.marketing.track.open', $this->tracking_token);
     }
 
     /**
@@ -156,7 +156,7 @@ class CampaignRecipient extends Model
      */
     public function getClickRedirectUrl(string $destinationUrl): string
     {
-        return route('focal.marketing.track.click', [
+        return route('odden.marketing.track.click', [
             'token' => $this->tracking_token,
             'url' => $destinationUrl,
             'sig' => self::clickSignature((string) $this->tracking_token, $destinationUrl),
@@ -170,7 +170,7 @@ class CampaignRecipient extends Model
     public static function clickSignature(string $token, string $destinationUrl, ?string $key = null): string
     {
         // JSON-encode the parts so no token/URL combination can produce the same signed string as another.
-        return hash_hmac('sha256', (string) json_encode(['focal-click', $token, $destinationUrl]), $key ?? (string) config('app.key'));
+        return hash_hmac('sha256', (string) json_encode(['odden-click', $token, $destinationUrl]), $key ?? (string) config('app.key'));
     }
 
     /**
@@ -196,7 +196,7 @@ class CampaignRecipient extends Model
      */
     public function getUnsubscribeUrl(): string
     {
-        return route('focal.marketing.unsubscribe.show', $this->unsubscribe_token);
+        return route('odden.marketing.unsubscribe.show', $this->unsubscribe_token);
     }
 
     /**
@@ -206,7 +206,7 @@ class CampaignRecipient extends Model
      */
     public function getOneClickUnsubscribeUrl(): string
     {
-        return route('focal.marketing.unsubscribe.process', $this->unsubscribe_token);
+        return route('odden.marketing.unsubscribe.process', $this->unsubscribe_token);
     }
 
     /**
@@ -216,6 +216,6 @@ class CampaignRecipient extends Model
      */
     public static function unsubscribePathPrefix(): string
     {
-        return Str::before(route('focal.marketing.unsubscribe.show', '__token__', false), '__token__');
+        return Str::before(route('odden.marketing.unsubscribe.show', '__token__', false), '__token__');
     }
 }

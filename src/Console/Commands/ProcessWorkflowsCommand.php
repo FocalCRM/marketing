@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Console\Commands;
+namespace Odden\Marketing\Console\Commands;
 
-use Focal\Marketing\Actions\ProcessDueWorkflowsAction;
+use Odden\Marketing\Actions\ProcessDueWorkflowsAction;
 use Illuminate\Console\Command;
 
 class ProcessWorkflowsCommand extends Command

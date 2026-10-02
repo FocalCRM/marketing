@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Support\UserModel;
+use Odden\Core\Support\UserModel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,21 +14,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $contactsTable = config('focal-core.tables.contacts', 'focal_contacts');
-        $listsTable = config('focal-core.tables.lists', 'focal_lists');
-        $templatesTable = config('focal-marketing.tables.templates', 'focal_marketing_templates');
-        $campaignsTable = config('focal-marketing.tables.campaigns', 'focal_marketing_campaigns');
-        $recipientsTable = config('focal-marketing.tables.recipients', 'focal_marketing_campaign_recipients');
-        $submissionsTable = config('focal-marketing.tables.form_submissions', 'focal_marketing_form_submissions');
+        $contactsTable = config('odden-core.tables.contacts', 'odden_contacts');
+        $listsTable = config('odden-core.tables.lists', 'odden_lists');
+        $templatesTable = config('odden-marketing.tables.templates', 'odden_marketing_templates');
+        $campaignsTable = config('odden-marketing.tables.campaigns', 'odden_marketing_campaigns');
+        $recipientsTable = config('odden-marketing.tables.recipients', 'odden_marketing_campaign_recipients');
+        $submissionsTable = config('odden-marketing.tables.form_submissions', 'odden_marketing_form_submissions');
 
-        $rulesTable = config('focal-marketing.tables.scoring_rules', 'focal_marketing_lead_scoring_rules');
-        $scoreLogsTable = config('focal-marketing.tables.score_logs', 'focal_marketing_lead_score_logs');
-        $workflowsTable = config('focal-marketing.tables.workflows', 'focal_marketing_workflows');
-        $stepsTable = config('focal-marketing.tables.workflow_steps', 'focal_marketing_workflow_steps');
-        $enrollmentsTable = config('focal-marketing.tables.workflow_enrollments', 'focal_marketing_workflow_enrollments');
-        $workflowLogsTable = config('focal-marketing.tables.workflow_logs', 'focal_marketing_workflow_logs');
+        $rulesTable = config('odden-marketing.tables.scoring_rules', 'odden_marketing_lead_scoring_rules');
+        $scoreLogsTable = config('odden-marketing.tables.score_logs', 'odden_marketing_lead_score_logs');
+        $workflowsTable = config('odden-marketing.tables.workflows', 'odden_marketing_workflows');
+        $stepsTable = config('odden-marketing.tables.workflow_steps', 'odden_marketing_workflow_steps');
+        $enrollmentsTable = config('odden-marketing.tables.workflow_enrollments', 'odden_marketing_workflow_enrollments');
+        $workflowLogsTable = config('odden-marketing.tables.workflow_logs', 'odden_marketing_workflow_logs');
 
-        // 1. Lead score columns on contacts are owned by focalcrm/core.
+        // 1. Lead score columns on contacts are owned by getodden/crm-core.
 
         // 2. Lead Scoring Rules Table
         Schema::create($rulesTable, function (Blueprint $table): void {
@@ -138,17 +138,17 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $contactsTable = config('focal-core.tables.contacts', 'focal_contacts');
-        $campaignsTable = config('focal-marketing.tables.campaigns', 'focal_marketing_campaigns');
-        $recipientsTable = config('focal-marketing.tables.recipients', 'focal_marketing_campaign_recipients');
-        $submissionsTable = config('focal-marketing.tables.form_submissions', 'focal_marketing_form_submissions');
+        $contactsTable = config('odden-core.tables.contacts', 'odden_contacts');
+        $campaignsTable = config('odden-marketing.tables.campaigns', 'odden_marketing_campaigns');
+        $recipientsTable = config('odden-marketing.tables.recipients', 'odden_marketing_campaign_recipients');
+        $submissionsTable = config('odden-marketing.tables.form_submissions', 'odden_marketing_form_submissions');
 
-        $rulesTable = config('focal-marketing.tables.scoring_rules', 'focal_marketing_lead_scoring_rules');
-        $scoreLogsTable = config('focal-marketing.tables.score_logs', 'focal_marketing_lead_score_logs');
-        $workflowsTable = config('focal-marketing.tables.workflows', 'focal_marketing_workflows');
-        $stepsTable = config('focal-marketing.tables.workflow_steps', 'focal_marketing_workflow_steps');
-        $enrollmentsTable = config('focal-marketing.tables.workflow_enrollments', 'focal_marketing_workflow_enrollments');
-        $workflowLogsTable = config('focal-marketing.tables.workflow_logs', 'focal_marketing_workflow_logs');
+        $rulesTable = config('odden-marketing.tables.scoring_rules', 'odden_marketing_lead_scoring_rules');
+        $scoreLogsTable = config('odden-marketing.tables.score_logs', 'odden_marketing_lead_score_logs');
+        $workflowsTable = config('odden-marketing.tables.workflows', 'odden_marketing_workflows');
+        $stepsTable = config('odden-marketing.tables.workflow_steps', 'odden_marketing_workflow_steps');
+        $enrollmentsTable = config('odden-marketing.tables.workflow_enrollments', 'odden_marketing_workflow_enrollments');
+        $workflowLogsTable = config('odden-marketing.tables.workflow_logs', 'odden_marketing_workflow_logs');
 
         Schema::table($submissionsTable, function (Blueprint $table): void {
             $table->dropColumn(['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content']);

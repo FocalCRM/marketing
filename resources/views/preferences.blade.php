@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Preference Center | {{ config('app.name', 'Focal') }}</title>
+    <title>Email Preference Center | {{ config('app.name', 'Odden') }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col justify-between">
     <header class="bg-white border-b border-slate-200 py-4">
         <div class="max-w-xl mx-auto px-4 flex justify-between items-center">
-            <span class="text-xl font-bold tracking-tight text-slate-900">{{ config('app.name', 'Focal') }}</span>
+            <span class="text-xl font-bold tracking-tight text-slate-900">{{ config('app.name', 'Odden') }}</span>
         </div>
     </header>
 
@@ -23,11 +23,11 @@
         <div class="bg-white p-8 rounded-xl shadow-sm border border-slate-200">
             <h1 class="text-2xl font-bold text-slate-900 mb-2">Communication Preferences</h1>
             <p class="text-sm text-slate-500 mb-6">
-                Manage the topics and updates you receive from {{ config('app.name', 'Focal') }} for
+                Manage the topics and updates you receive from {{ config('app.name', 'Odden') }} for
                 <span class="font-medium text-slate-800">{{ $contact?->email ?? 'your email' }}</span>.
             </p>
 
-            <form method="POST" action="{{ route('focal.marketing.preferences.update', $token) }}" class="space-y-6">
+            <form method="POST" action="{{ route('odden.marketing.preferences.update', $token) }}" class="space-y-6">
                 @csrf
                 <div class="space-y-4 divide-y divide-slate-100">
                     @foreach($topics as $key => $topic)
@@ -77,7 +77,7 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
-        &copy; {{ date('Y') }} {{ config('app.name', 'Focal') }}. All rights reserved.
+        &copy; {{ date('Y') }} {{ config('app.name', 'Odden') }}. All rights reserved.
     </footer>
 </body>
 </html>

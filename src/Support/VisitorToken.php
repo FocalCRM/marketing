@@ -2,29 +2,29 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Support;
+namespace Odden\Marketing\Support;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 /**
- * The anonymous visitor id shared by focal.js, embed.js and the hosted pages.
+ * The anonymous visitor id shared by odden.js, embed.js and the hosted pages.
  *
  * The browser scripts generate a random id, keep it in first-party storage on the
- * host site (localStorage and a readable "_focal_vid" cookie) and send it as
+ * host site (localStorage and a readable "_odden_vid" cookie) and send it as
  * "visitor_token" with every pageview, auto-capture and embedded form submission.
  * Nothing depends on the app's own cookies, so it works when the scripts are
  * embedded on another domain. Hosted pages served by the app itself (landing pages)
- * also carry the server-issued "focal_vid" cookie, which is used when a request
+ * also carry the server-issued "odden_vid" cookie, which is used when a request
  * has no explicit token.
  */
 final class VisitorToken
 {
     /** Server-issued, encrypted cookie set by the pageview endpoint (same-site flows). */
-    public const COOKIE = 'focal_vid';
+    public const COOKIE = 'odden_vid';
 
     /** localStorage key and first-party cookie name the browser scripts use on the host site. */
-    public const CLIENT_KEY = '_focal_vid';
+    public const CLIENT_KEY = '_odden_vid';
 
     /** Letters, digits, "-" and "_", 16 to 64 characters. Covers ids from the scripts and Str::random(40). */
     public const PATTERN = '/^[A-Za-z0-9_-]{16,64}$/';
@@ -41,7 +41,7 @@ final class VisitorToken
 
     /**
      * The visitor token of a request: an explicit, well-formed "visitor_token" field
-     * first, then the "focal_vid" cookie. Malformed values are ignored.
+     * first, then the "odden_vid" cookie. Malformed values are ignored.
      */
     public static function fromRequest(Request $request): ?string
     {
@@ -55,15 +55,15 @@ final class VisitorToken
     }
 
     /**
-     * JavaScript helper embedded in focal.js and embed.js so both read and write the same id.
-     * Defines focalVisitorId(), which returns the stored id or creates and stores a new one.
+     * JavaScript helper embedded in odden.js and embed.js so both read and write the same id.
+     * Defines oddenVisitorId(), which returns the stored id or creates and stores a new one.
      */
     public static function javascript(): string
     {
         $key = self::CLIENT_KEY;
 
         return <<<JS
-    function focalVisitorId() {
+    function oddenVisitorId() {
         var key = '{$key}';
         var pattern = /^[A-Za-z0-9_-]{16,64}$/;
         var vid = null;

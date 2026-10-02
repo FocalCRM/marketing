@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
 use Closure;
-use DoPHP\MailBuilder\MailBuilder;
-use Focal\Marketing\Mail\TransactionalTemplateMailable;
-use Focal\Marketing\Models\MarketingTemplate;
-use Focal\Marketing\Services\DomainThrottler;
-use Focal\Marketing\Services\MarketingWebhookDispatcher;
-use Focal\Marketing\Support\MarketingMailer;
+use Odden\MailBuilder\MailBuilder;
+use Odden\Marketing\Mail\TransactionalTemplateMailable;
+use Odden\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Services\DomainThrottler;
+use Odden\Marketing\Services\MarketingWebhookDispatcher;
+use Odden\Marketing\Support\MarketingMailer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -19,7 +19,7 @@ class TransactionalTemplateController extends Controller
 {
     /**
      * Queue a transactional email using a pre-built MarketingTemplate. Returns once the
-     * message is on the queue (focal-marketing.mail); a queue worker delivers it.
+     * message is on the queue (odden-marketing.mail); a queue worker delivers it.
      */
     public function send(Request $request, string|int $template): JsonResponse
     {

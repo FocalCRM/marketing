@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use DoPHP\MailBuilder\MailBuilder;
-use DoPHP\MailBuilder\MergeTags\MergeTagRegistry;
+use Odden\MailBuilder\MailBuilder;
+use Odden\MailBuilder\MergeTags\MergeTagRegistry;
 
 class MergeTagRegistrationTest extends TestCase
 {

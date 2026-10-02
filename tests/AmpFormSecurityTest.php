@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\MarketingEvent;
-use Focal\Marketing\Models\MarketingEventRegistration;
-use Focal\Marketing\Models\NpsResponse;
-use Focal\Marketing\Models\NpsSurvey;
-use Focal\Marketing\Support\ContactToken;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\MarketingEvent;
+use Odden\Marketing\Models\MarketingEventRegistration;
+use Odden\Marketing\Models\NpsResponse;
+use Odden\Marketing\Models\NpsSurvey;
+use Odden\Marketing\Support\ContactToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
@@ -47,7 +47,7 @@ class AmpFormSecurityTest extends TestCase
 
         foreach ([['Origin' => 'https://evil.test'], []] as $headers) {
             $this->withHeaders($headers)
-                ->postJson(route('focal.marketing.amp.feedback'), ['token' => 'nps_token_amp_123', 'score' => 1])
+                ->postJson(route('odden.marketing.amp.feedback'), ['token' => 'nps_token_amp_123', 'score' => 1])
                 ->assertForbidden()
                 ->assertHeaderMissing('Access-Control-Allow-Origin')
                 ->assertHeaderMissing('Access-Control-Allow-Credentials');
@@ -58,25 +58,25 @@ class AmpFormSecurityTest extends TestCase
 
     public function test_feedback_follows_the_amp_email_cors_spec_for_allowed_origins(): void
     {
-        $this->withHeaders(['Origin' => 'https://mail.google.com', 'AMP-Email-Sender' => 'news@focal.test'])
-            ->postJson(route('focal.marketing.amp.feedback'), ['score' => 9])
+        $this->withHeaders(['Origin' => 'https://mail.google.com', 'AMP-Email-Sender' => 'news@odden.test'])
+            ->postJson(route('odden.marketing.amp.feedback'), ['score' => 9])
             ->assertOk()
             ->assertHeader('Access-Control-Allow-Origin', 'https://mail.google.com')
-            ->assertHeader('AMP-Email-Allow-Sender', 'news@focal.test')
+            ->assertHeader('AMP-Email-Allow-Sender', 'news@odden.test')
             ->assertHeader('Access-Control-Expose-Headers', 'AMP-Email-Allow-Sender')
             ->assertHeaderMissing('Access-Control-Allow-Credentials');
     }
 
     public function test_allowed_origins_are_configurable(): void
     {
-        config(['focal-marketing.amp.allowed_origins' => ['https://mail.example.test']]);
+        config(['odden-marketing.amp.allowed_origins' => ['https://mail.example.test']]);
 
         $this->withHeaders(['Origin' => 'https://mail.google.com'])
-            ->postJson(route('focal.marketing.amp.feedback'), ['score' => 9])
+            ->postJson(route('odden.marketing.amp.feedback'), ['score' => 9])
             ->assertForbidden();
 
         $this->withHeaders(['Origin' => 'https://mail.example.test'])
-            ->postJson(route('focal.marketing.amp.feedback'), ['score' => 9])
+            ->postJson(route('odden.marketing.amp.feedback'), ['score' => 9])
             ->assertOk()
             ->assertHeader('Access-Control-Allow-Origin', 'https://mail.example.test');
     }
@@ -84,7 +84,7 @@ class AmpFormSecurityTest extends TestCase
     public function test_rsvp_never_creates_or_selects_contacts_by_submitted_email(): void
     {
         $this->withHeaders(['Origin' => 'https://mail.google.com'])
-            ->postJson(route('focal.marketing.amp.rsvp'), [
+            ->postJson(route('odden.marketing.amp.rsvp'), [
                 'event_slug' => 'keynote',
                 'email' => 'stranger@example.com',
                 'status' => 'attending',
@@ -92,7 +92,7 @@ class AmpFormSecurityTest extends TestCase
             ->assertStatus(422);
 
         $this->withHeaders(['Origin' => 'https://mail.google.com'])
-            ->postJson(route('focal.marketing.amp.rsvp'), [
+            ->postJson(route('odden.marketing.amp.rsvp'), [
                 'event_slug' => 'keynote',
                 'email' => 'ina@example.com',
                 'status' => 'declined',
@@ -113,7 +113,7 @@ class AmpFormSecurityTest extends TestCase
             ContactToken::make($this->invitee, ContactToken::forForm($this->event->id)),
         ] as $token) {
             $this->withHeaders(['Origin' => 'https://mail.google.com'])
-                ->postJson(route('focal.marketing.amp.rsvp'), ['event_slug' => 'keynote', 'token' => $token])
+                ->postJson(route('odden.marketing.amp.rsvp'), ['event_slug' => 'keynote', 'token' => $token])
                 ->assertForbidden()
                 ->assertHeader('Access-Control-Allow-Origin', 'https://mail.google.com');
         }
@@ -124,7 +124,7 @@ class AmpFormSecurityTest extends TestCase
     public function test_rsvp_registers_the_contact_the_signed_token_was_issued_for(): void
     {
         $this->withHeaders(['Origin' => 'https://mail.google.com'])
-            ->postJson(route('focal.marketing.amp.rsvp'), [
+            ->postJson(route('odden.marketing.amp.rsvp'), [
                 'event_slug' => 'keynote',
                 'token' => $this->event->rsvpTokenFor($this->invitee),
                 'email' => 'someone-else@example.com',

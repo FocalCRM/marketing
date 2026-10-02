@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\RecordWebVisitAction;
-use Focal\Marketing\Actions\StitchVisitorToContactAction;
-use Focal\Marketing\Models\PageView;
-use Focal\Marketing\Models\VisitorSession;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\RecordWebVisitAction;
+use Odden\Marketing\Actions\StitchVisitorToContactAction;
+use Odden\Marketing\Models\PageView;
+use Odden\Marketing\Models\VisitorSession;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class WebTrackingAndIdentityStitchingTest extends TestCase
@@ -18,9 +18,9 @@ class WebTrackingAndIdentityStitchingTest extends TestCase
     public function test_pageview_endpoint_creates_session_and_page_view_records(): void
     {
         $response = $this->postJson('/marketing/track/pageview', [
-            'url' => 'https://focal.test/features/crm',
+            'url' => 'https://odden.test/features/crm',
             'path' => '/features/crm',
-            'title' => 'CRM Features | Focal',
+            'title' => 'CRM Features | Odden',
             'referer' => 'https://google.com',
             'utm_source' => 'google',
             'utm_medium' => 'organic',
@@ -28,7 +28,7 @@ class WebTrackingAndIdentityStitchingTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonStructure(['status', 'session_id', 'visitor_token']);
-        $response->assertCookie('focal_vid');
+        $response->assertCookie('odden_vid');
 
         $session = VisitorSession::query()->first();
         $this->assertNotNull($session);
@@ -53,28 +53,28 @@ class WebTrackingAndIdentityStitchingTest extends TestCase
         $action = new RecordWebVisitAction;
         $action->execute([
             'contact_id' => $contact->id,
-            'url' => 'https://focal.test/pricing',
+            'url' => 'https://odden.test/pricing',
             'path' => '/pricing',
-            'title' => 'Focal Pricing & Plans',
+            'title' => 'Odden Pricing & Plans',
         ]);
 
         $contact->refresh();
         // High-intent path '/pricing' awards +20 points -> 10 + 20 = 30
         $this->assertSame(30, $contact->lead_score);
-        $this->assertDatabaseHas('focal_marketing_lead_score_logs', [
+        $this->assertDatabaseHas('odden_marketing_lead_score_logs', [
             'contact_id' => $contact->id,
             'event_description' => 'High Intent Web Visit: /pricing (+20 pts)',
         ]);
     }
 
-    public function test_focal_tracking_javascript_script_is_served(): void
+    public function test_odden_tracking_javascript_script_is_served(): void
     {
-        $response = $this->get('/marketing/focal.js');
+        $response = $this->get('/marketing/odden.js');
 
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/javascript');
         $this->assertStringContainsString('/marketing/track/pageview', $response->getContent() ?: '');
-        $this->assertStringContainsString('focal_vid', $response->getContent() ?: '');
+        $this->assertStringContainsString('odden_vid', $response->getContent() ?: '');
     }
 
     public function test_retroactive_identity_stitching_links_prior_browsing_history_to_contact(): void
@@ -85,13 +85,13 @@ class WebTrackingAndIdentityStitchingTest extends TestCase
         $visitAction = new RecordWebVisitAction;
         $visitAction->execute([
             'visitor_token' => $visitorToken,
-            'url' => 'https://focal.test/blog/modern-sales',
+            'url' => 'https://odden.test/blog/modern-sales',
             'path' => '/blog/modern-sales',
             'title' => 'Modern Sales Blog',
         ]);
         $visitAction->execute([
             'visitor_token' => $visitorToken,
-            'url' => 'https://focal.test/features',
+            'url' => 'https://odden.test/features',
             'path' => '/features',
             'title' => 'Features Overview',
         ]);

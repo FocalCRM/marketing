@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-use Focal\Core\Enums\LifecycleStage;
-use Focal\Core\Models\Contact;
+use Odden\Core\Enums\LifecycleStage;
+use Odden\Core\Models\Contact;
 
-test('embed script focal.js is served with form interception code', function () {
-    $response = $this->get(route('focal.marketing.track.script'));
+test('embed script odden.js is served with form interception code', function () {
+    $response = $this->get(route('odden.marketing.track.script'));
 
     $response->assertOk()
         ->assertHeader('Content-Type', 'application/javascript')
@@ -25,7 +25,7 @@ test('auto-captures external website form submission creating lead with intent s
         'utm_campaign' => 'q4-enterprise-surge',
     ];
 
-    $response = $this->postJson(route('focal.marketing.forms.auto-capture'), $payload);
+    $response = $this->postJson(route('odden.marketing.forms.auto-capture'), $payload);
 
     $response->assertOk()
         ->assertJsonPath('status', 'success')

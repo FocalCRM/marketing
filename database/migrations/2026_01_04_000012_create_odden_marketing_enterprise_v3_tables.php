@@ -13,10 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        $campaignsTable = config('focal-marketing.tables.campaigns', 'focal_marketing_campaigns');
-        $recipientsTable = config('focal-marketing.tables.recipients', 'focal_marketing_campaign_recipients');
-        $topicsTable = config('focal-marketing.tables.subscription_topics', 'focal_marketing_subscription_topics');
-        $contactTopicsTable = config('focal-marketing.tables.contact_topics', 'focal_marketing_contact_topics');
+        $campaignsTable = config('odden-marketing.tables.campaigns', 'odden_marketing_campaigns');
+        $recipientsTable = config('odden-marketing.tables.recipients', 'odden_marketing_campaign_recipients');
+        $topicsTable = config('odden-marketing.tables.subscription_topics', 'odden_marketing_subscription_topics');
+        $contactTopicsTable = config('odden-marketing.tables.contact_topics', 'odden_marketing_contact_topics');
 
         // 1. Subscription Topics Table
         if (! Schema::hasTable($topicsTable)) {
@@ -91,10 +91,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        $campaignsTable = config('focal-marketing.tables.campaigns', 'focal_marketing_campaigns');
-        $recipientsTable = config('focal-marketing.tables.recipients', 'focal_marketing_campaign_recipients');
-        $topicsTable = config('focal-marketing.tables.subscription_topics', 'focal_marketing_subscription_topics');
-        $contactTopicsTable = config('focal-marketing.tables.contact_topics', 'focal_marketing_contact_topics');
+        $campaignsTable = config('odden-marketing.tables.campaigns', 'odden_marketing_campaigns');
+        $recipientsTable = config('odden-marketing.tables.recipients', 'odden_marketing_campaign_recipients');
+        $topicsTable = config('odden-marketing.tables.subscription_topics', 'odden_marketing_subscription_topics');
+        $contactTopicsTable = config('odden-marketing.tables.contact_topics', 'odden_marketing_contact_topics');
 
         Schema::dropIfExists($contactTopicsTable);
         Schema::dropIfExists($topicsTable);

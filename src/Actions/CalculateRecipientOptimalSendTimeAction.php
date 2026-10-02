@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
 use Carbon\CarbonInterface;
 use DateTimeZone;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
 use Illuminate\Support\Carbon;
 
 class CalculateRecipientOptimalSendTimeAction

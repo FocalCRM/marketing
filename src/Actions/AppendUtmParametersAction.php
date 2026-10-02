@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Actions;
+namespace Odden\Marketing\Actions;
 
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\CampaignRecipient;
 use Illuminate\Support\Str;
 
 class AppendUtmParametersAction
@@ -29,7 +29,7 @@ class AppendUtmParametersAction
             : Str::slug($campaign->name);
 
         $utmParams = [
-            'utm_source' => 'focal',
+            'utm_source' => 'odden',
             'utm_medium' => 'email',
             'utm_campaign' => $campaignSlug,
         ];

@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Http\Controllers;
+namespace Odden\Marketing\Http\Controllers;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\ApplyLeadScoringEventAction;
-use Focal\Marketing\Enums\LeadScoringEventType;
-use Focal\Marketing\Models\CampaignRecipient;
-use Focal\Marketing\Models\MarketingSubscription;
-use Focal\Marketing\Models\MarketingSubscriptionTopic;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\ApplyLeadScoringEventAction;
+use Odden\Marketing\Enums\LeadScoringEventType;
+use Odden\Marketing\Models\CampaignRecipient;
+use Odden\Marketing\Models\MarketingSubscription;
+use Odden\Marketing\Models\MarketingSubscriptionTopic;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -28,7 +28,7 @@ class MarketingPreferencesController extends Controller
         $dbTopics = MarketingSubscriptionTopic::orderBy('sort_order')->get();
         if ($dbTopics->isEmpty()) {
             $defaultTopics = [
-                ['name' => 'Product Releases & Changelogs', 'slug' => 'product_updates', 'description' => 'Stay informed on the newest capabilities shipped in Focal.', 'sort_order' => 1],
+                ['name' => 'Product Releases & Changelogs', 'slug' => 'product_updates', 'description' => 'Stay informed on the newest capabilities shipped in Odden.', 'sort_order' => 1],
                 ['name' => 'Weekly Growth & RevOps Digest', 'slug' => 'newsletter', 'description' => 'Best practices, pipeline strategies, and sales playbooks.', 'sort_order' => 2],
                 ['name' => 'Live Briefings & Executive Webinars', 'slug' => 'webinars', 'description' => 'Invitations to live product walkthroughs and VIP sessions.', 'sort_order' => 3],
                 ['name' => 'Security & Reliability Advisories', 'slug' => 'security', 'description' => 'Essential updates regarding platform maintenance and security.', 'sort_order' => 4],
@@ -58,7 +58,7 @@ class MarketingPreferencesController extends Controller
 
         $isSuppressed = $contact !== null && MarketingSubscription::isSuppressed($contact->email);
 
-        return view('focal-marketing::preferences', compact('contact', 'topics', 'currentTopics', 'token', 'isSuppressed'));
+        return view('odden-marketing::preferences', compact('contact', 'topics', 'currentTopics', 'token', 'isSuppressed'));
     }
 
     /**
@@ -119,7 +119,7 @@ class MarketingPreferencesController extends Controller
             );
         }
 
-        return view('focal-marketing::confirmed', compact('contact'));
+        return view('odden-marketing::confirmed', compact('contact'));
     }
 
     /**

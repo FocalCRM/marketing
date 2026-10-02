@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Services;
+namespace Odden\Marketing\Services;
 
-use DoPHP\MailBuilder\Data\EmailSlot;
-use DoPHP\MailBuilder\Enums\SlotType;
-use DoPHP\MailBuilder\MailBuilder;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Models\MarketingTemplate;
+use Odden\MailBuilder\Data\EmailSlot;
+use Odden\MailBuilder\Enums\SlotType;
+use Odden\MailBuilder\MailBuilder;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\MarketingTemplate;
 
 class ContactPersonaPreviewService
 {

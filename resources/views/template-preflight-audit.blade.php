@@ -4,11 +4,11 @@
     $subject = $get('subject') ?? ($record?->subject ?? '');
     
     $result = null;
-    if (class_exists(\DoPHP\MailBuilder\MailBuilder::class)) {
+    if (class_exists(\Odden\MailBuilder\MailBuilder::class)) {
         if (!empty($slots) && is_array($slots)) {
-            $result = \DoPHP\MailBuilder\MailBuilder::audit($slots, ['subject' => $subject]);
+            $result = \Odden\MailBuilder\MailBuilder::audit($slots, ['subject' => $subject]);
         } elseif ($record?->body_html) {
-            $result = \DoPHP\MailBuilder\MailBuilder::audit($record->body_html, ['subject' => $subject]);
+            $result = \Odden\MailBuilder\MailBuilder::audit($record->body_html, ['subject' => $subject]);
         }
     }
 @endphp

@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Tests;
+namespace Odden\Marketing\Tests;
 
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Actions\EnrollContactInWorkflowAction;
-use Focal\Marketing\Actions\GetCampaignAttributionAction;
-use Focal\Marketing\Enums\AttributionModel;
-use Focal\Marketing\Enums\WorkflowStepType;
-use Focal\Marketing\Enums\WorkflowTriggerType;
-use Focal\Marketing\Models\Campaign;
-use Focal\Marketing\Models\FormSubmission;
-use Focal\Marketing\Models\MarketingForm;
-use Focal\Marketing\Models\MarketingWorkflow;
-use Focal\Sales\Enums\DealStatus;
-use Focal\Sales\Models\Deal;
-use Focal\Sales\Models\Pipeline;
-use Focal\Sales\Models\PipelineStage;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\EnrollContactInWorkflowAction;
+use Odden\Marketing\Actions\GetCampaignAttributionAction;
+use Odden\Marketing\Enums\AttributionModel;
+use Odden\Marketing\Enums\WorkflowStepType;
+use Odden\Marketing\Enums\WorkflowTriggerType;
+use Odden\Marketing\Models\Campaign;
+use Odden\Marketing\Models\FormSubmission;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Models\MarketingWorkflow;
+use Odden\Sales\Enums\DealStatus;
+use Odden\Sales\Models\Deal;
+use Odden\Sales\Models\Pipeline;
+use Odden\Sales\Models\PipelineStage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 
@@ -47,7 +47,7 @@ class MultiChannelWorkflowsAndAttributionTest extends TestCase
             'name' => 'Send SMS Confirmation',
             'type' => WorkflowStepType::SendSms,
             'config' => [
-                'message' => 'Focal: Your enterprise account has been provisioned!',
+                'message' => 'Odden: Your enterprise account has been provisioned!',
                 'requires_consent' => true,
             ],
         ]);
@@ -62,7 +62,7 @@ class MultiChannelWorkflowsAndAttributionTest extends TestCase
         $this->assertStringContainsString('Dispatched SMS to +12025550192', $log->action_taken);
 
         // Verify task logged on contact timeline
-        $this->assertDatabaseHas('focal_activities', [
+        $this->assertDatabaseHas('odden_activities', [
             'subject_id' => $contactWithConsent->id,
             'title' => 'Workflow SMS: SMS Notification Flow',
         ]);
@@ -160,7 +160,7 @@ class MultiChannelWorkflowsAndAttributionTest extends TestCase
             'name' => 'Enterprise Architecture Summit',
             'subject' => 'Summit Invitation',
             'sender_name' => 'Events',
-            'sender_email' => 'events@focal.test',
+            'sender_email' => 'events@odden.test',
         ]);
 
         $form = MarketingForm::create([

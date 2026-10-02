@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
-use Focal\Marketing\Support\ContactToken;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Support\ContactToken;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -63,7 +63,7 @@ class MarketingEvent extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.events', 'focal_marketing_events');
+        return config('odden-marketing.tables.events', 'odden_marketing_events');
     }
 
     /**
@@ -114,7 +114,7 @@ class MarketingEvent extends Model
     {
         return $this->belongsToMany(
             Contact::class,
-            config('focal-marketing.tables.event_registrations', 'focal_marketing_event_registrations'),
+            config('odden-marketing.tables.event_registrations', 'odden_marketing_event_registrations'),
             'event_id',
             'contact_id'
         )->withTimestamps()->withPivot(['status', 'registered_at', 'attended_at']);

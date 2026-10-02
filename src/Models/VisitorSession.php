@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Focal\Marketing\Models;
+namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Focal\Core\Models\Contact;
+use Odden\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -53,7 +53,7 @@ class VisitorSession extends Model
      */
     public function getTable(): string
     {
-        return config('focal-marketing.tables.visitor_sessions', 'focal_marketing_visitor_sessions');
+        return config('odden-marketing.tables.visitor_sessions', 'odden_marketing_visitor_sessions');
     }
 
     /**
