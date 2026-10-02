@@ -50,7 +50,7 @@ return new class extends Migration
                 $table->foreignIdFor(UserModel::className(), 'created_by')->nullable()->constrained()->nullOnDelete();
                 $table->timestamps();
 
-                $table->index(['template_id', 'version_number']);
+                $table->index(['template_id', 'version_number'], 'focal_mkt_template_revisions_version_idx');
             });
         }
     }

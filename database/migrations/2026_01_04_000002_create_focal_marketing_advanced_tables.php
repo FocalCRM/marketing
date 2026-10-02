@@ -107,7 +107,7 @@ return new class extends Migration
 
         // 8. Add A/B Testing & Audience List fields to Campaigns
         Schema::table($campaignsTable, function (Blueprint $table) use ($listsTable, $templatesTable): void {
-            $table->foreignId('crm_list_id')->nullable()->after('campaign_type')->constrained($listsTable)->nullOnDelete();
+            $table->foreignId('crm_list_id')->nullable()->constrained($listsTable)->nullOnDelete();
             $table->boolean('is_ab_test')->default(false)->after('scheduled_at');
             $table->string('variant_b_subject')->nullable()->after('is_ab_test');
             $table->foreignId('variant_b_template_id')->nullable()->after('variant_b_subject')->constrained($templatesTable)->nullOnDelete();
