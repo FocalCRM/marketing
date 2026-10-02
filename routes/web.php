@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Focal\Core\Http\Middleware\RequireApiToken;
+use Focal\Core\Support\CsrfExemption;
 use Focal\Core\Support\RouteGroup;
 use Focal\Marketing\Http\Controllers\AmpFormController;
 use Focal\Marketing\Http\Controllers\CustomBehavioralEventController;
@@ -19,7 +20,6 @@ use Focal\Marketing\Http\Controllers\NpsSurveyController;
 use Focal\Marketing\Http\Controllers\TransactionalTemplateController;
 use Focal\Marketing\Http\Controllers\WebTrackingController;
 use Focal\Marketing\Http\Controllers\WorkflowEnrollmentWebhookController;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Support\Facades\Route;
 
 // Server-to-server endpoints require the marketing API token; browser-facing
@@ -51,19 +51,19 @@ Route::group(RouteGroup::attributes('focal-marketing.routes.web'), function () u
     // Inbound Web Tracking & Client Script
     Route::get('/marketing/focal.js', [WebTrackingController::class, 'clientScript'])->name('focal.marketing.track.script');
     Route::post('/marketing/track/pageview', [WebTrackingController::class, 'pageview'])
-        ->withoutMiddleware([ValidateCsrfToken::class])
+        ->withoutMiddleware(CsrfExemption::middleware())
         ->middleware('throttle:focal-public')
         ->name('focal.marketing.track.pageview');
 
     // External Form Auto-Capture Endpoint
     Route::post('/marketing/forms/auto-capture', [WebTrackingController::class, 'autoCapture'])
-        ->withoutMiddleware([ValidateCsrfToken::class])
+        ->withoutMiddleware(CsrfExemption::middleware())
         ->middleware('throttle:focal-public')
         ->name('focal.marketing.forms.auto-capture');
 
     // Inbound ESP Deliverability Webhooks (bounces, complaints)
     Route::post('/marketing/webhooks/esp/{provider}', [EspWebhookController::class, 'handle'])
-        ->withoutMiddleware([ValidateCsrfToken::class])
+        ->withoutMiddleware(CsrfExemption::middleware())
         ->middleware([$apiToken, 'throttle:focal-api'])
         ->name('focal.marketing.webhooks.esp');
 
@@ -99,7 +99,7 @@ Route::group(RouteGroup::attributes('focal-marketing.routes.web'), function () u
 });
 
 Route::group(RouteGroup::attributes('focal-marketing.routes.api'), function () use ($apiToken): void {
-    Route::withoutMiddleware([ValidateCsrfToken::class])->group(function () use ($apiToken): void {
+    Route::withoutMiddleware(CsrfExemption::middleware())->group(function () use ($apiToken): void {
         // Public, browser-facing endpoints (embedded forms, event sign-ups, in-email AMP forms).
         Route::middleware('throttle:focal-public')->group(function (): void {
             // External / Embed form submission endpoint (CSRF-exempt for cross-site landing pages)
