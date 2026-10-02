@@ -166,7 +166,7 @@ class CampaignDispatchAndTrackingTest extends TestCase
         ]);
 
         $targetUrl = 'https://focal.test/special-offer';
-        $response = $this->get('/marketing/track/click/'.$recipient->tracking_token.'?url='.urlencode($targetUrl));
+        $response = $this->get($recipient->getClickRedirectUrl($targetUrl));
 
         $response->assertRedirect($targetUrl);
 

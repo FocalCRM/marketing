@@ -128,4 +128,37 @@ return [
     'api' => [
         'token' => env('FOCAL_MARKETING_API_TOKEN'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | AMP for Email
+    |--------------------------------------------------------------------------
+    |
+    | Origins allowed to call the in-email AMP form endpoints (feedback and
+    | RSVP). Requests from any other Origin get a 403 with no CORS headers.
+    | Set a comma-separated list in FOCAL_MARKETING_AMP_ALLOWED_ORIGINS to
+    | override the defaults (the AMP for Email clients' origins).
+    |
+    */
+    'amp' => [
+        'allowed_origins' => array_values(array_filter(array_map('trim', explode(',', (string) env(
+            'FOCAL_MARKETING_AMP_ALLOWED_ORIGINS',
+            'https://mail.google.com,https://outlook.live.com,https://mail.yahoo.com,https://mail.aol.com'
+        ))))),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Outbound Webhooks
+    |--------------------------------------------------------------------------
+    |
+    | Default endpoint and signing secret for outbound event webhooks (such as
+    | template.email.sent). A webhook is only sent when a secret is available,
+    | either here or as the request's webhook_secret; there is no fallback.
+    |
+    */
+    'webhooks' => [
+        'outbound_url' => env('FOCAL_MARKETING_WEBHOOK_URL'),
+        'secret' => env('FOCAL_MARKETING_WEBHOOK_SECRET'),
+    ],
 ];

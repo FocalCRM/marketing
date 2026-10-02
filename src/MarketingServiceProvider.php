@@ -18,10 +18,15 @@ use Focal\Marketing\Models\LeadDecayLog;
 use Focal\Marketing\Models\LeadScoreLog;
 use Focal\Marketing\Models\MarketingSubscription;
 use Focal\Marketing\Models\WorkflowEnrollment;
+use Illuminate\Http\Middleware\HandleCors;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 use Illuminate\Support\ServiceProvider;
 
 class MarketingServiceProvider extends ServiceProvider
 {
+    private static bool $ampCorsSkipRegistered = false;
+
     /**
      * Register any application services.
      */
@@ -87,6 +92,7 @@ class MarketingServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'focal-marketing');
         if (config('focal-marketing.routes.enabled', true)) {
             $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+            $this->skipGlobalCorsForAmpRoutes();
         }
 
         // Dynamic Eloquent relations on Contact
@@ -137,5 +143,36 @@ class MarketingServiceProvider extends ServiceProvider
                 __DIR__.'/../database/migrations' => database_path('migrations'),
             ], 'focal-marketing-migrations');
         }
+    }
+
+    /**
+     * The in-email AMP endpoints set their own CORS headers from an origin
+     * allow-list (focal-marketing.amp.allowed_origins). Keep the app's global
+     * CORS middleware (config/cors.php, which matches "api/*" by default) from
+     * replacing them with its own, usually wildcard, headers.
+     */
+    protected function skipGlobalCorsForAmpRoutes(): void
+    {
+        if (self::$ampCorsSkipRegistered) {
+            return;
+        }
+
+        self::$ampCorsSkipRegistered = true;
+
+        HandleCors::skipWhen(static function (Request $request): bool {
+            if (! str_ends_with($request->path(), 'amp/feedback') && ! str_ends_with($request->path(), 'amp/rsvp')) {
+                return false;
+            }
+
+            foreach (['focal.marketing.amp.feedback', 'focal.marketing.amp.rsvp'] as $name) {
+                $route = app('router')->getRoutes()->getByName($name);
+
+                if ($route instanceof Route && trim($route->uri(), '/') === trim($request->path(), '/')) {
+                    return true;
+                }
+            }
+
+            return false;
+        });
     }
 }

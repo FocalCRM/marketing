@@ -6,6 +6,7 @@ namespace Focal\Marketing\Models;
 
 use Carbon\CarbonInterface;
 use Focal\Core\Models\Contact;
+use Focal\Marketing\Support\ContactToken;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -137,5 +138,13 @@ class MarketingEvent extends Model
     public function isFull(): bool
     {
         return $this->capacity !== null && $this->registrations_count >= $this->capacity;
+    }
+
+    /**
+     * Signed token identifying a contact for this event's in-email AMP RSVP form.
+     */
+    public function rsvpTokenFor(Contact $contact): string
+    {
+        return ContactToken::make($contact, ContactToken::forEvent($this->id));
     }
 }

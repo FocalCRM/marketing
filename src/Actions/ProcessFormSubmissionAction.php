@@ -37,6 +37,8 @@ class ProcessFormSubmissionAction
 
         unset($data['contact_id'], $data['contact']);
 
+        $isVerified = $contact !== null;
+
         if ($contact === null && ! empty($email)) {
             /** @var Contact|null $contact */
             $contact = Contact::query()->where('email', $email)->first();
@@ -115,7 +117,23 @@ class ProcessFormSubmissionAction
                 'sms_consent', 'visitor_token', 'contact_id',
                 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content',
             ];
-            $customProps = array_diff_key($data, array_flip($excludedKeys));
+
+            // Only fields the form declares become custom properties; anything else
+            // stays on the submission record only.
+            $declaredKeys = array_diff($this->declaredFieldNames($form), $excludedKeys);
+            $customProps = array_intersect_key($data, array_flip($declaredKeys));
+
+            // Without a signed token the submitter has not proven they own this contact
+            // (matched by email or just created), so existing values are only filled in,
+            // never overwritten.
+            if (! $isVerified) {
+                $customProps = array_filter(
+                    $customProps,
+                    fn (string $key): bool => $this->isBlank($contact->getProperty($key)),
+                    ARRAY_FILTER_USE_KEY,
+                );
+            }
+
             if (! empty($customProps)) {
                 $contact->setProperties($customProps)->save();
             }
@@ -141,5 +159,30 @@ class ProcessFormSubmissionAction
         }
 
         return $submission;
+    }
+
+    /**
+     * Field names declared in the form's schema and progressive profiling queue.
+     *
+     * @return list<string>
+     */
+    private function declaredFieldNames(MarketingForm $form): array
+    {
+        $names = [];
+
+        foreach ([...($form->fields_schema ?? []), ...($form->progressive_fields ?? [])] as $field) {
+            $name = $field['name'] ?? null;
+
+            if (is_string($name) && $name !== '') {
+                $names[] = $name;
+            }
+        }
+
+        return array_values(array_unique($names));
+    }
+
+    private function isBlank(mixed $value): bool
+    {
+        return $value === null || $value === '' || $value === [];
     }
 }

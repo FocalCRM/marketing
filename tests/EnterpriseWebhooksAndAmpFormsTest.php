@@ -152,17 +152,19 @@ class EnterpriseWebhooksAndAmpFormsTest extends TestCase
             'token' => 'nps_token_amp_123',
         ]);
 
-        $response = $this->postJson(route('focal.marketing.amp.feedback', [
-            '__amp_source_origin' => 'https://mail.google.com',
-        ]), [
+        $response = $this->withHeaders([
+            'Origin' => 'https://mail.google.com',
+            'AMP-Email-Sender' => 'surveys@focal.test',
+        ])->postJson(route('focal.marketing.amp.feedback'), [
             'token' => 'nps_token_amp_123',
             'score' => 9,
             'feedback' => 'Loved the interactive email experience!',
         ]);
 
         $response->assertOk()
-            ->assertHeader('AMP-Access-Control-Allow-Source', 'https://mail.google.com')
-            ->assertHeader('Access-Control-Expose-Headers', 'AMP-Access-Control-Allow-Source, AMP-Email-Allow-Sender')
+            ->assertHeader('Access-Control-Allow-Origin', 'https://mail.google.com')
+            ->assertHeader('AMP-Email-Allow-Sender', 'surveys@focal.test')
+            ->assertHeader('Access-Control-Expose-Headers', 'AMP-Email-Allow-Sender')
             ->assertJson([
                 'status' => 'success',
                 'score' => 9,
@@ -183,12 +185,11 @@ class EnterpriseWebhooksAndAmpFormsTest extends TestCase
             'status' => 'published',
         ]);
 
-        $response = $this->postJson(route('focal.marketing.amp.rsvp', [
-            '__amp_source_origin' => 'https://mail.google.com',
-        ]), [
+        $contact = Contact::create(['first_name' => 'Jordan', 'email' => 'keynote_fan@example.com']);
+
+        $response = $this->withHeaders(['Origin' => 'https://mail.google.com'])->postJson(route('focal.marketing.amp.rsvp'), [
             'event_slug' => 'keynote-2026',
-            'email' => 'keynote_fan@example.com',
-            'first_name' => 'Jordan',
+            'token' => $event->rsvpTokenFor($contact),
             'status' => 'attending',
         ]);
 
@@ -198,9 +199,6 @@ class EnterpriseWebhooksAndAmpFormsTest extends TestCase
                 'event' => 'keynote-2026',
                 'rsvp_status' => 'attending',
             ]);
-
-        $contact = Contact::where('email', 'keynote_fan@example.com')->first();
-        expect($contact)->not->toBeNull();
 
         $registration = MarketingEventRegistration::where('event_id', $event->id)
             ->where('contact_id', $contact->id)

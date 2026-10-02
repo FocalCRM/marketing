@@ -68,7 +68,8 @@ class SendCampaignProofAction
             '{{campaign.name}}' => $campaign->name,
         ];
 
-        $html = str_replace(array_keys($placeholders), array_values($placeholders), $rawHtml);
+        // Values are HTML-escaped: the sample contact's fields are untrusted input.
+        $html = str_replace(array_keys($placeholders), array_map(e(...), $placeholders), $rawHtml);
 
         // Evaluate smart dynamic content blocks if present
         $html = app(EvaluateSmartContentBlocksAction::class)->execute($html, $contact);

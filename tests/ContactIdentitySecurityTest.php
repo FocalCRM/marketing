@@ -150,6 +150,92 @@ class ContactIdentitySecurityTest extends TestCase
         $this->assertSame(1, $this->form->submissions()->where('contact_id', $this->victim->id)->count());
     }
 
+    public function test_submissions_matched_by_email_only_fill_empty_properties(): void
+    {
+        $this->victim->setProperties(['lead_owner' => 'alice'])->save();
+
+        $payload = [
+            'first_name' => 'Mallory',
+            'email' => 'victoria@example.com',
+            'budget' => '$0',
+            'lead_owner' => 'mallory',
+        ];
+
+        $this->post('/forms/demo-request', $payload)->assertOk();
+        $this->postJson(route('focal.marketing.forms.api-submit', 'demo-request'), $payload)->assertOk();
+
+        $this->victim->refresh();
+        $this->assertSame('Victoria', $this->victim->first_name);
+        $this->assertSame('$50k', $this->victim->getProperty('budget'));
+        $this->assertSame('alice', $this->victim->getProperty('lead_owner'));
+
+        // Raw data is still kept on the submission.
+        $this->assertSame('$0', $this->form->submissions()->latest('id')->first()->form_data['budget']);
+    }
+
+    public function test_unverified_submissions_fill_empty_declared_properties_only(): void
+    {
+        $this->victim->properties = null;
+        $this->victim->save();
+
+        $this->post('/forms/demo-request', [
+            'first_name' => 'Victoria',
+            'email' => 'victoria@example.com',
+            'budget' => '$75k',
+            'is_vip' => '1',
+        ])->assertOk();
+
+        $this->victim->refresh();
+        $this->assertSame('$75k', $this->victim->getProperty('budget'));
+        $this->assertNull($this->victim->getProperty('is_vip'));
+
+        $this->post('/forms/demo-request', [
+            'first_name' => 'Newbie',
+            'email' => 'newbie@example.com',
+            'budget' => '$10k',
+            'lead_score_override' => '999',
+        ])->assertOk();
+
+        $newbie = Contact::query()->where('email', 'newbie@example.com')->sole();
+        $this->assertSame('$10k', $newbie->getProperty('budget'));
+        $this->assertNull($newbie->getProperty('lead_score_override'));
+    }
+
+    public function test_landing_page_submissions_cannot_overwrite_properties_by_email(): void
+    {
+        LandingPage::create([
+            'title' => 'Launch',
+            'slug' => 'launch',
+            'headline' => 'Launch',
+            'form_id' => $this->form->id,
+            'is_published' => true,
+        ]);
+
+        $this->post('/p/launch/submit', [
+            'first_name' => 'Mallory',
+            'email' => 'victoria@example.com',
+            'budget' => '$0',
+            'is_vip' => '1',
+        ])->assertRedirect();
+
+        $this->victim->refresh();
+        $this->assertSame('$50k', $this->victim->getProperty('budget'));
+        $this->assertNull($this->victim->getProperty('is_vip'));
+    }
+
+    public function test_signed_submission_cannot_write_undeclared_properties(): void
+    {
+        $this->post('/forms/demo-request', [
+            'contact' => ContactToken::make($this->victim, ContactToken::forForm($this->form->id)),
+            'budget' => '$250k',
+            'is_vip' => '1',
+        ])->assertOk();
+
+        $this->victim->refresh();
+        $this->assertSame('$250k', $this->victim->getProperty('budget'));
+        $this->assertNull($this->victim->getProperty('is_vip'));
+    }
+
     public function test_asset_downloads_are_attributed_only_with_a_valid_signature(): void
     {
         $asset = MarketingAsset::create([

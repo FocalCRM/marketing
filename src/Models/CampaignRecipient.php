@@ -156,7 +156,39 @@ class CampaignRecipient extends Model
      */
     public function getClickRedirectUrl(string $destinationUrl): string
     {
-        return route('focal.marketing.track.click', ['token' => $this->tracking_token, 'url' => $destinationUrl]);
+        return route('focal.marketing.track.click', [
+            'token' => $this->tracking_token,
+            'url' => $destinationUrl,
+            'sig' => self::clickSignature((string) $this->tracking_token, $destinationUrl),
+        ]);
+    }
+
+    /**
+     * HMAC binding a tracking token to one destination, so the click redirect
+     * cannot be used as an open redirect to arbitrary URLs.
+     */
+    public static function clickSignature(string $token, string $destinationUrl, ?string $key = null): string
+    {
+        // JSON-encode the parts so no token/URL combination can produce the same signed string as another.
+        return hash_hmac('sha256', (string) json_encode(['focal-click', $token, $destinationUrl]), $key ?? (string) config('app.key'));
+    }
+
+    /**
+     * Links stay valid after an APP_KEY rotation while the old key is listed in APP_PREVIOUS_KEYS.
+     */
+    public static function hasValidClickSignature(string $token, mixed $destinationUrl, mixed $signature): bool
+    {
+        if (! is_string($destinationUrl) || ! is_string($signature)) {
+            return false;
+        }
+
+        foreach ([config('app.key'), ...(array) config('app.previous_keys', [])] as $key) {
+            if (is_string($key) && $key !== '' && hash_equals(self::clickSignature($token, $destinationUrl, $key), $signature)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

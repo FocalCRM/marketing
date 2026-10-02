@@ -22,7 +22,7 @@ class DispatchSmsAction
         ?string $title = null
     ): MarketingSmsMessage {
         $compiler = app(CompileCampaignMessageAction::class);
-        $compiledMessage = $compiler->compileForContact($message, $contact);
+        $compiledMessage = $compiler->compileForContact($message, $contact, escape: false);
 
         $hasPhone = ! empty($contact->phone);
         $hasConsent = ! $requiresConsent || (bool) $contact->sms_consent;

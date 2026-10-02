@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Focal\Marketing\Http\Controllers;
 
+use Closure;
 use DoPHP\MailBuilder\Mail\TemplateMailable;
 use DoPHP\MailBuilder\MailBuilder;
 use Focal\Marketing\Models\MarketingTemplate;
@@ -46,10 +47,20 @@ class TransactionalTemplateController extends Controller
             'webhook_secret' => 'nullable|string|max:255',
             'attachments' => 'nullable|array',
             'attachments.*.name' => 'required_with:attachments|string|max:255',
-            'attachments.*.path' => 'nullable|string|max:500',
-            'attachments.*.data' => 'nullable|string',
+            // Attachments are inline base64 only: a server-side path would let any
+            // token holder read files such as .env.
+            'attachments.*.path' => 'prohibited',
+            'attachments.*.data' => [
+                'required_with:attachments',
+                'string',
+                function (string $attribute, mixed $value, Closure $fail): void {
+                    if (! is_string($value) || base64_decode($value, true) === false) {
+                        $fail('The :attribute field must be base64 encoded.');
+                    }
+                },
+            ],
             'attachments.*.mime' => 'nullable|string|max:100',
-            'attachments.*.is_base64' => 'nullable|boolean',
+            'attachments.*.is_base64' => 'sometimes|accepted',
         ]);
 
         /** @var string $to */
@@ -93,7 +104,7 @@ class TransactionalTemplateController extends Controller
             fromEmail: isset($validated['from_email']) ? (string) $validated['from_email'] : null,
             fromName: isset($validated['from_name']) ? (string) $validated['from_name'] : null,
             replyToEmail: isset($validated['reply_to']) ? (string) $validated['reply_to'] : null,
-            customAttachments: isset($validated['attachments']) && is_array($validated['attachments']) ? array_values($validated['attachments']) : [],
+            customAttachments: $this->inlineAttachments($validated['attachments'] ?? []),
         );
 
         $recipientName = isset($validated['name']) ? (string) $validated['name'] : null;
@@ -232,5 +243,34 @@ class TransactionalTemplateController extends Controller
         }
 
         return response()->json($response);
+    }
+
+    /**
+     * Rebuild validated attachments with only the inline fields, so nothing but
+     * base64 content ever reaches the mailable.
+     *
+     * @return list<array{name: string, data: string, mime: string|null, is_base64: true}>
+     */
+    private function inlineAttachments(mixed $attachments): array
+    {
+        if (! is_array($attachments)) {
+            return [];
+        }
+
+        $inline = [];
+        foreach ($attachments as $attachment) {
+            if (! is_array($attachment)) {
+                continue;
+            }
+
+            $inline[] = [
+                'name' => (string) ($attachment['name'] ?? 'attachment'),
+                'data' => (string) ($attachment['data'] ?? ''),
+                'mime' => isset($attachment['mime']) ? (string) $attachment['mime'] : null,
+                'is_base64' => true,
+            ];
+        }
+
+        return $inline;
     }
 }

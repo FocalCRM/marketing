@@ -132,7 +132,7 @@ class LeadScoringTest extends TestCase
         $this->assertSame(13, $contact->lead_score);
 
         // 2. Trigger click redirect -> +10 points
-        $this->get('/marketing/track/click/'.$recipient->tracking_token.'?url=https://focal.test/security');
+        $this->get($recipient->getClickRedirectUrl('https://focal.test/security'));
         $contact->refresh();
         $this->assertSame(23, $contact->lead_score);
 

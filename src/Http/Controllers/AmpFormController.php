@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Focal\Marketing\Http\Controllers;
 
-use Focal\Core\Models\Contact;
 use Focal\Marketing\Models\MarketingEvent;
 use Focal\Marketing\Models\MarketingEventRegistration;
 use Focal\Marketing\Models\NpsResponse;
+use Focal\Marketing\Support\ContactToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -19,6 +19,8 @@ class AmpFormController extends Controller
      */
     public function feedback(Request $request): JsonResponse
     {
+        $this->ensureAllowedOrigin($request);
+
         $validated = $request->validate([
             'token' => 'nullable|string|max:255',
             'score' => 'required|integer|min:0|max:10',
@@ -51,43 +53,43 @@ class AmpFormController extends Controller
 
     /**
      * Handle in-email AMP event RSVP form submission.
+     *
+     * The contact comes only from the signed token issued for this recipient and
+     * event (MarketingEvent::rsvpTokenFor()); a submitted email is never trusted.
      */
     public function rsvp(Request $request): JsonResponse
     {
+        $this->ensureAllowedOrigin($request);
+
         $validated = $request->validate([
             'event_slug' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
+            'token' => 'required|string|max:255',
             'status' => 'nullable|string|in:attending,declined,tentative',
-            'first_name' => 'nullable|string|max:255',
-            'last_name' => 'nullable|string|max:255',
         ]);
 
         $eventSlug = (string) $validated['event_slug'];
-        $email = (string) $validated['email'];
         $status = isset($validated['status']) ? (string) $validated['status'] : 'attending';
 
         $event = MarketingEvent::query()->where('slug', $eventSlug)->first();
+        $contact = $event !== null ? ContactToken::resolve($validated['token'], ContactToken::forEvent($event->id)) : null;
 
-        if ($event !== null) {
-            $contact = Contact::query()->firstOrCreate(
-                ['email' => $email],
-                [
-                    'first_name' => $validated['first_name'] ?? 'Attendee',
-                    'last_name' => $validated['last_name'] ?? '',
-                ]
-            );
-
-            MarketingEventRegistration::query()->updateOrCreate(
-                [
-                    'event_id' => $event->id,
-                    'contact_id' => $contact->id,
-                ],
-                [
-                    'status' => $status,
-                    'registered_at' => now(),
-                ]
-            );
+        if ($event === null || $contact === null) {
+            return $this->ampResponse($request, [
+                'status' => 'error',
+                'message' => 'This RSVP link is invalid or has expired.',
+            ], 403);
         }
+
+        MarketingEventRegistration::query()->updateOrCreate(
+            [
+                'event_id' => $event->id,
+                'contact_id' => $contact->id,
+            ],
+            [
+                'status' => $status,
+                'registered_at' => now(),
+            ]
+        );
 
         return $this->ampResponse($request, [
             'status' => 'success',
@@ -98,23 +100,31 @@ class AmpFormController extends Controller
     }
 
     /**
-     * Return a JsonResponse with standard AMP CORS headers.
+     * Reject requests that don't come from an allow-listed AMP for Email client.
+     */
+    protected function ensureAllowedOrigin(Request $request): void
+    {
+        $origin = $request->header('Origin');
+        $allowed = (array) config('focal-marketing.amp.allowed_origins', []);
+
+        abort_unless(is_string($origin) && in_array($origin, $allowed, true), 403);
+    }
+
+    /**
+     * Return a JsonResponse with AMP for Email CORS headers (spec version 2).
      *
      * @param  array<string, mixed>  $data
      */
     protected function ampResponse(Request $request, array $data, int $status = 200): JsonResponse
     {
-        $sourceOrigin = $request->query('__amp_source_origin');
-        $origin = $request->header('Origin', '*');
-
         $response = response()->json($data, $status);
 
-        $response->headers->set('Access-Control-Allow-Origin', (string) $origin);
-        $response->headers->set('Access-Control-Allow-Credentials', 'true');
-        $response->headers->set('Access-Control-Expose-Headers', 'AMP-Access-Control-Allow-Source, AMP-Email-Allow-Sender');
+        $response->headers->set('Access-Control-Allow-Origin', (string) $request->header('Origin'));
+        $response->headers->set('Access-Control-Expose-Headers', 'AMP-Email-Allow-Sender');
 
-        if (! empty($sourceOrigin) && is_string($sourceOrigin)) {
-            $response->headers->set('AMP-Access-Control-Allow-Source', $sourceOrigin);
+        $sender = $request->header('AMP-Email-Sender');
+        if (is_string($sender) && $sender !== '') {
+            $response->headers->set('AMP-Email-Allow-Sender', $sender);
         }
 
         return $response;

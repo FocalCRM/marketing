@@ -40,6 +40,11 @@ final class ContactToken
         return "form:{$formId}";
     }
 
+    public static function forEvent(int|string $eventId): string
+    {
+        return "event:{$eventId}";
+    }
+
     private static function signature(string $contactId, string $scope): string
     {
         return hash_hmac('sha256', "focal-contact|{$scope}|{$contactId}", (string) config('app.key'));

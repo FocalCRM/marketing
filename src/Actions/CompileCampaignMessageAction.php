@@ -67,7 +67,8 @@ class CompileCampaignMessageAction
             '{{campaign.name}}' => $campaign->name,
         ];
 
-        $html = str_replace(array_keys($placeholders), array_values($placeholders), $rawHtml);
+        // Values are HTML-escaped: contact and company fields are untrusted input.
+        $html = str_replace(array_keys($placeholders), array_map(e(...), $placeholders), $rawHtml);
 
         // Evaluate smart dynamic content blocks
         $html = app(EvaluateSmartContentBlocksAction::class)->execute($html, $contact);
@@ -111,7 +112,7 @@ class CompileCampaignMessageAction
     /**
      * Compile raw HTML template for a given contact (used by drip workflows).
      */
-    public function compileForContact(string $rawHtml, Contact $contact): string
+    public function compileForContact(string $rawHtml, Contact $contact, bool $escape = true): string
     {
         /** @var Company|null $company */
         $company = $contact->companies()->first();
@@ -124,7 +125,10 @@ class CompileCampaignMessageAction
             '{{unsubscribe_url}}' => $contact->getPreferenceCenterUrl(),
         ];
 
-        $html = str_replace(array_keys($placeholders), array_values($placeholders), $rawHtml);
+        // Values are HTML-escaped for HTML bodies: contact and company fields are untrusted input.
+        // Plain-text messages such as SMS pass $escape = false.
+        $values = $escape ? array_map(e(...), $placeholders) : array_values($placeholders);
+        $html = str_replace(array_keys($placeholders), $values, $rawHtml);
 
         return app(EvaluateSmartContentBlocksAction::class)->execute($html, $contact);
     }

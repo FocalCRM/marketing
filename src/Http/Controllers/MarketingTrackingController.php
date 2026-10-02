@@ -49,9 +49,21 @@ class MarketingTrackingController extends Controller
 
     /**
      * Record a link click event and redirect recipient to destination URL.
+     *
+     * Only destinations signed for this token when the email was compiled are
+     * followed; anything else is a 404, so the endpoint is not an open redirect.
      */
     public function trackClick(Request $request, string $token): RedirectResponse
     {
+        $destinationUrl = $request->query('url');
+
+        if (! CampaignRecipient::hasValidClickSignature($token, $destinationUrl, $request->query('sig'))
+            || ! is_string($destinationUrl)
+            || ! in_array(strtolower((string) parse_url($destinationUrl, PHP_URL_SCHEME)), ['http', 'https'], true)
+            || filter_var($destinationUrl, FILTER_VALIDATE_URL) === false) {
+            abort(404);
+        }
+
         /** @var CampaignRecipient|null $recipient */
         $recipient = CampaignRecipient::query()->where('tracking_token', $token)->first();
 
@@ -65,11 +77,6 @@ class MarketingTrackingController extends Controller
                     "Clicked link in campaign: {$recipient->campaign->name}"
                 );
             }
-        }
-
-        $destinationUrl = $request->query('url');
-        if (empty($destinationUrl) || ! is_string($destinationUrl) || ! filter_var($destinationUrl, FILTER_VALIDATE_URL)) {
-            $destinationUrl = url('/');
         }
 
         return redirect()->away($destinationUrl);

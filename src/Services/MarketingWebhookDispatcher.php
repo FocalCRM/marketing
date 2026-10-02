@@ -26,7 +26,16 @@ class MarketingWebhookDispatcher
             return false;
         }
 
-        $signingSecret = $secret ?? (string) config('focal-marketing.webhooks.secret', 'focal-default-secret');
+        $signingSecret = $secret ?? config('focal-marketing.webhooks.secret');
+        if (! is_string($signingSecret) || $signingSecret === '') {
+            Log::warning('Outbound marketing webhook not sent: no signing secret. Pass webhook_secret or set FOCAL_MARKETING_WEBHOOK_SECRET.', [
+                'event' => $event,
+                'url' => $url,
+            ]);
+
+            return false;
+        }
+
         $timestamp = time();
         $eventId = (string) Str::uuid();
 
@@ -45,16 +54,17 @@ class MarketingWebhookDispatcher
         $signature = self::generateSignature($timestamp, $jsonPayload, $signingSecret);
 
         try {
+            // Send the exact JSON that was signed, so receivers can verify the raw body.
             $response = Http::timeout(5)
+                ->withBody($jsonPayload, 'application/json')
                 ->withHeaders([
-                    'Content-Type' => 'application/json',
                     'User-Agent' => 'Focal-Marketing-Webhooks/1.0',
                     'X-Focal-Event' => $event,
                     'X-Focal-Delivery' => $eventId,
                     'X-Focal-Timestamp' => (string) $timestamp,
                     'X-Focal-Signature' => $signature,
                 ])
-                ->post($url, $payload);
+                ->post($url);
 
             return $response->successful();
         } catch (\Throwable $e) {
