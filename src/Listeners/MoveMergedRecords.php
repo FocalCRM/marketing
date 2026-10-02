@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Listeners;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Odden\Core\Events\CompaniesMerged;
 use Odden\Core\Events\ContactsMerged;
 use Odden\Core\Models\Contact;
@@ -27,8 +29,6 @@ use Odden\Marketing\Models\PageView;
 use Odden\Marketing\Models\VisitorSession;
 use Odden\Marketing\Models\WorkflowEnrollment;
 use Odden\Marketing\Models\WorkflowLog;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Moves the Marketing records keyed to a merged-away contact or company onto the record it was

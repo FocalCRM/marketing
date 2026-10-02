@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\CompileCampaignMessageAction;
@@ -14,8 +16,6 @@ use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\MarketingSubscription;
 use Odden\Marketing\Models\MarketingTemplate;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CampaignDispatchAndTrackingTest extends TestCase
 {

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Artisan;
 use Odden\Core\Models\Contact;
 use Odden\Core\Models\CrmList;
 use Odden\Marketing\Actions\AuditCampaignDeliverabilityAction;
@@ -17,9 +20,6 @@ use Odden\Marketing\Models\MarketingForm;
 use Odden\Marketing\Models\MarketingTemplate;
 use Odden\Marketing\Models\MarketingWorkflow;
 use Odden\Marketing\Models\WorkflowStep;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Artisan;
 
 class MarketingAutomationAndDeliverabilitySuiteTest extends TestCase
 {

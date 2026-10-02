@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Odden\Core\Enums\LeadStatus;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Company;
@@ -25,8 +27,6 @@ use Odden\Sales\Enums\DealStatus;
 use Odden\Sales\Models\Deal;
 use Odden\Sales\Models\Pipeline;
 use Odden\Sales\Models\PipelineStage;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Collection;
 
 class MarketingEnterpriseDifferentiationSuiteTest extends TestCase
 {

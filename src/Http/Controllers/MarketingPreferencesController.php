@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\View\View;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\ApplyLeadScoringEventAction;
 use Odden\Marketing\Enums\LeadScoringEventType;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\MarketingSubscription;
 use Odden\Marketing\Models\MarketingSubscriptionTopic;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use Illuminate\View\View;
 
 class MarketingPreferencesController extends Controller
 {

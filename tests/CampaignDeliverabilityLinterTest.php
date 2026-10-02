@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Marketing\Actions\LintCampaignDeliverabilityAction;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\MarketingTemplate;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CampaignDeliverabilityLinterTest extends TestCase
 {

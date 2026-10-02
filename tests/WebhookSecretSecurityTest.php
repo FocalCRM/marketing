@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
-use Odden\Marketing\Models\MarketingTemplate;
-use Odden\Marketing\Services\MarketingWebhookDispatcher;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Odden\Marketing\Models\MarketingTemplate;
+use Odden\Marketing\Services\MarketingWebhookDispatcher;
 
 /**
  * Outbound webhooks are never signed with a guessable default secret.

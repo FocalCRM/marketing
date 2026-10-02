@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Models\MarketingForm;
 use Odden\Marketing\Support\ContactToken;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ProgressiveProfilingTest extends TestCase
 {

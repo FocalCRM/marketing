@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Odden\Marketing\Http\Controllers;
 
 use Closure;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Odden\MailBuilder\MailBuilder;
 use Odden\Marketing\Mail\TransactionalTemplateMailable;
 use Odden\Marketing\Models\MarketingTemplate;
 use Odden\Marketing\Services\DomainThrottler;
 use Odden\Marketing\Services\MarketingWebhookDispatcher;
 use Odden\Marketing\Support\MarketingMailer;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 
 class TransactionalTemplateController extends Controller
 {

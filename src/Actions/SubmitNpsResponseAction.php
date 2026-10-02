@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Actions;
 
+use Illuminate\Support\Facades\DB;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Enums\LeadScoringEventType;
 use Odden\Marketing\Models\NpsResponse;
-use Illuminate\Support\Facades\DB;
 
 class SubmitNpsResponseAction
 {

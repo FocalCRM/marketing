@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\EnrollContactInWorkflowAction;
 use Odden\Marketing\Actions\ExecuteWorkflowStepAction;
@@ -19,8 +21,6 @@ use Odden\Marketing\Models\MarketingWorkflow;
 use Odden\Marketing\Models\WorkflowEnrollment;
 use Odden\Marketing\Models\WorkflowLog;
 use Odden\Marketing\Tests\Fixtures\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * #2: the send_email step queues a message through the campaign delivery path.

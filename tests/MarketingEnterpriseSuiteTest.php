@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Str;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\ProcessSubscriberSunsetPolicyAction;
@@ -16,9 +19,6 @@ use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\MarketingSubscription;
 use Odden\Marketing\Models\MarketingWorkflow;
 use Odden\Marketing\Services\DomainHealthCheckService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Str;
 
 class MarketingEnterpriseSuiteTest extends TestCase
 {

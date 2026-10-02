@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Actions;
 
+use Illuminate\Support\Str;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\MarketingSmsMessage;
-use Illuminate\Support\Str;
 
 class DispatchSmsAction
 {

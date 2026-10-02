@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\CalculateClosedLoopMetricsAction;
 use Odden\Marketing\Models\Campaign;
@@ -12,8 +14,6 @@ use Odden\Sales\Enums\DealStatus;
 use Odden\Sales\Models\Deal;
 use Odden\Sales\Models\Pipeline;
 use Odden\Sales\Models\PipelineStage;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 
 class CampaignBudgetAndRoiTest extends TestCase
 {

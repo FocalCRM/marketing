@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Actions;
 
-use Odden\MailBuilder\MailBuilder;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
+use Odden\MailBuilder\MailBuilder;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\MarketingTemplate;

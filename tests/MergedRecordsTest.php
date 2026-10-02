@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Odden\Core\Actions\MergeCompaniesAction;
 use Odden\Core\Actions\MergeContactsAction;
 use Odden\Core\Models\Company;
@@ -34,8 +36,6 @@ use Odden\Marketing\Models\PageView;
 use Odden\Marketing\Models\VisitorSession;
 use Odden\Marketing\Models\WorkflowEnrollment;
 use Odden\Marketing\Models\WorkflowLog;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 /**
  * @return array{0: Contact, 1: Contact}

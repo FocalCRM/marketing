@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
-use Odden\MailBuilder\Filament\Components\EmailSlotBuilder;
 use Filament\Forms\Components\Builder;
-use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Odden\MailBuilder\Filament\Components\EmailSlotBuilder;
+use Odden\Marketing\Models\MarketingTemplate;
 
 class MarketingTemplateSlotIntegrationTest extends TestCase
 {

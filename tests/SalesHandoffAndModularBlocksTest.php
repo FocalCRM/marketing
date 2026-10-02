@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\EnrollContactInWorkflowAction;
@@ -18,7 +19,6 @@ use Odden\Marketing\Tests\Fixtures\User;
 use Odden\Sales\Enums\DealStatus;
 use Odden\Sales\Models\Deal;
 use Odden\Sales\Models\Pipeline;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class SalesHandoffAndModularBlocksTest extends TestCase
 {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\AnalyzeConversionFunnelAction;
 use Odden\Marketing\Models\CustomBehavioralEvent;
@@ -15,7 +16,6 @@ use Odden\Sales\Enums\DealStatus;
 use Odden\Sales\Models\Deal;
 use Odden\Sales\Models\Pipeline;
 use Odden\Sales\Models\PipelineStage;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ConversionFunnelAnalysisTest extends TestCase
 {

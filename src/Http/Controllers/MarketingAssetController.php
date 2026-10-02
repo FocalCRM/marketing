@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Http\Controllers;
 
-use Odden\Marketing\Actions\TrackAssetDownloadAction;
-use Odden\Marketing\Models\MarketingAsset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Odden\Marketing\Actions\TrackAssetDownloadAction;
+use Odden\Marketing\Models\MarketingAsset;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class MarketingAssetController extends Controller

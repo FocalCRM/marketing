@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\CompileCampaignMessageAction;
@@ -15,8 +17,6 @@ use Odden\Marketing\Mail\CampaignProofMailable;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\MarketingTemplate;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * Contact and company data merged into email HTML must not inject markup.

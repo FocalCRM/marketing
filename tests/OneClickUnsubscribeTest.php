@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Enums\CampaignStatus;
 use Odden\Marketing\Enums\RecipientStatus;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\MarketingSubscription;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
  * #6: RFC 8058 one-click unsubscribe. Mailbox providers POST

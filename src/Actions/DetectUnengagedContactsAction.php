@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Actions;
 
-use Odden\Core\Models\Contact;
 use Illuminate\Database\Eloquent\Collection;
+use Odden\Core\Models\Contact;
 
 class DetectUnengagedContactsAction
 {

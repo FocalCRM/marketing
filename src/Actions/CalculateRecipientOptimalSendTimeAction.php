@@ -6,10 +6,10 @@ namespace Odden\Marketing\Actions;
 
 use Carbon\CarbonInterface;
 use DateTimeZone;
+use Illuminate\Support\Carbon;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
-use Illuminate\Support\Carbon;
 
 class CalculateRecipientOptimalSendTimeAction
 {

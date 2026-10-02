@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Actions;
 
+use Illuminate\Support\Facades\DB;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Enums\LeadScoringEventType;
 use Odden\Marketing\Models\LeadScoreLog;
 use Odden\Marketing\Models\LeadScoringRule;
-use Illuminate\Support\Facades\DB;
 
 class ApplyLeadScoringEventAction
 {

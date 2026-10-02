@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\DispatchSmsAction;
 use Odden\Marketing\Actions\EnrollContactInWorkflowAction;
@@ -14,7 +15,6 @@ use Odden\Marketing\Models\MarketingSmsMessage;
 use Odden\Marketing\Models\MarketingWorkflow;
 use Odden\Marketing\Models\NpsResponse;
 use Odden\Marketing\Models\NpsSurvey;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class HorizonMarketingExtensionsTest extends TestCase
 {

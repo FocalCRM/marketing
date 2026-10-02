@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
@@ -17,7 +18,6 @@ use Odden\Marketing\Models\AdAudienceSync;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\MarketingForm;
 use Odden\Marketing\Tests\Fixtures\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MarketingEnterpriseParitySuiteTest extends TestCase
 {

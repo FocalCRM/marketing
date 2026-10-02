@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\DispatchCampaignAction;
 use Odden\Marketing\Actions\EvaluateAbTestWinnerAction;
@@ -18,8 +20,6 @@ use Odden\Sales\Enums\DealStatus;
 use Odden\Sales\Models\Deal;
 use Odden\Sales\Models\Pipeline;
 use Odden\Sales\Models\PipelineStage;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Collection;
 
 class AbTestingAndAttributionTest extends TestCase
 {

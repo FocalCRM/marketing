@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
 use Odden\Core\Enums\ActivityType;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\RecordWebVisitAction;
 use Odden\Marketing\Actions\StitchVisitorToContactAction;
 use Odden\Marketing\Support\VisitorToken;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
 
 class WebTrackingController extends Controller
 {

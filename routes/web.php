@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Route;
 use Odden\Core\Http\Middleware\RequireApiToken;
 use Odden\Core\Support\CsrfExemption;
 use Odden\Core\Support\RouteGroup;
@@ -20,7 +21,6 @@ use Odden\Marketing\Http\Controllers\NpsSurveyController;
 use Odden\Marketing\Http\Controllers\TransactionalTemplateController;
 use Odden\Marketing\Http\Controllers\WebTrackingController;
 use Odden\Marketing\Http\Controllers\WorkflowEnrollmentWebhookController;
-use Illuminate\Support\Facades\Route;
 
 // Server-to-server endpoints require the marketing API token; browser-facing
 // submissions are rate limited per IP (see odden-core.rate_limits).

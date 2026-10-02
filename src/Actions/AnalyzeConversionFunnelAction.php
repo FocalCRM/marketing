@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Odden\Marketing\Actions;
 
 use Carbon\CarbonInterface;
+use Illuminate\Support\Carbon;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\CustomBehavioralEvent;
@@ -12,7 +13,6 @@ use Odden\Marketing\Models\FormSubmission;
 use Odden\Marketing\Models\PageView;
 use Odden\Sales\Enums\DealStatus;
 use Odden\Sales\Models\Deal;
-use Illuminate\Support\Carbon;
 
 class AnalyzeConversionFunnelAction
 {

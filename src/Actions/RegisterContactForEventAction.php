@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Actions;
 
+use Illuminate\Support\Facades\DB;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Enums\LeadScoringEventType;
 use Odden\Marketing\Models\MarketingEvent;
 use Odden\Marketing\Models\MarketingEventRegistration;
-use Illuminate\Support\Facades\DB;
 
 class RegisterContactForEventAction
 {

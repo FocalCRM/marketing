@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Testing\TestResponse;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\CompileCampaignMessageAction;
 use Odden\Marketing\Enums\CampaignStatus;
@@ -11,8 +13,6 @@ use Odden\Marketing\Enums\RecipientStatus;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\MarketingTemplate;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Testing\TestResponse;
 
 /**
  * #7: UTM tagging and click tracking must not HTML-escape the destination URL

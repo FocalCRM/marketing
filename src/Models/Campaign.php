@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Odden\Core\Models\Contact;
 use Odden\Core\Models\CrmList;
 use Odden\Marketing\Actions\CalculateRecipientOptimalSendTimeAction;
 use Odden\Marketing\Enums\CampaignStatus;
 use Odden\Marketing\Enums\CampaignType;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id

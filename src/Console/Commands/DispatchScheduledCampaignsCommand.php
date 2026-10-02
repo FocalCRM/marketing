@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Console\Commands;
 
+use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Collection;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\DeliverCampaignMessageAction;
 use Odden\Marketing\Actions\DispatchCampaignAction;
@@ -12,8 +14,6 @@ use Odden\Marketing\Enums\RecipientStatus;
 use Odden\Marketing\Exceptions\CampaignHasNoAudienceException;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
-use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Collection;
 
 class DispatchScheduledCampaignsCommand extends Command
 {

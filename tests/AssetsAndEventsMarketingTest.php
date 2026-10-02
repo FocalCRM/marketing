@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Actions\EvaluateActiveListAction;
 use Odden\Core\Enums\ListType;
 use Odden\Core\Models\Contact;
@@ -16,7 +17,6 @@ use Odden\Marketing\Enums\WorkflowTriggerType;
 use Odden\Marketing\Models\MarketingAsset;
 use Odden\Marketing\Models\MarketingEvent;
 use Odden\Marketing\Models\MarketingWorkflow;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AssetsAndEventsMarketingTest extends TestCase
 {

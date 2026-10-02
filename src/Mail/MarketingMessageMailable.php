@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Mail;
 
-use Odden\Marketing\Mail\Concerns\UsesMarketingMailQueue;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -12,6 +11,7 @@ use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Headers;
+use Odden\Marketing\Mail\Concerns\UsesMarketingMailQueue;
 
 /**
  * A compiled campaign or workflow email for one recipient: HTML plus a plain-text

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Odden\Marketing\Models\MarketingEvent;
 use Odden\Marketing\Models\MarketingEventRegistration;
 use Odden\Marketing\Models\NpsResponse;
 use Odden\Marketing\Support\ContactToken;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 
 class AmpFormController extends Controller
 {

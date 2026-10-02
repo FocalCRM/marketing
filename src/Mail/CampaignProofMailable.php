@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Mail;
 
-use Odden\Marketing\Mail\Concerns\UsesMarketingMailQueue;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Odden\Marketing\Mail\Concerns\UsesMarketingMailQueue;
 
 /**
  * A campaign proof for internal reviewers, queued on the queue set in odden-marketing.mail.

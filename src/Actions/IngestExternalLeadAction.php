@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Actions;
 
+use Illuminate\Support\Facades\DB;
 use Odden\Core\Enums\LeadStatus;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Company;
@@ -11,7 +12,6 @@ use Odden\Core\Models\Contact;
 use Odden\Marketing\Enums\LeadScoringEventType;
 use Odden\Marketing\Enums\WorkflowTriggerType;
 use Odden\Marketing\Models\MarketingWorkflow;
-use Illuminate\Support\Facades\DB;
 
 class IngestExternalLeadAction
 {

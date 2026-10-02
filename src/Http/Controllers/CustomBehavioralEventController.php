@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Http\Controllers;
 
-use Odden\Core\Models\Contact;
-use Odden\Marketing\Actions\TrackCustomBehavioralEventAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\TrackCustomBehavioralEventAction;
 
 class CustomBehavioralEventController extends Controller
 {

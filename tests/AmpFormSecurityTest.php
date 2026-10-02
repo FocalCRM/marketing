@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Models\MarketingEvent;
 use Odden\Marketing\Models\MarketingEventRegistration;
 use Odden\Marketing\Models\NpsResponse;
 use Odden\Marketing\Models\NpsSurvey;
 use Odden\Marketing\Support\ContactToken;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
  * In-email AMP endpoints answer only AMP email clients, and RSVPs act only for the recipient the link was issued to.

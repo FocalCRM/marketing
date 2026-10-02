@@ -6,19 +6,19 @@ namespace Odden\Marketing\Tests;
 
 use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
 use BladeUI\Icons\BladeIconsServiceProvider;
-use Odden\MailBuilder\MailBuilderServiceProvider;
 use Filament\Actions\ActionsServiceProvider;
 use Filament\Forms\FormsServiceProvider;
 use Filament\Infolists\InfolistsServiceProvider;
 use Filament\Notifications\NotificationsServiceProvider;
 use Filament\Schemas\SchemasServiceProvider;
 use Filament\Support\SupportServiceProvider;
+use Kirschbaum\PowerJoins\PowerJoinsServiceProvider;
+use Livewire\LivewireServiceProvider;
 use Odden\Core\CoreServiceProvider;
+use Odden\MailBuilder\MailBuilderServiceProvider;
 use Odden\Marketing\MarketingServiceProvider;
 use Odden\Marketing\Tests\Fixtures\User;
 use Odden\Sales\SalesServiceProvider;
-use Kirschbaum\PowerJoins\PowerJoinsServiceProvider;
-use Livewire\LivewireServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
 

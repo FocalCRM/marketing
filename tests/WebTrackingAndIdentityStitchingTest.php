@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\RecordWebVisitAction;
 use Odden\Marketing\Actions\StitchVisitorToContactAction;
 use Odden\Marketing\Models\PageView;
 use Odden\Marketing\Models\VisitorSession;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class WebTrackingAndIdentityStitchingTest extends TestCase
 {

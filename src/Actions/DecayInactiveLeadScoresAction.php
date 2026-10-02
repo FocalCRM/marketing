@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Actions;
 
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Enums\LeadScoringEventType;
 use Odden\Marketing\Models\LeadDecayLog;
 use Odden\Marketing\Models\LeadScoreLog;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\DB;
 
 class DecayInactiveLeadScoresAction
 {

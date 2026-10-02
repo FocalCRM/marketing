@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
-use Odden\Core\Models\Contact;
-use Odden\Marketing\Models\MarketingTemplate;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Models\MarketingTemplate;
 
 class ApiSecurityTest extends TestCase
 {

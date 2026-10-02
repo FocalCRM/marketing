@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Odden\Core\Models\Contact;
-use Odden\Marketing\Support\ContactToken;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Support\ContactToken;
 
 /**
  * @property int $id

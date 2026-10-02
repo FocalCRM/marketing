@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Odden\Marketing\Enums\WorkflowStepType;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Odden\Marketing\Enums\WorkflowStepType;
 
 /**
  * @property int $id

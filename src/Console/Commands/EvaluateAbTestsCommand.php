@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Console\Commands;
 
+use Illuminate\Console\Command;
 use Odden\Marketing\Actions\EvaluateAbTestWinnerAction;
 use Odden\Marketing\Enums\CampaignStatus;
 use Odden\Marketing\Models\Campaign;
-use Illuminate\Console\Command;
 
 class EvaluateAbTestsCommand extends Command
 {

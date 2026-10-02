@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\HandoffLeadToSalesAction;
 use Odden\Marketing\Enums\CampaignStatus;
@@ -12,8 +14,6 @@ use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\MarketingTemplate;
 use Odden\Sales\Models\Pipeline;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * Regressions for Carbon 3's signed diffIn*() results and a wrong column name,

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Odden\Core\Support\UserModel;
-use Odden\Marketing\Enums\WorkflowTriggerType;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Odden\Core\Support\UserModel;
+use Odden\Marketing\Enums\WorkflowTriggerType;
 
 /**
  * @property int $id

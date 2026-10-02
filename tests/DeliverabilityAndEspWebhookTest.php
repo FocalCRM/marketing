@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Enums\CampaignStatus;
 use Odden\Marketing\Enums\RecipientStatus;
@@ -11,7 +12,6 @@ use Odden\Marketing\Enums\SubscriptionStatus;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\MarketingSubscription;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class DeliverabilityAndEspWebhookTest extends TestCase
 {

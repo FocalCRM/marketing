@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Models\LandingPage;
 use Odden\Marketing\Models\MarketingAsset;
 use Odden\Marketing\Models\MarketingForm;
 use Odden\Marketing\Support\ContactToken;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
  * Public endpoints must not let a caller choose which contact they act as.

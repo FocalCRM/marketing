@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Odden\Core\Enums\LeadStatus;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\EnrollContactInWorkflowAction;
 use Odden\Marketing\Models\MarketingWorkflow;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 
 class WorkflowEnrollmentWebhookController extends Controller
 {

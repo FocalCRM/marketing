@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Testing\TestResponse;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\RecordWebVisitAction;
 use Odden\Marketing\Actions\StitchVisitorToContactAction;
@@ -9,7 +10,6 @@ use Odden\Marketing\Models\LandingPage;
 use Odden\Marketing\Models\MarketingForm;
 use Odden\Marketing\Models\PageView;
 use Odden\Marketing\Models\VisitorSession;
-use Illuminate\Testing\TestResponse;
 
 const CROSS_DOMAIN_VID = '3f9a1c0e8b7d4a6f9e2c1b0a5d4e3f21';
 

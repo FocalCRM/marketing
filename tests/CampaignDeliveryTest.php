@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\UniqueConstraintViolationException;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Odden\Core\Models\Contact;
 use Odden\Core\Models\CrmList;
 use Odden\Marketing\Actions\DeliverCampaignMessageAction;
@@ -17,11 +22,6 @@ use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\MarketingSubscription;
 use Odden\Marketing\Models\MarketingTemplate;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Database\UniqueConstraintViolationException;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Mail;
 use RuntimeException;
 
 /**

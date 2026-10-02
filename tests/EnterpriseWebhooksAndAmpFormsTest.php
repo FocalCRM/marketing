@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
-use Odden\MailBuilder\Mail\TemplateMailable;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Odden\Core\Models\Contact;
+use Odden\MailBuilder\Mail\TemplateMailable;
 use Odden\Marketing\Models\MarketingEvent;
 use Odden\Marketing\Models\MarketingEventRegistration;
 use Odden\Marketing\Models\MarketingTemplate;
@@ -15,9 +18,6 @@ use Odden\Marketing\Services\AbTestSignificanceCalculator;
 use Odden\Marketing\Services\ContactPersonaPreviewService;
 use Odden\Marketing\Services\DomainThrottler;
 use Odden\Marketing\Services\MarketingWebhookDispatcher;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
 
 class EnterpriseWebhooksAndAmpFormsTest extends TestCase
 {

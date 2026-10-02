@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Actions;
 
+use Illuminate\Database\Eloquent\Model;
 use Odden\Core\Enums\LeadStatus;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Company;
@@ -12,7 +13,6 @@ use Odden\Core\Support\UserModel;
 use Odden\Sales\Enums\DealStatus;
 use Odden\Sales\Models\Deal;
 use Odden\Sales\Models\Pipeline;
-use Illuminate\Database\Eloquent\Model;
 
 class HandoffLeadToSalesAction
 {

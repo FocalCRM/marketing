@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\RegisterContactForEventAction;
 use Odden\Marketing\Actions\UpdateAttendanceStatusAction;
 use Odden\Marketing\Models\MarketingEvent;
 use Odden\Marketing\Models\MarketingEventRegistration;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 
 class MarketingEventController extends Controller
 {

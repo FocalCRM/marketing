@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Marketing\Models\FormSubmission;
 use Odden\Marketing\Models\MarketingForm;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MarketingFormEmbedTest extends TestCase
 {

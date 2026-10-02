@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Models\MarketingSubscription;
 use Odden\Marketing\Models\MarketingSubscriptionTopic;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class MarketingSubscriptionTopicTest extends TestCase
 {

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Odden\MailBuilder\Mail\TemplateMailable;
 use Odden\Marketing\Actions\SendCampaignProofAction;
 use Odden\Marketing\Enums\CampaignStatus;
 use Odden\Marketing\Mail\CampaignProofMailable;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\MarketingTemplate;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * #17: proofs and the transactional API queue their mail on the configured

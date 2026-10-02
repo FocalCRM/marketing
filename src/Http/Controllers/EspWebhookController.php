@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Http\Controllers;
 
-use Odden\Marketing\Actions\ProcessEspWebhookAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Odden\Marketing\Actions\ProcessEspWebhookAction;
 
 class EspWebhookController extends Controller
 {

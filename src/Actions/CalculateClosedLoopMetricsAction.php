@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Actions;
 
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Enums\AttributionModel;
 use Odden\Marketing\Models\Campaign;
@@ -11,8 +13,6 @@ use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\FormSubmission;
 use Odden\Sales\Enums\DealStatus;
 use Odden\Sales\Models\Deal;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 class CalculateClosedLoopMetricsAction
 {

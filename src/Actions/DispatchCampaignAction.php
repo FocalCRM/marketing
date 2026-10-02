@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Actions;
 
+use Illuminate\Support\Collection;
 use Odden\Core\Models\Contact;
 use Odden\Core\Models\CrmList;
 use Odden\Marketing\Enums\CampaignStatus;
@@ -11,7 +12,6 @@ use Odden\Marketing\Enums\RecipientStatus;
 use Odden\Marketing\Exceptions\CampaignHasNoAudienceException;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
-use Illuminate\Support\Collection;
 
 class DispatchCampaignAction
 {

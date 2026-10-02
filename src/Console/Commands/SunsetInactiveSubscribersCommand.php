@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Console\Commands;
 
-use Odden\Marketing\Actions\ProcessSubscriberSunsetPolicyAction;
 use Illuminate\Console\Command;
+use Odden\Marketing\Actions\ProcessSubscriberSunsetPolicyAction;
 
 class SunsetInactiveSubscribersCommand extends Command
 {

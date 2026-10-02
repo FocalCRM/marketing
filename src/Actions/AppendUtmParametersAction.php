@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Actions;
 
+use Illuminate\Support\Str;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
-use Illuminate\Support\Str;
 
 class AppendUtmParametersAction
 {

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Http\Controllers;
 
-use Odden\Marketing\Actions\ProcessFormSubmissionAction;
-use Odden\Marketing\Actions\RecordWebVisitAction;
-use Odden\Marketing\Models\LandingPage;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
+use Odden\Marketing\Actions\ProcessFormSubmissionAction;
+use Odden\Marketing\Actions\RecordWebVisitAction;
+use Odden\Marketing\Models\LandingPage;
 
 class LandingPageController extends Controller
 {

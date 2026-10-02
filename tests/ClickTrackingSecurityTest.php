@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Marketing\Actions\CompileCampaignMessageAction;
 use Odden\Marketing\Enums\CampaignStatus;
 use Odden\Marketing\Enums\RecipientStatus;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\MarketingTemplate;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
  * The click redirect must only send people to destinations the app itself signed.

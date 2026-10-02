@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Services;
 
+use Odden\Core\Models\Contact;
 use Odden\MailBuilder\Data\EmailSlot;
 use Odden\MailBuilder\Enums\SlotType;
 use Odden\MailBuilder\MailBuilder;
-use Odden\Core\Models\Contact;
 use Odden\Marketing\Models\MarketingTemplate;
 
 class ContactPersonaPreviewService

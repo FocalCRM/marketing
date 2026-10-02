@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Odden\Marketing\Models;
 
 use Carbon\CarbonInterface;
-use Odden\Marketing\Enums\LeadScoringEventType;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Odden\Marketing\Enums\LeadScoringEventType;
 
 /**
  * @property int $id

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Models\Company;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\CalculateCompanyIntentScoreAction;
 use Odden\Marketing\Actions\CheckFatiguePolicyAction;
 use Odden\Marketing\Actions\DetectUnengagedContactsAction;
 use Odden\Marketing\Actions\ExecuteSunsetPolicyAction;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class AbmAndSunsetPolicyTest extends TestCase
 {

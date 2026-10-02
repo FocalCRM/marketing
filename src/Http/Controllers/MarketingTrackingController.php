@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Http\Controllers;
 
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Routing\Controller;
 use Odden\Marketing\Actions\ApplyLeadScoringEventAction;
 use Odden\Marketing\Enums\LeadScoringEventType;
 use Odden\Marketing\Enums\RecipientStatus;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\MarketingSubscription;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
 
 class MarketingTrackingController extends Controller
 {

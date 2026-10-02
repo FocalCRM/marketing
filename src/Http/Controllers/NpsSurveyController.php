@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Http\Controllers;
 
-use Odden\Marketing\Actions\SubmitNpsResponseAction;
-use Odden\Marketing\Models\NpsResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\View\View;
+use Odden\Marketing\Actions\SubmitNpsResponseAction;
+use Odden\Marketing\Models\NpsResponse;
 
 class NpsSurveyController extends Controller
 {

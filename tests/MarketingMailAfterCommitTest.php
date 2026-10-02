@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Odden\Marketing\Mail\CampaignProofMailable;
 use Odden\Marketing\Mail\MarketingMessageMailable;
 use Odden\Marketing\Mail\TransactionalTemplateMailable;
 use Odden\Marketing\Support\MarketingMailer;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 /**

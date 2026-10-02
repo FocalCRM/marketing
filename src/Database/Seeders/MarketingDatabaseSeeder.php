@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Database\Seeders;
 
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Enums\CampaignStatus;
@@ -21,8 +23,6 @@ use Odden\Marketing\Models\LeadScoringRule;
 use Odden\Marketing\Models\MarketingForm;
 use Odden\Marketing\Models\MarketingTemplate;
 use Odden\Marketing\Models\MarketingWorkflow;
-use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class MarketingDatabaseSeeder extends Seeder
 {

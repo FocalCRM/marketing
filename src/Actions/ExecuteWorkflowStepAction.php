@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Actions;
 
+use Illuminate\Support\Facades\Http;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Support\UserModel;
 use Odden\Marketing\Enums\WorkflowEnrollmentStatus;
@@ -18,7 +19,6 @@ use Odden\Marketing\Support\MarketingMailer;
 use Odden\Sales\Enums\DealStatus;
 use Odden\Sales\Models\Deal;
 use Odden\Sales\Models\Pipeline;
-use Illuminate\Support\Facades\Http;
 
 class ExecuteWorkflowStepAction
 {

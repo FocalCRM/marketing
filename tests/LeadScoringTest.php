@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Odden\Core\Enums\LifecycleStage;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\ApplyLeadScoringEventAction;
@@ -14,7 +15,6 @@ use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\LeadScoringRule;
 use Odden\Marketing\Models\MarketingForm;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class LeadScoringTest extends TestCase
 {

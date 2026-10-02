@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Mail;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Odden\MailBuilder\Data\EmailDocument;
 use Odden\MailBuilder\Mail\TemplateMailable;
 use Odden\Marketing\Mail\Concerns\UsesMarketingMailQueue;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 /**
  * A transactional API email, queued on the queue set in odden-marketing.mail.

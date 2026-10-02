@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use Odden\Core\Support\UserModel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Odden\Core\Support\UserModel;
 
 return new class extends Migration
 {

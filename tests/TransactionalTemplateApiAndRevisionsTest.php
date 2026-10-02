@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Odden\MailBuilder\Mail\TemplateMailable;
 use Odden\Marketing\Actions\EvaluateTemplateAbTestsAction;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
 use Odden\Marketing\Models\MarketingSavedBlock;
 use Odden\Marketing\Models\MarketingTemplate;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Mail;
 
 class TransactionalTemplateApiAndRevisionsTest extends TestCase
 {

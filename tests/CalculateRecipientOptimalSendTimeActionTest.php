@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Tests;
 
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Odden\Core\Models\Contact;
 use Odden\Marketing\Actions\CalculateRecipientOptimalSendTimeAction;
 use Odden\Marketing\Models\Campaign;
 use Odden\Marketing\Models\CampaignRecipient;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Carbon;
 
 class CalculateRecipientOptimalSendTimeActionTest extends TestCase
 {

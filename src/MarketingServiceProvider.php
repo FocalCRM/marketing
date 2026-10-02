@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace Odden\Marketing;
 
-use Odden\MailBuilder\MergeTags\MergeTagRegistry;
+use Illuminate\Http\Middleware\HandleCors;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\ServiceProvider;
 use Odden\Core\Events\CompaniesMerged;
 use Odden\Core\Events\ContactsMerged;
 use Odden\Core\Models\Contact;
+use Odden\MailBuilder\MergeTags\MergeTagRegistry;
 use Odden\Marketing\Console\Commands\DecayLeadScoresCommand;
 use Odden\Marketing\Console\Commands\DispatchScheduledCampaignsCommand;
 use Odden\Marketing\Console\Commands\EvaluateAbTestsCommand;
@@ -21,11 +26,6 @@ use Odden\Marketing\Models\LeadDecayLog;
 use Odden\Marketing\Models\LeadScoreLog;
 use Odden\Marketing\Models\MarketingSubscription;
 use Odden\Marketing\Models\WorkflowEnrollment;
-use Illuminate\Http\Middleware\HandleCors;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Route;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\ServiceProvider;
 
 class MarketingServiceProvider extends ServiceProvider
 {

@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Odden\Marketing\Http\Controllers;
 
-use Odden\Core\Models\Contact;
-use Odden\Marketing\Actions\ProcessFormSubmissionAction;
-use Odden\Marketing\Models\MarketingForm;
-use Odden\Marketing\Support\ContactToken;
-use Odden\Marketing\Support\VisitorToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Odden\Core\Models\Contact;
+use Odden\Marketing\Actions\ProcessFormSubmissionAction;
+use Odden\Marketing\Models\MarketingForm;
+use Odden\Marketing\Support\ContactToken;
+use Odden\Marketing\Support\VisitorToken;
 
 class MarketingFormController extends Controller
 {
