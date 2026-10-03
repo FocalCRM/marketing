@@ -113,6 +113,26 @@ class ProcessEspWebhookAction
     }
 
     /**
+     * Map Mailgun's event names onto the ones this action acts on. Mailgun reports a bounce as
+     * "failed" with a severity, and a spam complaint as "complained". Only a permanent failure
+     * is a hard bounce; a temporary one is kept as a soft bounce and suppresses nobody.
+     *
+     * @param  array<string, mixed>  $payload
+     */
+    protected function mailgunEventType(array $payload): string
+    {
+        $event = strtolower((string) ($payload['event-data']['event'] ?? ($payload['event'] ?? 'unknown')));
+        $severity = strtolower((string) ($payload['event-data']['severity'] ?? ''));
+
+        return match (true) {
+            $event === 'failed' && $severity === 'permanent' => 'hard_bounce',
+            $event === 'failed' => 'soft_bounce',
+            $event === 'complained' => 'complaint',
+            default => $event,
+        };
+    }
+
+    /**
      * Normalize provider-specific webhook payload schemas into unified structure.
      *
      * @param  array<string|int, mixed>  $payload
@@ -123,7 +143,7 @@ class ProcessEspWebhookAction
         return match (strtolower($provider)) {
             'mailgun' => [
                 'email' => (string) ($payload['event-data']['recipient'] ?? ($payload['recipient'] ?? '')),
-                'event_type' => (string) ($payload['event-data']['event'] ?? ($payload['event'] ?? 'unknown')),
+                'event_type' => $this->mailgunEventType($payload),
                 'error_code' => (string) ($payload['event-data']['delivery-status']['code'] ?? null),
                 'error_message' => (string) ($payload['event-data']['delivery-status']['message'] ?? null),
                 'tracking_token' => (string) ($payload['event-data']['user-variables']['odden_token'] ?? null),

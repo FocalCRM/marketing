@@ -21,12 +21,14 @@ use Odden\Marketing\Http\Controllers\NpsSurveyController;
 use Odden\Marketing\Http\Controllers\TransactionalTemplateController;
 use Odden\Marketing\Http\Controllers\WebTrackingController;
 use Odden\Marketing\Http\Controllers\WorkflowEnrollmentWebhookController;
+use Odden\Marketing\Http\Middleware\AuthenticateEspWebhook;
 
 // Server-to-server endpoints require the marketing API token; browser-facing
 // submissions are rate limited per IP (see odden-core.rate_limits).
+
 $apiToken = RequireApiToken::class.':odden-marketing.api.token';
 
-Route::group(RouteGroup::attributes('odden-marketing.routes.web'), function () use ($apiToken): void {
+Route::group(RouteGroup::attributes('odden-marketing.routes.web'), function (): void {
     // Hosted lead capture forms
     Route::get('/forms/{slug}', [MarketingFormController::class, 'show'])->name('odden.marketing.forms.show');
     Route::post('/forms/{slug}', [MarketingFormController::class, 'submit'])
@@ -68,7 +70,7 @@ Route::group(RouteGroup::attributes('odden-marketing.routes.web'), function () u
     // Inbound ESP Deliverability Webhooks (bounces, complaints)
     Route::post('/marketing/webhooks/esp/{provider}', [EspWebhookController::class, 'handle'])
         ->withoutMiddleware(CsrfExemption::middleware())
-        ->middleware([$apiToken, 'throttle:odden-api'])
+        ->middleware([AuthenticateEspWebhook::class, 'throttle:odden-api'])
         ->name('odden.marketing.webhooks.esp');
 
     // Hosted Public Landing Pages

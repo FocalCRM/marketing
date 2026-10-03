@@ -149,6 +149,25 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | ESP Webhook Authentication
+    |--------------------------------------------------------------------------
+    |
+    | Mailgun cannot send an API token header, so set its HTTP webhook signing key
+    | (Mailgun dashboard > Webhooks) and the Mailgun webhook is authenticated by
+    | Mailgun's HMAC signature instead. Signatures older than "tolerance" seconds
+    | are rejected. With no key, Mailgun webhooks use the API token like any other
+    | provider.
+    |
+    */
+    'esp' => [
+        'mailgun' => [
+            'signing_key' => env('ODDEN_MARKETING_MAILGUN_SIGNING_KEY'),
+            'tolerance' => (int) env('ODDEN_MARKETING_MAILGUN_SIGNATURE_TOLERANCE', 900),
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | AMP for Email
     |--------------------------------------------------------------------------
     |
