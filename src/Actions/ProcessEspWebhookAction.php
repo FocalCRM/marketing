@@ -117,7 +117,7 @@ class ProcessEspWebhookAction
      * "failed" with a severity, and a spam complaint as "complained". Only a permanent failure
      * is a hard bounce; a temporary one is kept as a soft bounce and suppresses nobody.
      *
-     * @param  array<string, mixed>  $payload
+     * @param  array<string|int, mixed>  $payload
      */
     protected function mailgunEventType(array $payload): string
     {
